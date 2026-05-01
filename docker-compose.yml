@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  backend:
+    build: ./backend
+    container_name: nutrirp_backend
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=sqlite:///./nutrirp.db   # Troque por SQL Server em produção
+      - SECRET_KEY=troque-por-chave-secreta-forte
+      - ACCESS_TOKEN_EXPIRE_MINUTES=1440
+    volumes:
+      - backend_data:/app
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build: ./frontend
+    container_name: nutrirp_frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  backend_data:
