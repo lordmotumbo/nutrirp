@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Plus, Trash2, Save, FileDown, ChevronDown, ChevronUp } from 'lucide-react'
+import { ArrowLeft, Plus, Trash2, Save, FileDown, ChevronDown, ChevronUp, Pencil } from 'lucide-react'
 import api from '../api'
 import toast from 'react-hot-toast'
+import FoodAutocomplete from '../components/FoodAutocomplete'
 
 const DEFAULT_MEALS = [
   { name: 'Café da manhã', time: '07:00', order: 0, notes: '', foods: [] },
@@ -87,11 +88,24 @@ export default function DietBuilder() {
     setCollapsed(c => ({ ...c, [i]: !c[i] }))
   }
 
-  function addFood(mealIdx) {
+  // Adiciona alimento via autocomplete (com dados nutricionais preenchidos)
+  // ou manualmente (campos vazios)
+  function addFood(mealIdx, foodData = null) {
+    const newFood = foodData
+      ? {
+          food_name: foodData.nome,
+          quantity: '100',
+          unit: 'g',
+          calories: String(foodData.kcal),
+          protein: String(foodData.prot),
+          carbs: String(foodData.carb),
+          fat: String(foodData.gord),
+          notes: '',
+        }
+      : { food_name: '', quantity: '', unit: 'g', calories: '', protein: '', carbs: '', fat: '', notes: '' }
+
     setMeals(ms => ms.map((m, i) =>
-      i === mealIdx
-        ? { ...m, foods: [...m.foods, { food_name: '', quantity: '', unit: 'g', calories: '', protein: '', carbs: '', fat: '', notes: '' }] }
-        : m
+      i === mealIdx ? { ...m, foods: [...m.foods, newFood] } : m
     ))
   }
 
@@ -121,7 +135,7 @@ export default function DietBuilder() {
     setMeals(ms => ms.map((m, idx) => idx === i ? { ...m, [key]: value } : m))
   }
 
-  // Totais
+  // Totais calculados em tempo real
   const totals = meals.reduce((acc, m) => {
     m.foods.forEach(f => {
       acc.calories += parseFloat(f.calories) || 0
@@ -189,7 +203,7 @@ export default function DietBuilder() {
         </div>
       </div>
 
-      {/* Totais */}
+      {/* Totais em tempo real */}
       <div className="grid grid-cols-4 gap-3">
         {[
           { label: 'Calorias', value: `${totals.calories.toFixed(0)} kcal` },
@@ -207,6 +221,7 @@ export default function DietBuilder() {
       {/* Refeições */}
       {meals.map((meal, mealIdx) => (
         <div key={mealIdx} className="card space-y-3">
+          {/* Cabeçalho da refeição */}
           <div className="flex items-center gap-2">
             <button type="button" onClick={() => toggleCollapse(mealIdx)} className="text-gray-400">
               {collapsed[mealIdx] ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
@@ -229,7 +244,7 @@ export default function DietBuilder() {
 
           {!collapsed[mealIdx] && (
             <>
-              {/* Header colunas */}
+              {/* Header das colunas */}
               {meal.foods.length > 0 && (
                 <div className="grid grid-cols-12 gap-1.5 text-xs text-gray-400 px-0.5">
                   <span className="col-span-4">Alimento</span>
@@ -242,6 +257,7 @@ export default function DietBuilder() {
                 </div>
               )}
 
+              {/* Linhas de alimentos */}
               {meal.foods.map((food, foodIdx) => (
                 <FoodRow
                   key={foodIdx}
@@ -251,12 +267,24 @@ export default function DietBuilder() {
                 />
               ))}
 
+              {/* Busca de alimentos com autocomplete */}
+              <div className="pt-1">
+                <p className="text-xs text-gray-400 mb-1.5 flex items-center gap-1">
+                  🔍 Buscar alimento (TACO + USDA) — valores preenchidos automaticamente
+                </p>
+                <FoodAutocomplete
+                  placeholder="Digite o nome do alimento..."
+                  onSelect={(food) => addFood(mealIdx, food)}
+                />
+              </div>
+
+              {/* Botão adicionar manualmente */}
               <button
                 type="button"
-                className="text-sm text-primary-700 hover:text-primary-900 flex items-center gap-1"
+                className="text-xs text-gray-400 hover:text-gray-600 flex items-center gap-1"
                 onClick={() => addFood(mealIdx)}
               >
-                <Plus className="w-4 h-4" /> Adicionar alimento
+                <Pencil className="w-3 h-3" /> Adicionar manualmente
               </button>
 
               <div>

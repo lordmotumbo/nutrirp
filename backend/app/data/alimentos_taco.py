@@ -1,0 +1,161 @@
+# Tabela TACO simplificada — alimentos mais comuns (por 100g)
+# Fonte: TACO 4ª edição (UNICAMP) — domínio público
+# Campos: nome, kcal, proteina(g), carboidrato(g), gordura(g), fibra(g)
+
+TACO = [
+    # Cereais e derivados
+    {"nome": "Arroz branco cozido", "kcal": 128, "prot": 2.5, "carb": 28.1, "gord": 0.2, "fibra": 1.6},
+    {"nome": "Arroz integral cozido", "kcal": 124, "prot": 2.6, "carb": 25.8, "gord": 1.0, "fibra": 2.7},
+    {"nome": "Arroz parboilizado cozido", "kcal": 127, "prot": 2.6, "carb": 27.9, "gord": 0.3, "fibra": 1.7},
+    {"nome": "Macarrão cozido", "kcal": 111, "prot": 3.8, "carb": 22.7, "gord": 0.5, "fibra": 1.6},
+    {"nome": "Macarrão integral cozido", "kcal": 124, "prot": 5.3, "carb": 23.8, "gord": 0.9, "fibra": 3.5},
+    {"nome": "Pão francês", "kcal": 300, "prot": 8.0, "carb": 58.6, "gord": 3.1, "fibra": 2.3},
+    {"nome": "Pão de forma", "kcal": 253, "prot": 7.8, "carb": 49.4, "gord": 3.1, "fibra": 2.3},
+    {"nome": "Pão integral", "kcal": 253, "prot": 8.1, "carb": 48.0, "gord": 3.4, "fibra": 5.0},
+    {"nome": "Farinha de trigo", "kcal": 360, "prot": 9.8, "carb": 75.1, "gord": 1.4, "fibra": 2.3},
+    {"nome": "Farinha de mandioca torrada", "kcal": 361, "prot": 1.5, "carb": 87.9, "gord": 0.3, "fibra": 6.5},
+    {"nome": "Aveia em flocos", "kcal": 394, "prot": 13.9, "carb": 66.6, "gord": 8.5, "fibra": 9.1},
+    {"nome": "Granola", "kcal": 394, "prot": 8.5, "carb": 65.0, "gord": 10.0, "fibra": 5.0},
+    {"nome": "Tapioca (goma)", "kcal": 345, "prot": 0.2, "carb": 85.9, "gord": 0.0, "fibra": 0.0},
+    {"nome": "Cuscuz de milho cozido", "kcal": 109, "prot": 2.2, "carb": 24.0, "gord": 0.5, "fibra": 1.4},
+    {"nome": "Milho verde cozido", "kcal": 86, "prot": 3.2, "carb": 18.7, "gord": 1.0, "fibra": 2.0},
+    {"nome": "Pipoca com sal", "kcal": 375, "prot": 11.7, "carb": 73.1, "gord": 4.5, "fibra": 10.0},
+    {"nome": "Biscoito cream cracker", "kcal": 441, "prot": 9.6, "carb": 70.0, "gord": 13.0, "fibra": 2.0},
+    {"nome": "Biscoito maisena", "kcal": 440, "prot": 6.5, "carb": 74.0, "gord": 12.0, "fibra": 1.5},
+
+    # Leguminosas
+    {"nome": "Feijão carioca cozido", "kcal": 76, "prot": 4.8, "carb": 13.6, "gord": 0.5, "fibra": 8.5},
+    {"nome": "Feijão preto cozido", "kcal": 77, "prot": 4.5, "carb": 14.0, "gord": 0.5, "fibra": 8.4},
+    {"nome": "Lentilha cozida", "kcal": 93, "prot": 6.3, "carb": 16.3, "gord": 0.5, "fibra": 7.9},
+    {"nome": "Grão-de-bico cozido", "kcal": 164, "prot": 8.9, "carb": 27.4, "gord": 2.6, "fibra": 6.0},
+    {"nome": "Ervilha cozida", "kcal": 95, "prot": 6.4, "carb": 15.6, "gord": 0.4, "fibra": 5.7},
+    {"nome": "Soja cozida", "kcal": 141, "prot": 12.9, "carb": 11.5, "gord": 6.4, "fibra": 9.6},
+
+    # Carnes bovinas
+    {"nome": "Carne bovina patinho grelhado", "kcal": 219, "prot": 32.0, "carb": 0.0, "gord": 9.9, "fibra": 0.0},
+    {"nome": "Carne bovina alcatra grelhada", "kcal": 238, "prot": 30.7, "carb": 0.0, "gord": 12.4, "fibra": 0.0},
+    {"nome": "Carne bovina filé mignon grelhado", "kcal": 219, "prot": 32.8, "carb": 0.0, "gord": 9.4, "fibra": 0.0},
+    {"nome": "Carne bovina acém cozido", "kcal": 218, "prot": 28.5, "carb": 0.0, "gord": 11.2, "fibra": 0.0},
+    {"nome": "Carne bovina contrafilé grelhado", "kcal": 261, "prot": 29.5, "carb": 0.0, "gord": 15.7, "fibra": 0.0},
+    {"nome": "Carne bovina picanha grelhada", "kcal": 280, "prot": 27.0, "carb": 0.0, "gord": 18.5, "fibra": 0.0},
+    {"nome": "Carne bovina moída refogada", "kcal": 219, "prot": 26.0, "carb": 0.0, "gord": 12.5, "fibra": 0.0},
+    {"nome": "Fígado bovino cozido", "kcal": 152, "prot": 24.4, "carb": 3.8, "gord": 4.4, "fibra": 0.0},
+
+    # Carnes suínas
+    {"nome": "Carne suína lombo assado", "kcal": 197, "prot": 30.0, "carb": 0.0, "gord": 8.2, "fibra": 0.0},
+    {"nome": "Carne suína costela assada", "kcal": 397, "prot": 22.0, "carb": 0.0, "gord": 34.0, "fibra": 0.0},
+    {"nome": "Bacon frito", "kcal": 541, "prot": 14.6, "carb": 1.5, "gord": 52.0, "fibra": 0.0},
+    {"nome": "Linguiça suína grelhada", "kcal": 290, "prot": 16.0, "carb": 2.0, "gord": 24.0, "fibra": 0.0},
+    {"nome": "Presunto cozido", "kcal": 109, "prot": 16.0, "carb": 1.5, "gord": 4.3, "fibra": 0.0},
+
+    # Aves
+    {"nome": "Frango peito grelhado sem pele", "kcal": 163, "prot": 31.5, "carb": 0.0, "gord": 3.2, "fibra": 0.0},
+    {"nome": "Frango coxa assada sem pele", "kcal": 180, "prot": 25.0, "carb": 0.0, "gord": 8.5, "fibra": 0.0},
+    {"nome": "Frango sobrecoxa assada sem pele", "kcal": 200, "prot": 23.0, "carb": 0.0, "gord": 11.5, "fibra": 0.0},
+    {"nome": "Frango inteiro assado com pele", "kcal": 239, "prot": 27.0, "carb": 0.0, "gord": 14.0, "fibra": 0.0},
+    {"nome": "Peru peito assado", "kcal": 159, "prot": 29.9, "carb": 0.0, "gord": 3.6, "fibra": 0.0},
+
+    # Peixes e frutos do mar
+    {"nome": "Atum em lata (água)", "kcal": 119, "prot": 26.0, "carb": 0.0, "gord": 1.0, "fibra": 0.0},
+    {"nome": "Atum em lata (óleo)", "kcal": 200, "prot": 24.0, "carb": 0.0, "gord": 11.0, "fibra": 0.0},
+    {"nome": "Salmão grelhado", "kcal": 208, "prot": 28.0, "carb": 0.0, "gord": 10.0, "fibra": 0.0},
+    {"nome": "Tilápia grelhada", "kcal": 128, "prot": 26.0, "carb": 0.0, "gord": 2.7, "fibra": 0.0},
+    {"nome": "Sardinha em lata (óleo)", "kcal": 208, "prot": 24.1, "carb": 0.0, "gord": 11.5, "fibra": 0.0},
+    {"nome": "Camarão cozido", "kcal": 99, "prot": 20.9, "carb": 0.9, "gord": 1.1, "fibra": 0.0},
+    {"nome": "Bacalhau cozido", "kcal": 117, "prot": 26.7, "carb": 0.0, "gord": 0.7, "fibra": 0.0},
+    {"nome": "Frango do mar (merluza) grelhado", "kcal": 108, "prot": 22.0, "carb": 0.0, "gord": 1.8, "fibra": 0.0},
+
+    # Ovos e laticínios
+    {"nome": "Ovo de galinha inteiro cozido", "kcal": 146, "prot": 13.3, "carb": 0.6, "gord": 9.5, "fibra": 0.0},
+    {"nome": "Ovo de galinha clara cozida", "kcal": 52, "prot": 10.9, "carb": 0.7, "gord": 0.2, "fibra": 0.0},
+    {"nome": "Ovo de galinha gema cozida", "kcal": 322, "prot": 15.9, "carb": 1.0, "gord": 27.7, "fibra": 0.0},
+    {"nome": "Leite integral", "kcal": 61, "prot": 3.2, "carb": 4.7, "gord": 3.2, "fibra": 0.0},
+    {"nome": "Leite desnatado", "kcal": 35, "prot": 3.4, "carb": 4.9, "gord": 0.1, "fibra": 0.0},
+    {"nome": "Leite semidesnatado", "kcal": 47, "prot": 3.3, "carb": 4.8, "gord": 1.5, "fibra": 0.0},
+    {"nome": "Iogurte natural integral", "kcal": 66, "prot": 3.5, "carb": 4.9, "gord": 3.3, "fibra": 0.0},
+    {"nome": "Iogurte natural desnatado", "kcal": 43, "prot": 4.1, "carb": 5.8, "gord": 0.2, "fibra": 0.0},
+    {"nome": "Iogurte grego", "kcal": 97, "prot": 9.0, "carb": 3.6, "gord": 5.0, "fibra": 0.0},
+    {"nome": "Queijo mussarela", "kcal": 300, "prot": 22.2, "carb": 2.0, "gord": 22.5, "fibra": 0.0},
+    {"nome": "Queijo prato", "kcal": 358, "prot": 24.6, "carb": 1.6, "gord": 28.0, "fibra": 0.0},
+    {"nome": "Queijo minas frescal", "kcal": 264, "prot": 17.4, "carb": 3.2, "gord": 20.2, "fibra": 0.0},
+    {"nome": "Queijo cottage", "kcal": 98, "prot": 11.1, "carb": 3.4, "gord": 4.3, "fibra": 0.0},
+    {"nome": "Requeijão cremoso", "kcal": 257, "prot": 8.5, "carb": 3.2, "gord": 23.5, "fibra": 0.0},
+    {"nome": "Manteiga", "kcal": 726, "prot": 0.5, "carb": 0.1, "gord": 80.5, "fibra": 0.0},
+    {"nome": "Margarina", "kcal": 530, "prot": 0.5, "carb": 0.5, "gord": 58.0, "fibra": 0.0},
+
+    # Frutas
+    {"nome": "Banana prata", "kcal": 98, "prot": 1.3, "carb": 26.0, "gord": 0.1, "fibra": 2.0},
+    {"nome": "Banana maçã", "kcal": 87, "prot": 1.1, "carb": 22.8, "gord": 0.3, "fibra": 1.9},
+    {"nome": "Maçã", "kcal": 56, "prot": 0.3, "carb": 15.2, "gord": 0.1, "fibra": 1.3},
+    {"nome": "Laranja pera", "kcal": 37, "prot": 0.9, "carb": 8.9, "gord": 0.1, "fibra": 0.8},
+    {"nome": "Mamão papaia", "kcal": 40, "prot": 0.5, "carb": 10.4, "gord": 0.1, "fibra": 1.8},
+    {"nome": "Manga tommy", "kcal": 64, "prot": 0.5, "carb": 17.0, "gord": 0.3, "fibra": 1.6},
+    {"nome": "Uva itália", "kcal": 69, "prot": 0.7, "carb": 17.9, "gord": 0.1, "fibra": 0.9},
+    {"nome": "Morango", "kcal": 30, "prot": 0.8, "carb": 7.1, "gord": 0.3, "fibra": 1.7},
+    {"nome": "Melancia", "kcal": 33, "prot": 0.6, "carb": 8.1, "gord": 0.2, "fibra": 0.3},
+    {"nome": "Melão", "kcal": 29, "prot": 0.7, "carb": 7.5, "gord": 0.1, "fibra": 0.3},
+    {"nome": "Abacaxi", "kcal": 48, "prot": 0.9, "carb": 12.3, "gord": 0.1, "fibra": 1.0},
+    {"nome": "Abacate", "kcal": 96, "prot": 1.2, "carb": 6.0, "gord": 8.4, "fibra": 6.3},
+    {"nome": "Pera", "kcal": 55, "prot": 0.5, "carb": 14.9, "gord": 0.1, "fibra": 3.0},
+    {"nome": "Pêssego", "kcal": 43, "prot": 0.9, "carb": 11.0, "gord": 0.1, "fibra": 1.5},
+    {"nome": "Kiwi", "kcal": 61, "prot": 1.1, "carb": 14.7, "gord": 0.6, "fibra": 3.0},
+    {"nome": "Limão", "kcal": 32, "prot": 1.0, "carb": 7.3, "gord": 0.3, "fibra": 2.3},
+    {"nome": "Coco fresco", "kcal": 354, "prot": 3.4, "carb": 15.2, "gord": 34.0, "fibra": 9.0},
+    {"nome": "Açaí", "kcal": 58, "prot": 1.5, "carb": 6.7, "gord": 3.0, "fibra": 2.6},
+    {"nome": "Goiaba", "kcal": 54, "prot": 2.3, "carb": 10.7, "gord": 0.9, "fibra": 6.2},
+    {"nome": "Caju", "kcal": 43, "prot": 1.0, "carb": 9.8, "gord": 0.3, "fibra": 1.7},
+
+    # Verduras e legumes
+    {"nome": "Alface", "kcal": 11, "prot": 1.3, "carb": 1.7, "gord": 0.2, "fibra": 1.8},
+    {"nome": "Rúcula", "kcal": 25, "prot": 2.6, "carb": 3.7, "gord": 0.7, "fibra": 1.6},
+    {"nome": "Espinafre cozido", "kcal": 28, "prot": 2.9, "carb": 3.4, "gord": 0.4, "fibra": 2.2},
+    {"nome": "Brócolis cozido", "kcal": 35, "prot": 2.3, "carb": 6.6, "gord": 0.4, "fibra": 3.1},
+    {"nome": "Couve-flor cozida", "kcal": 25, "prot": 1.9, "carb": 4.9, "gord": 0.2, "fibra": 2.4},
+    {"nome": "Cenoura crua", "kcal": 34, "prot": 1.3, "carb": 7.7, "gord": 0.2, "fibra": 3.2},
+    {"nome": "Cenoura cozida", "kcal": 41, "prot": 1.0, "carb": 9.6, "gord": 0.2, "fibra": 3.0},
+    {"nome": "Tomate", "kcal": 15, "prot": 1.1, "carb": 3.1, "gord": 0.2, "fibra": 1.2},
+    {"nome": "Pepino", "kcal": 10, "prot": 0.7, "carb": 2.2, "gord": 0.1, "fibra": 0.5},
+    {"nome": "Abobrinha cozida", "kcal": 19, "prot": 1.2, "carb": 3.8, "gord": 0.2, "fibra": 1.1},
+    {"nome": "Berinjela cozida", "kcal": 24, "prot": 0.8, "carb": 5.5, "gord": 0.2, "fibra": 2.6},
+    {"nome": "Chuchu cozido", "kcal": 19, "prot": 0.5, "carb": 4.5, "gord": 0.1, "fibra": 1.4},
+    {"nome": "Beterraba cozida", "kcal": 39, "prot": 1.5, "carb": 8.8, "gord": 0.1, "fibra": 2.0},
+    {"nome": "Batata inglesa cozida", "kcal": 52, "prot": 1.2, "carb": 11.9, "gord": 0.1, "fibra": 1.2},
+    {"nome": "Batata-doce cozida", "kcal": 77, "prot": 0.6, "carb": 18.4, "gord": 0.1, "fibra": 2.2},
+    {"nome": "Mandioca cozida", "kcal": 125, "prot": 0.6, "carb": 30.1, "gord": 0.3, "fibra": 1.9},
+    {"nome": "Inhame cozido", "kcal": 116, "prot": 1.5, "carb": 27.9, "gord": 0.2, "fibra": 1.8},
+    {"nome": "Cebola crua", "kcal": 40, "prot": 1.7, "carb": 9.0, "gord": 0.1, "fibra": 2.2},
+    {"nome": "Alho", "kcal": 98, "prot": 4.4, "carb": 21.2, "gord": 0.3, "fibra": 4.3},
+    {"nome": "Pimentão verde", "kcal": 20, "prot": 0.9, "carb": 4.4, "gord": 0.2, "fibra": 1.4},
+    {"nome": "Couve manteiga crua", "kcal": 25, "prot": 2.1, "carb": 4.1, "gord": 0.4, "fibra": 2.0},
+    {"nome": "Repolho cru", "kcal": 15, "prot": 1.4, "carb": 2.5, "gord": 0.1, "fibra": 1.0},
+    {"nome": "Quiabo cozido", "kcal": 25, "prot": 2.1, "carb": 4.5, "gord": 0.2, "fibra": 3.2},
+    {"nome": "Vagem cozida", "kcal": 27, "prot": 1.8, "carb": 5.8, "gord": 0.1, "fibra": 3.4},
+
+    # Oleaginosas e sementes
+    {"nome": "Amendoim torrado", "kcal": 581, "prot": 26.0, "carb": 16.1, "gord": 47.5, "fibra": 8.0},
+    {"nome": "Castanha-do-pará", "kcal": 643, "prot": 14.3, "carb": 15.1, "gord": 63.5, "fibra": 7.9},
+    {"nome": "Castanha de caju torrada", "kcal": 570, "prot": 18.5, "carb": 29.1, "gord": 46.3, "fibra": 3.7},
+    {"nome": "Nozes", "kcal": 620, "prot": 14.3, "carb": 18.4, "gord": 59.4, "fibra": 4.6},
+    {"nome": "Amêndoas", "kcal": 581, "prot": 21.2, "carb": 21.7, "gord": 49.9, "fibra": 12.5},
+    {"nome": "Semente de chia", "kcal": 490, "prot": 16.5, "carb": 42.1, "gord": 30.7, "fibra": 34.4},
+    {"nome": "Semente de linhaça", "kcal": 495, "prot": 18.3, "carb": 28.9, "gord": 42.2, "fibra": 27.3},
+    {"nome": "Pasta de amendoim", "kcal": 589, "prot": 25.1, "carb": 21.6, "gord": 49.9, "fibra": 6.0},
+
+    # Óleos e gorduras
+    {"nome": "Azeite de oliva", "kcal": 884, "prot": 0.0, "carb": 0.0, "gord": 100.0, "fibra": 0.0},
+    {"nome": "Óleo de soja", "kcal": 884, "prot": 0.0, "carb": 0.0, "gord": 100.0, "fibra": 0.0},
+    {"nome": "Óleo de coco", "kcal": 862, "prot": 0.0, "carb": 0.0, "gord": 100.0, "fibra": 0.0},
+
+    # Bebidas
+    {"nome": "Suco de laranja natural", "kcal": 45, "prot": 0.7, "carb": 10.4, "gord": 0.2, "fibra": 0.2},
+    {"nome": "Leite de coco", "kcal": 197, "prot": 2.0, "carb": 5.5, "gord": 19.9, "fibra": 0.0},
+    {"nome": "Whey protein (pó)", "kcal": 370, "prot": 75.0, "carb": 10.0, "gord": 5.0, "fibra": 0.0},
+
+    # Suplementos e outros
+    {"nome": "Proteína de soja texturizada seca", "kcal": 336, "prot": 52.0, "carb": 30.0, "gord": 1.0, "fibra": 17.0},
+    {"nome": "Tofu", "kcal": 76, "prot": 8.1, "carb": 1.9, "gord": 4.8, "fibra": 0.3},
+    {"nome": "Mel", "kcal": 309, "prot": 0.4, "carb": 84.0, "gord": 0.0, "fibra": 0.2},
+    {"nome": "Açúcar refinado", "kcal": 387, "prot": 0.0, "carb": 99.5, "gord": 0.0, "fibra": 0.0},
+    {"nome": "Açúcar mascavo", "kcal": 375, "prot": 0.5, "carb": 97.3, "gord": 0.1, "fibra": 0.0},
+    {"nome": "Adoçante stevia", "kcal": 0, "prot": 0.0, "carb": 0.0, "gord": 0.0, "fibra": 0.0},
+]

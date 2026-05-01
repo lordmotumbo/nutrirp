@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import Base, engine
 from app.routers import auth, patients, anamnese, diets, appointments
+from app.routers import foods
 
 # Cria as tabelas automaticamente (SQLite dev / SQL Server prod)
 Base.metadata.create_all(bind=engine)
@@ -25,6 +26,7 @@ app.include_router(patients.router)
 app.include_router(anamnese.router)
 app.include_router(diets.router)
 app.include_router(appointments.router)
+app.include_router(foods.router)
 
 
 @app.get("/")
