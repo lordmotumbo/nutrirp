@@ -23,10 +23,13 @@ function PrivateRoute({ children }) {
   return children
 }
 
+import ThemePanel from './components/ThemePanel'
+
 function AppRoutes() {
   return (
     <>
       <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
+      <ThemePanel />
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />

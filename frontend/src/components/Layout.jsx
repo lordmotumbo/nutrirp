@@ -3,7 +3,6 @@ import { useAuth } from '../context/AuthContext'
 import { LayoutDashboard, Users, CalendarDays, LogOut, Menu, DollarSign } from 'lucide-react'
 import { useState } from 'react'
 import NutrirpLogo from './NutrirpLogo'
-import ThemePanel from './ThemePanel'
 
 const nav = [
   { to: '/',          label: 'Dashboard', icon: LayoutDashboard, end: true },
@@ -68,7 +67,6 @@ export default function Layout() {
             >
               <LogOut className="w-3.5 h-3.5" /> Sair
             </button>
-            <ThemePanel />
           </div>
         </div>
       </aside>

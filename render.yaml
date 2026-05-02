@@ -13,17 +13,15 @@ services:
         value: HS256
       - key: ACCESS_TOKEN_EXPIRE_MINUTES
         value: "1440"
+      # Banco no disco persistente — sobrevive a deploys e restarts
       - key: DATABASE_URL
-        value: sqlite:///./nutrirp.db
+        value: sqlite:////opt/render/project/src/nutrirp.db
     disk:
       name: nutrirp-db
       mountPath: /opt/render/project/src
       sizeGB: 1
 
   # ── Frontend (React/Vite → Static Site) ───────────────────────────
-  # IMPORTANTE: após o deploy do backend, defina a variável de ambiente
-  # VITE_API_URL = https://nutrirp-backend.onrender.com/api
-  # no painel do Render para o serviço nutrirp-frontend
   - type: web
     name: nutrirp-frontend
     runtime: static
