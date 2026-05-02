@@ -20,14 +20,14 @@ export default function Layout() {
   function handleLogout() { logout(); navigate('/login') }
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen">
       {/* Sidebar */}
       <aside
         className={`
           fixed inset-y-0 left-0 z-40 w-60 flex flex-col
           transform transition-transform duration-200
           ${open ? 'translate-x-0' : '-translate-x-full'}
-          md:relative md:translate-x-0
+          md:relative md:translate-x-0 md:flex-shrink-0
         `}
         style={{ backgroundColor: 'var(--color-sidebar)' }}
       >
@@ -79,7 +79,7 @@ export default function Layout() {
       )}
 
       {/* Main */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Topbar mobile */}
         <header className="md:hidden flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
           <button onClick={() => setOpen(true)}>

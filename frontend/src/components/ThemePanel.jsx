@@ -29,14 +29,18 @@ export default function ThemePanel() {
       {/* Painel lateral */}
       {open && (
         <>
-          {/* Overlay */}
+          {/* Overlay — renderizado no body via portal seria ideal, mas fixed funciona se o pai não tiver transform */}
           <div
-            className="fixed inset-0 z-50 bg-black/40"
+            className="fixed inset-0 bg-black/40"
+            style={{ zIndex: 9998 }}
             onClick={() => setOpen(false)}
           />
 
-          {/* Drawer */}
-          <div className="fixed right-0 top-0 h-full w-80 z-50 bg-white dark:bg-gray-900 shadow-2xl flex flex-col">
+          {/* Drawer — sempre fixo à direita da viewport */}
+          <div
+            className="fixed top-0 right-0 h-full w-80 bg-white dark:bg-gray-900 shadow-2xl flex flex-col"
+            style={{ zIndex: 9999 }}
+          >
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b dark:border-gray-700">
               <div>
