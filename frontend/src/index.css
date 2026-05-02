@@ -2,32 +2,99 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Variáveis de tema (sobrescritas pelo ThemeContext) ─────────── */
+:root {
+  --color-primary:       #2E7D32;
+  --color-primary-light: #E8F5E9;
+  --color-primary-dark:  #1B5E20;
+  --color-sidebar:       #2E7D32;
+}
+
+/* ── Base ────────────────────────────────────────────────────────── */
 @layer base {
   body {
-    @apply bg-gray-50 text-gray-800 font-sans;
+    @apply bg-gray-50 text-gray-800 font-sans transition-colors duration-200;
+  }
+
+  /* Dark mode base */
+  .dark body,
+  .dark {
+    @apply bg-gray-950 text-gray-100;
+  }
+
+  .dark .card {
+    @apply bg-gray-900 border-gray-800 text-gray-100;
+  }
+
+  .dark .input {
+    @apply bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-500;
+  }
+
+  .dark .label {
+    @apply text-gray-300;
+  }
+
+  .dark .btn-secondary {
+    @apply bg-gray-800 border-gray-700 text-gray-200 hover:bg-gray-700;
   }
 }
 
+/* ── Componentes ─────────────────────────────────────────────────── */
 @layer components {
   .btn-primary {
-    @apply bg-primary-700 hover:bg-primary-800 text-white font-medium px-4 py-2 rounded-lg transition-colors duration-150 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply font-medium px-4 py-2 rounded-lg transition-colors duration-150
+           flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed
+           text-white;
+    background-color: var(--color-primary);
   }
+  .btn-primary:hover {
+    filter: brightness(0.9);
+  }
+
   .btn-secondary {
-    @apply bg-white hover:bg-gray-50 text-gray-700 font-medium px-4 py-2 rounded-lg border border-gray-200 transition-colors duration-150 flex items-center gap-2;
+    @apply bg-white hover:bg-gray-50 text-gray-700 font-medium px-4 py-2
+           rounded-lg border border-gray-200 transition-colors duration-150
+           flex items-center gap-2;
   }
+
   .btn-danger {
-    @apply bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-lg transition-colors duration-150 flex items-center gap-2;
+    @apply bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2
+           rounded-lg transition-colors duration-150 flex items-center gap-2;
   }
+
   .input {
-    @apply w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white;
+    @apply w-full border border-gray-200 rounded-lg px-3 py-2 text-sm
+           focus:outline-none focus:ring-2 focus:border-transparent bg-white
+           transition-colors duration-150;
   }
+  .input:focus {
+    --tw-ring-color: var(--color-primary);
+    box-shadow: 0 0 0 2px var(--color-primary);
+  }
+
   .label {
     @apply block text-sm font-medium text-gray-700 mb-1;
   }
+
   .card {
-    @apply bg-white rounded-xl shadow-sm border border-gray-100 p-5;
+    @apply bg-white rounded-xl shadow-sm border border-gray-100 p-5
+           transition-colors duration-200;
   }
+
   .badge {
     @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  /* Sidebar usa variável de cor */
+  .sidebar-bg {
+    background-color: var(--color-sidebar);
+  }
+
+  .sidebar-active {
+    background-color: rgba(0,0,0,0.2);
+  }
+
+  .sidebar-hover:hover {
+    background-color: rgba(0,0,0,0.15);
   }
 }
