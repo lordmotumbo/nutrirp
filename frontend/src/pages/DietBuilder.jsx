@@ -311,7 +311,7 @@ export default function DietBuilder() {
         </button>
         {savedDietId && (
           <a
-            href={`/api/diets/${savedDietId}/pdf`}
+            href={`${import.meta.env.VITE_API_URL || 'https://nutrirp-api.onrender.com/api'}/diets/${savedDietId}/pdf?token=${localStorage.getItem('nutrirp_token')}`}
             target="_blank"
             rel="noreferrer"
             className="btn-secondary flex items-center gap-2"

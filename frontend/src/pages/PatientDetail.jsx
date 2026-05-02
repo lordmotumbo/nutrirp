@@ -185,7 +185,7 @@ export default function PatientDetail() {
                   </p>
                 </div>
                 <a
-                  href={`/api/diets/${d.id}/pdf`}
+                  href={`${import.meta.env.VITE_API_URL || 'https://nutrirp-api.onrender.com/api'}/diets/${d.id}/pdf?token=${localStorage.getItem('nutrirp_token')}`}
                   target="_blank"
                   rel="noreferrer"
                   className="btn-secondary text-xs py-1.5"
