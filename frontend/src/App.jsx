@@ -11,14 +11,17 @@ import Anamnese from './pages/Anamnese'
 import DietBuilder from './pages/DietBuilder'
 import Agenda from './pages/Agenda'
 
+// PrivateRoute precisa estar DENTRO do AuthProvider
+// por isso fica como componente separado chamado dentro de AppRoutes
 function PrivateRoute({ children }) {
   const { user } = useAuth()
-  return user ? children : <Navigate to="/login" replace />
+  if (!user) return <Navigate to="/login" replace />
+  return children
 }
 
-export default function App() {
+function AppRoutes() {
   return (
-    <AuthProvider>
+    <>
       <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
       <Routes>
         <Route path="/login" element={<Login />} />
@@ -40,6 +43,14 @@ export default function App() {
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+    </>
+  )
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppRoutes />
     </AuthProvider>
   )
 }
