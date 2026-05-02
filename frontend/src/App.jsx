@@ -10,9 +10,12 @@ import PatientDetail from './pages/PatientDetail'
 import Anamnese from './pages/Anamnese'
 import DietBuilder from './pages/DietBuilder'
 import Agenda from './pages/Agenda'
+import Anthropometry from './pages/Anthropometry'
+import Supplements from './pages/Supplements'
+import Exams from './pages/Exams'
+import Financial from './pages/Financial'
+import Chat from './pages/Chat'
 
-// PrivateRoute precisa estar DENTRO do AuthProvider
-// por isso fica como componente separado chamado dentro de AppRoutes
 function PrivateRoute({ children }) {
   const { user } = useAuth()
   if (!user) return <Navigate to="/login" replace />
@@ -39,7 +42,12 @@ function AppRoutes() {
           <Route path="patients/:id" element={<PatientDetail />} />
           <Route path="patients/:id/anamnese" element={<Anamnese />} />
           <Route path="patients/:id/diet" element={<DietBuilder />} />
+          <Route path="patients/:id/anthropometry" element={<Anthropometry />} />
+          <Route path="patients/:id/supplements" element={<Supplements />} />
+          <Route path="patients/:id/exams" element={<Exams />} />
+          <Route path="patients/:id/chat" element={<Chat />} />
           <Route path="agenda" element={<Agenda />} />
+          <Route path="financial" element={<Financial />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

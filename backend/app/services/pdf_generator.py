@@ -2,115 +2,153 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import cm
 from reportlab.lib import colors
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, HRFlowable
-from reportlab.lib.enums import TA_CENTER, TA_LEFT
+from reportlab.platypus import (
+    SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle,
+    HRFlowable, KeepTogether
+)
+from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
 from io import BytesIO
 from datetime import datetime
 
-
+# Paleta de cores
 GREEN = colors.HexColor("#2E7D32")
 LIGHT_GREEN = colors.HexColor("#E8F5E9")
-DARK_GRAY = colors.HexColor("#333333")
-MID_GRAY = colors.HexColor("#666666")
+DARK_GRAY = colors.HexColor("#212121")
+MID_GRAY = colors.HexColor("#616161")
+LIGHT_GRAY = colors.HexColor("#F5F5F5")
+WHITE = colors.white
+
+
+def _styles():
+    base = getSampleStyleSheet()
+    return {
+        "title": ParagraphStyle("t", parent=base["Title"], textColor=GREEN, fontSize=22, spaceAfter=2, leading=26),
+        "subtitle": ParagraphStyle("s", parent=base["Normal"], textColor=MID_GRAY, fontSize=9, spaceAfter=10),
+        "section": ParagraphStyle("sec", parent=base["Heading2"], textColor=GREEN, fontSize=12, spaceBefore=12, spaceAfter=4),
+        "normal": ParagraphStyle("n", parent=base["Normal"], textColor=DARK_GRAY, fontSize=9, leading=13),
+        "small": ParagraphStyle("sm", parent=base["Normal"], textColor=MID_GRAY, fontSize=7, leading=10),
+        "bold": ParagraphStyle("b", parent=base["Normal"], textColor=DARK_GRAY, fontSize=9, leading=13, fontName="Helvetica-Bold"),
+        "center": ParagraphStyle("c", parent=base["Normal"], textColor=MID_GRAY, fontSize=8, alignment=TA_CENTER),
+    }
 
 
 def generate_diet_pdf(diet, patient, nutritionist) -> bytes:
     buffer = BytesIO()
     doc = SimpleDocTemplate(
-        buffer,
-        pagesize=A4,
-        rightMargin=2 * cm,
-        leftMargin=2 * cm,
-        topMargin=2 * cm,
-        bottomMargin=2 * cm,
+        buffer, pagesize=A4,
+        rightMargin=2*cm, leftMargin=2*cm,
+        topMargin=2*cm, bottomMargin=2*cm,
+        title=f"Plano Alimentar - {patient.name}",
     )
-
-    styles = getSampleStyleSheet()
-    title_style = ParagraphStyle("title", parent=styles["Title"], textColor=GREEN, fontSize=20, spaceAfter=4)
-    subtitle_style = ParagraphStyle("subtitle", parent=styles["Normal"], textColor=MID_GRAY, fontSize=10, spaceAfter=12)
-    meal_title_style = ParagraphStyle("meal_title", parent=styles["Heading2"], textColor=GREEN, fontSize=13, spaceBefore=14, spaceAfter=6)
-    normal_style = ParagraphStyle("normal", parent=styles["Normal"], textColor=DARK_GRAY, fontSize=10)
-    small_style = ParagraphStyle("small", parent=styles["Normal"], textColor=MID_GRAY, fontSize=8)
-
+    s = _styles()
     story = []
 
-    # Cabeçalho
-    story.append(Paragraph("NUTRIRP", title_style))
-    story.append(Paragraph(f"Nutricionista: {nutritionist.name} | CRN: {nutritionist.crn or '-'}", subtitle_style))
-    story.append(HRFlowable(width="100%", thickness=1, color=GREEN))
-    story.append(Spacer(1, 0.3 * cm))
+    # ── Cabeçalho ────────────────────────────────────────────────────
+    story.append(Paragraph("NUTRIRP", s["title"]))
+    crn = f" | CRN: {nutritionist.crn}" if nutritionist.crn else ""
+    story.append(Paragraph(f"Nutricionista: <b>{nutritionist.name}</b>{crn}", s["subtitle"]))
+    story.append(HRFlowable(width="100%", thickness=1.5, color=GREEN, spaceAfter=6))
 
-    # Dados do paciente
-    story.append(Paragraph(f"<b>Paciente:</b> {patient.name}", normal_style))
+    # ── Dados do paciente ─────────────────────────────────────────────
+    goal_map = {"emagrecimento": "Emagrecimento", "ganho_massa": "Ganho de Massa",
+                "manutencao": "Manutenção", "saude": "Saúde Geral"}
+
+    patient_data = [["Paciente", patient.name]]
     if patient.weight and patient.height:
         bmi = patient.weight / ((patient.height / 100) ** 2)
-        story.append(Paragraph(
-            f"<b>Peso:</b> {patient.weight} kg &nbsp;&nbsp; <b>Altura:</b> {patient.height} cm &nbsp;&nbsp; <b>IMC:</b> {bmi:.1f}",
-            normal_style
-        ))
+        patient_data.append(["Peso / Altura / IMC",
+                              f"{patient.weight} kg / {patient.height} cm / {bmi:.1f}"])
     if patient.goal:
-        goal_map = {
-            "emagrecimento": "Emagrecimento",
-            "ganho_massa": "Ganho de Massa",
-            "manutencao": "Manutenção",
-            "saude": "Saúde Geral",
-        }
-        story.append(Paragraph(f"<b>Objetivo:</b> {goal_map.get(patient.goal, patient.goal)}", normal_style))
+        patient_data.append(["Objetivo", goal_map.get(patient.goal, patient.goal)])
+    if patient.phone:
+        patient_data.append(["Telefone", patient.phone])
 
-    story.append(Spacer(1, 0.3 * cm))
-    story.append(HRFlowable(width="100%", thickness=0.5, color=colors.lightgrey))
-    story.append(Spacer(1, 0.3 * cm))
+    pt = Table(patient_data, colWidths=[4*cm, 13*cm])
+    pt.setStyle(TableStyle([
+        ("FONTNAME", (0, 0), (0, -1), "Helvetica-Bold"),
+        ("FONTSIZE", (0, 0), (-1, -1), 9),
+        ("TEXTCOLOR", (0, 0), (0, -1), GREEN),
+        ("TEXTCOLOR", (1, 0), (1, -1), DARK_GRAY),
+        ("ROWBACKGROUNDS", (0, 0), (-1, -1), [WHITE, LIGHT_GRAY]),
+        ("LEFTPADDING", (0, 0), (-1, -1), 6),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+        ("TOPPADDING", (0, 0), (-1, -1), 4),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+        ("GRID", (0, 0), (-1, -1), 0.3, colors.HexColor("#E0E0E0")),
+    ]))
+    story.append(pt)
+    story.append(Spacer(1, 0.4*cm))
 
-    # Título da dieta
-    story.append(Paragraph(f"<b>{diet.title}</b>", meal_title_style))
+    # ── Título da dieta ───────────────────────────────────────────────
+    story.append(Paragraph(diet.title, s["section"]))
     if diet.description:
-        story.append(Paragraph(diet.description, normal_style))
-    if diet.total_calories:
-        story.append(Paragraph(f"<b>Total calórico estimado:</b> {diet.total_calories:.0f} kcal/dia", normal_style))
-    story.append(Spacer(1, 0.4 * cm))
+        story.append(Paragraph(diet.description, s["normal"]))
 
-    # Refeições
-    for meal in diet.meals:
+    # Totais
+    if diet.total_calories:
+        story.append(Spacer(1, 0.2*cm))
+        totals_data = [["Total calórico estimado", f"{diet.total_calories:.0f} kcal/dia"]]
+        tt = Table(totals_data, colWidths=[6*cm, 11*cm])
+        tt.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (0, 0), GREEN),
+            ("TEXTCOLOR", (0, 0), (0, 0), WHITE),
+            ("FONTNAME", (0, 0), (-1, -1), "Helvetica-Bold"),
+            ("FONTSIZE", (0, 0), (-1, -1), 9),
+            ("LEFTPADDING", (0, 0), (-1, -1), 8),
+            ("TOPPADDING", (0, 0), (-1, -1), 5),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+        ]))
+        story.append(tt)
+
+    story.append(Spacer(1, 0.3*cm))
+
+    # ── Refeições ─────────────────────────────────────────────────────
+    for meal in (diet.meals or []):
         time_str = f" — {meal.time}" if meal.time else ""
-        story.append(Paragraph(f"🍽 {meal.name}{time_str}", meal_title_style))
+        meal_block = []
+        meal_block.append(Paragraph(f"🍽 {meal.name}{time_str}", s["section"]))
 
         if meal.foods:
-            table_data = [["Alimento", "Qtd", "Unidade", "Kcal", "Prot", "Carb", "Gord"]]
+            header = [["Alimento", "Qtd", "Unid.", "kcal", "Prot", "Carb", "Gord"]]
+            rows = []
             for food in meal.foods:
-                table_data.append([
-                    food.food_name,
+                rows.append([
+                    food.food_name or "",
                     str(food.quantity or ""),
                     food.unit or "",
-                    f"{food.calories:.0f}" if food.calories else "",
-                    f"{food.protein:.1f}g" if food.protein else "",
-                    f"{food.carbs:.1f}g" if food.carbs else "",
-                    f"{food.fat:.1f}g" if food.fat else "",
+                    f"{food.calories:.0f}" if food.calories else "—",
+                    f"{food.protein:.1f}g" if food.protein else "—",
+                    f"{food.carbs:.1f}g" if food.carbs else "—",
+                    f"{food.fat:.1f}g" if food.fat else "—",
                 ])
-
-            table = Table(table_data, colWidths=[6 * cm, 1.5 * cm, 2 * cm, 1.5 * cm, 1.5 * cm, 1.5 * cm, 1.5 * cm])
+            table = Table(header + rows, colWidths=[5.5*cm, 1.5*cm, 2*cm, 1.5*cm, 1.5*cm, 1.5*cm, 1.5*cm])
             table.setStyle(TableStyle([
                 ("BACKGROUND", (0, 0), (-1, 0), GREEN),
-                ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
-                ("FONTSIZE", (0, 0), (-1, 0), 9),
-                ("FONTSIZE", (0, 1), (-1, -1), 9),
-                ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, LIGHT_GREEN]),
-                ("GRID", (0, 0), (-1, -1), 0.3, colors.lightgrey),
-                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("TEXTCOLOR", (0, 0), (-1, 0), WHITE),
+                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                ("FONTSIZE", (0, 0), (-1, -1), 8),
+                ("ROWBACKGROUNDS", (0, 1), (-1, -1), [WHITE, LIGHT_GREEN]),
+                ("GRID", (0, 0), (-1, -1), 0.3, colors.HexColor("#E0E0E0")),
                 ("LEFTPADDING", (0, 0), (-1, -1), 4),
                 ("RIGHTPADDING", (0, 0), (-1, -1), 4),
+                ("TOPPADDING", (0, 0), (-1, -1), 3),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
             ]))
-            story.append(table)
+            meal_block.append(table)
 
         if meal.notes:
-            story.append(Paragraph(f"<i>Obs: {meal.notes}</i>", small_style))
-        story.append(Spacer(1, 0.2 * cm))
+            meal_block.append(Paragraph(f"<i>Obs: {meal.notes}</i>", s["small"]))
 
-    # Rodapé
-    story.append(Spacer(1, 0.5 * cm))
-    story.append(HRFlowable(width="100%", thickness=0.5, color=colors.lightgrey))
+        meal_block.append(Spacer(1, 0.2*cm))
+        story.append(KeepTogether(meal_block))
+
+    # ── Rodapé ────────────────────────────────────────────────────────
+    story.append(Spacer(1, 0.5*cm))
+    story.append(HRFlowable(width="100%", thickness=0.5, color=colors.HexColor("#E0E0E0")))
     story.append(Paragraph(
-        f"Gerado em {datetime.now().strftime('%d/%m/%Y às %H:%M')} — NUTRIRP",
-        small_style
+        f"Gerado em {datetime.now().strftime('%d/%m/%Y às %H:%M')} — NUTRIRP | Sistema para Nutricionistas",
+        s["center"]
     ))
 
     doc.build(story)

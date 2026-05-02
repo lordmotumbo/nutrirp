@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import {
   ArrowLeft, ClipboardList, Utensils, CalendarDays,
-  Pencil, Trash2, TrendingUp, Plus
+  Pencil, Trash2, TrendingUp, Plus, FlaskConical, Pill, MessageSquare, Activity
 } from 'lucide-react'
 import api from '../api'
 import toast from 'react-hot-toast'
@@ -120,19 +120,20 @@ export default function PatientDetail() {
       </div>
 
       {/* Ações rápidas */}
-      <div className="grid grid-cols-3 gap-3">
-        <Link to={`/patients/${id}/anamnese`} className="card flex flex-col items-center gap-2 hover:shadow-md transition-shadow text-center">
-          <ClipboardList className="w-7 h-7 text-primary-600" />
-          <span className="text-sm font-medium">Anamnese</span>
-        </Link>
-        <Link to={`/patients/${id}/diet`} className="card flex flex-col items-center gap-2 hover:shadow-md transition-shadow text-center">
-          <Utensils className="w-7 h-7 text-primary-600" />
-          <span className="text-sm font-medium">Montar Dieta</span>
-        </Link>
-        <Link to="/agenda" className="card flex flex-col items-center gap-2 hover:shadow-md transition-shadow text-center">
-          <CalendarDays className="w-7 h-7 text-primary-600" />
-          <span className="text-sm font-medium">Agendar</span>
-        </Link>
+      <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+        {[
+          { to: `/patients/${id}/anamnese`, icon: ClipboardList, label: 'Anamnese' },
+          { to: `/patients/${id}/diet`, icon: Utensils, label: 'Dieta' },
+          { to: `/patients/${id}/anthropometry`, icon: Activity, label: 'Antropometria' },
+          { to: `/patients/${id}/exams`, icon: FlaskConical, label: 'Exames' },
+          { to: `/patients/${id}/supplements`, icon: Pill, label: 'Suplementos' },
+          { to: `/patients/${id}/chat`, icon: MessageSquare, label: 'Chat' },
+        ].map(({ to, icon: Icon, label }) => (
+          <Link key={to} to={to} className="card flex flex-col items-center gap-2 hover:shadow-md transition-shadow text-center py-4">
+            <Icon className="w-6 h-6 text-primary-600" />
+            <span className="text-xs font-medium">{label}</span>
+          </Link>
+        ))}
       </div>
 
       {/* Evolução de peso */}
