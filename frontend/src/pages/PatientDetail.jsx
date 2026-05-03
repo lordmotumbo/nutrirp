@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import {
   ArrowLeft, ClipboardList, Utensils, CalendarDays,
-  Pencil, Trash2, TrendingUp, Plus, FlaskConical, Pill, MessageSquare, Activity, FileText, UserPlus, X
+  Pencil, Trash2, TrendingUp, Plus, FlaskConical, Pill, MessageSquare, Activity, FileText, UserPlus, X, BookOpen
 } from 'lucide-react'
 import api from '../api'
 import toast from 'react-hot-toast'
@@ -30,8 +30,15 @@ export default function PatientDetail() {
   const [showEdit, setShowEdit] = useState(false)
   const [showEvo, setShowEvo] = useState(false)
   const [showPortalModal, setShowPortalModal] = useState(false)
+  const [showScheduleModal, setShowScheduleModal] = useState(false)
+  const [showDailyReport, setShowDailyReport] = useState(false)
+  const [dailyReportDate, setDailyReportDate] = useState(new Date().toISOString().slice(0, 10))
+  const [dailyReport, setDailyReport] = useState(null)
+  const [dailyReportLoading, setDailyReportLoading] = useState(false)
   const [portalForm, setPortalForm] = useState({ email: '', password: '' })
   const [portalLoading, setPortalLoading] = useState(false)
+  const [scheduleForm, setScheduleForm] = useState({ date: '', time: '09:00', duration_minutes: 60, type: 'consulta', notes: '' })
+  const [scheduleLoading, setScheduleLoading] = useState(false)
   const patientPortalUrl = `${window.location.origin}/paciente/`
 
   async function load() {
@@ -82,6 +89,34 @@ export default function PatientDetail() {
     } finally { setPortalLoading(false) }
   }
 
+  async function handleSchedule(e) {
+    e.preventDefault()
+    setScheduleLoading(true)
+    try {
+      await api.post('/appointments', {
+        patient_id: Number(id),
+        scheduled_at: `${scheduleForm.date}T${scheduleForm.time}:00`,
+        duration_minutes: Number(scheduleForm.duration_minutes),
+        type: scheduleForm.type,
+        notes: scheduleForm.notes || null,
+      })
+      toast.success('Consulta agendada!')
+      setShowScheduleModal(false)
+      setScheduleForm({ date: '', time: '09:00', duration_minutes: 60, type: 'consulta', notes: '' })
+    } catch (err) {
+      toast.error(err.response?.data?.detail || 'Erro ao agendar')
+    } finally { setScheduleLoading(false) }
+  }
+
+  async function loadDailyReport() {
+    setDailyReportLoading(true)
+    try {
+      const { data } = await api.get(`/reports/patient/${id}/daily/${dailyReportDate}`)
+      setDailyReport(data)
+    } catch { toast.error('Erro ao carregar relatório') }
+    finally { setDailyReportLoading(false) }
+  }
+
   async function handleAddEvolution(payload) {
     try {
       await api.post('/appointments/evolution', { ...payload, patient_id: Number(id) })
@@ -105,7 +140,7 @@ export default function PatientDetail() {
   return (
     <div className="space-y-6 max-w-4xl">
       {/* Header */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 flex-wrap">
         <Link to="/patients" className="text-gray-400 hover:text-gray-600">
           <ArrowLeft className="w-5 h-5" />
         </Link>
@@ -117,6 +152,9 @@ export default function PatientDetail() {
             </span>
           )}
         </div>
+        <button className="btn-secondary" onClick={() => setShowScheduleModal(true)} title="Agendar consulta">
+          <CalendarDays className="w-4 h-4" /> Agendar
+        </button>
         <button className="btn-secondary" onClick={() => setShowEdit(true)}>
           <Pencil className="w-4 h-4" /> Editar
         </button>
@@ -195,6 +233,19 @@ export default function PatientDetail() {
         )}
       </div>
 
+      {/* Diário do paciente */}
+      <div className="card">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-semibold flex items-center gap-2">
+            <BookOpen className="w-4 h-4 text-primary-600" /> Diário do Paciente
+          </h2>
+          <button className="btn-secondary text-xs py-1.5" onClick={() => { setShowDailyReport(true); loadDailyReport() }}>
+            Ver relatório diário
+          </button>
+        </div>
+        <p className="text-sm text-gray-400">Acompanhe o diário do paciente: humor, sono, água, atividade física e mais.</p>
+      </div>
+
       {/* Dietas */}
       <div className="card">
         <div className="flex items-center justify-between mb-4">
@@ -216,14 +267,22 @@ export default function PatientDetail() {
                     {d.meals?.length || 0} refeições
                   </p>
                 </div>
-                <a
-                  href={`${import.meta.env.VITE_API_URL || 'https://nutrirp-api.onrender.com/api'}/diets/${d.id}/pdf?token=${localStorage.getItem('nutrirp_token')}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="btn-secondary text-xs py-1.5"
-                >
-                  PDF
-                </a>
+                <div className="flex gap-2">
+                  <Link
+                    to={`/patients/${id}/diet/${d.id}/edit`}
+                    className="btn-secondary text-xs py-1.5"
+                  >
+                    <Pencil className="w-3 h-3" /> Editar
+                  </Link>
+                  <a
+                    href={`${import.meta.env.VITE_API_URL || 'https://nutrirp-api.onrender.com/api'}/diets/${d.id}/pdf?token=${localStorage.getItem('nutrirp_token')}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn-secondary text-xs py-1.5"
+                  >
+                    PDF
+                  </a>
+                </div>
               </li>
             ))}
           </ul>
@@ -235,6 +294,142 @@ export default function PatientDetail() {
       )}
       {showEvo && (
         <EvolutionModal onClose={() => setShowEvo(false)} onSave={handleAddEvolution} />
+      )}
+
+      {/* Modal agendar consulta */}
+      {showScheduleModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-md">
+            <div className="flex items-center justify-between px-6 py-4 border-b dark:border-gray-700">
+              <h2 className="font-semibold dark:text-white">📅 Agendar Consulta — {patient.name}</h2>
+              <button onClick={() => setShowScheduleModal(false)}><X className="w-5 h-5 text-gray-400" /></button>
+            </div>
+            <form onSubmit={handleSchedule} className="px-6 py-5 space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="label">Data *</label>
+                  <input type="date" className="input" value={scheduleForm.date}
+                    onChange={e => setScheduleForm(f => ({ ...f, date: e.target.value }))} required />
+                </div>
+                <div>
+                  <label className="label">Horário *</label>
+                  <input type="time" className="input" value={scheduleForm.time}
+                    onChange={e => setScheduleForm(f => ({ ...f, time: e.target.value }))} required />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="label">Duração (min)</label>
+                  <input type="number" className="input" value={scheduleForm.duration_minutes}
+                    onChange={e => setScheduleForm(f => ({ ...f, duration_minutes: e.target.value }))} min={15} step={15} />
+                </div>
+                <div>
+                  <label className="label">Tipo</label>
+                  <select className="input" value={scheduleForm.type}
+                    onChange={e => setScheduleForm(f => ({ ...f, type: e.target.value }))}>
+                    <option value="consulta">Consulta</option>
+                    <option value="retorno">Retorno</option>
+                    <option value="avaliacao">Avaliação</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="label">Observações</label>
+                <textarea className="input" rows={2} value={scheduleForm.notes}
+                  onChange={e => setScheduleForm(f => ({ ...f, notes: e.target.value }))} />
+              </div>
+              <div className="flex gap-3">
+                <button type="button" className="btn-secondary flex-1 justify-center" onClick={() => setShowScheduleModal(false)}>Cancelar</button>
+                <button type="submit" className="btn-primary flex-1 justify-center" disabled={scheduleLoading}>
+                  <CalendarDays className="w-4 h-4" /> {scheduleLoading ? 'Agendando...' : 'Agendar'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal relatório diário */}
+      {showDailyReport && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-lg max-h-[85vh] overflow-y-auto">
+            <div className="flex items-center justify-between px-6 py-4 border-b dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-900 z-10">
+              <h2 className="font-semibold dark:text-white">📋 Diário — {patient.name}</h2>
+              <button onClick={() => setShowDailyReport(false)}><X className="w-5 h-5 text-gray-400" /></button>
+            </div>
+            <div className="px-6 py-4 space-y-4">
+              <div className="flex gap-3">
+                <input
+                  type="date"
+                  className="input flex-1"
+                  value={dailyReportDate}
+                  onChange={e => setDailyReportDate(e.target.value)}
+                />
+                <button className="btn-primary" onClick={loadDailyReport} disabled={dailyReportLoading}>
+                  {dailyReportLoading ? 'Carregando...' : 'Buscar'}
+                </button>
+              </div>
+
+              {dailyReport && (
+                dailyReport.has_data ? (
+                  <div className="space-y-4">
+                    {/* Resumo */}
+                    <div className="grid grid-cols-2 gap-3">
+                      {[
+                        { label: '💧 Água total', value: `${dailyReport.summary.total_water_ml}ml` },
+                        { label: '😴 Sono total', value: `${dailyReport.summary.total_sleep_hours}h` },
+                        { label: '🥗 Adesão dieta', value: `${dailyReport.summary.avg_diet_adherence}%` },
+                        { label: '⚡ Energia média', value: `${dailyReport.summary.avg_energy?.toFixed(1) || '—'}/5` },
+                        { label: '😤 Estresse médio', value: `${dailyReport.summary.avg_stress?.toFixed(1) || '—'}/5` },
+                        { label: '🏃 Atividades', value: dailyReport.summary.activities.join(', ') || '—' },
+                      ].map(({ label, value }) => (
+                        <div key={label} className="p-3 rounded-xl bg-gray-50 dark:bg-gray-800">
+                          <p className="text-xs text-gray-400">{label}</p>
+                          <p className="font-semibold text-sm dark:text-white truncate">{value}</p>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Registros detalhados */}
+                    {dailyReport.entries.map((entry, i) => (
+                      <div key={i} className="border rounded-xl p-4 space-y-2 dark:border-gray-700">
+                        <p className="text-xs text-gray-400 font-medium">
+                          Registro {i + 1} {entry.date ? `— ${format(new Date(entry.date), 'HH:mm')}` : ''}
+                        </p>
+                        <div className="grid grid-cols-2 gap-2 text-sm dark:text-gray-300">
+                          {entry.mood && <span>Humor: {entry.mood}</span>}
+                          {entry.sleep_hours && <span>Sono: {entry.sleep_hours}h {entry.sleep_quality ? `(${entry.sleep_quality})` : ''}</span>}
+                          {entry.water_ml && <span>Água: {entry.water_ml}ml</span>}
+                          {entry.hunger_level && <span>Fome: {entry.hunger_level}/5</span>}
+                          {entry.energy_level && <span>Energia: {entry.energy_level}/5</span>}
+                          {entry.stress_level && <span>Estresse: {entry.stress_level}/5</span>}
+                          {entry.bowel_function && <span>Intestino: {entry.bowel_function}</span>}
+                          {entry.diet_adherence && <span>Adesão: {entry.diet_adherence}%</span>}
+                        </div>
+                        {entry.physical_activity && (
+                          <p className="text-sm dark:text-gray-300">
+                            🏃 {entry.physical_activity}
+                            {entry.activity_duration_min && ` · ${entry.activity_duration_min}min`}
+                            {entry.activity_intensity && ` · ${entry.activity_intensity}`}
+                          </p>
+                        )}
+                        {entry.symptoms && <p className="text-sm text-orange-500">⚠️ Sintomas: {entry.symptoms}</p>}
+                        {entry.medications_taken && <p className="text-sm text-blue-500">💊 {entry.medications_taken}</p>}
+                        {entry.notes && <p className="text-sm text-gray-500 italic">{entry.notes}</p>}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-4xl mb-2">📭</p>
+                    <p className="text-gray-500">Nenhum registro para este dia</p>
+                    <p className="text-xs text-gray-400 mt-1">O paciente não preencheu o diário nesta data</p>
+                  </div>
+                )
+              )}
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Modal criar acesso portal do paciente */}

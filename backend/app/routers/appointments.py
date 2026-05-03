@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from datetime import date
+from datetime import date, datetime
+from pydantic import BaseModel
 from app.database import get_db
 from app.models.appointment import Appointment, Evolution
 from app.models.patient import Patient
@@ -10,6 +11,12 @@ from app.schemas.appointment import AppointmentCreate, AppointmentOut, Evolution
 from app.services.auth import get_current_user
 
 router = APIRouter(prefix="/api/appointments", tags=["Agenda"])
+
+
+class StatusUpdateIn(BaseModel):
+    status: str
+    reason: Optional[str] = None
+    new_scheduled_at: Optional[datetime] = None  # para reagendamento
 
 
 @router.get("", response_model=List[AppointmentOut])
@@ -38,6 +45,7 @@ def list_appointments(
             "status": appt.status,
             "type": appt.type,
             "notes": appt.notes,
+            "cancel_reason": appt.cancel_reason,
             "created_at": appt.created_at,
             "patient_name": patient.name if patient else None,
         }
@@ -65,19 +73,41 @@ def create_appointment(
     return {**appt.__dict__, "patient_name": patient.name}
 
 
-@router.put("/{appt_id}/status", response_model=AppointmentOut)
+@router.put("/{appt_id}/status")
 def update_status(
     appt_id: int,
-    status: str,
+    data: StatusUpdateIn,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    """Atualiza status da consulta. Para reagendamento, pode incluir novo horário e mensagem ao paciente."""
     appt = db.query(Appointment).filter(
         Appointment.id == appt_id, Appointment.nutritionist_id == current_user.id
     ).first()
     if not appt:
         raise HTTPException(status_code=404, detail="Consulta não encontrada")
-    appt.status = status
+
+    appt.status = data.status
+    if data.reason:
+        appt.cancel_reason = data.reason
+
+    if data.status == "reagendado" and data.new_scheduled_at:
+        appt.scheduled_at = data.new_scheduled_at
+        appt.reschedule_requested_at = datetime.utcnow()
+        # Envia mensagem interna ao paciente via chat
+        from app.models.messaging import ChatMessage
+        msg_text = f"📅 Sua consulta foi reagendada para {data.new_scheduled_at.strftime('%d/%m/%Y às %H:%M')}."
+        if data.reason:
+            msg_text += f"\nMotivo: {data.reason}"
+        msg_text += "\n\nPor favor, confirme, solicite novo reagendamento ou cancele."
+        chat_msg = ChatMessage(
+            patient_id=appt.patient_id,
+            nutritionist_id=current_user.id,
+            sender="nutritionist",
+            message=msg_text,
+        )
+        db.add(chat_msg)
+
     db.commit()
     db.refresh(appt)
     patient = db.query(Patient).filter(Patient.id == appt.patient_id).first()

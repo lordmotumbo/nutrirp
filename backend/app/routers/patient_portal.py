@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 from typing import Optional, List
 from pydantic import BaseModel, EmailStr
-from datetime import datetime
+from datetime import datetime, date
 import bcrypt
 from jose import jwt
 from app.database import get_db
@@ -97,10 +97,24 @@ class DiaryIn(BaseModel):
     date: datetime
     mood: Optional[str] = None
     sleep_hours: Optional[float] = None
+    sleep_quality: Optional[str] = None
     water_ml: Optional[int] = None
     physical_activity: Optional[str] = None
+    activity_duration_min: Optional[int] = None
+    activity_intensity: Optional[str] = None
     diet_adherence: Optional[int] = None
+    hunger_level: Optional[int] = None
+    energy_level: Optional[int] = None
+    stress_level: Optional[int] = None
+    bowel_function: Optional[str] = None
+    symptoms: Optional[str] = None
+    medications_taken: Optional[str] = None
     notes: Optional[str] = None
+
+
+class WaterUpdateIn(BaseModel):
+    water_ml: int
+    date: Optional[datetime] = None
 
 
 @router.post("/diary", status_code=201)
@@ -113,6 +127,42 @@ def add_diary(data: DiaryIn, current: PatientUser = Depends(get_current_patient)
 @router.get("/diary")
 def list_diary(current: PatientUser = Depends(get_current_patient), db: Session = Depends(get_db)):
     return db.query(PatientDiary).filter(PatientDiary.patient_id == current.patient_id).order_by(PatientDiary.date.desc()).limit(30).all()
+
+
+@router.patch("/diary/water")
+def update_water_intake(
+    data: WaterUpdateIn,
+    current: PatientUser = Depends(get_current_patient),
+    db: Session = Depends(get_db)
+):
+    """Adiciona água ao registro do dia atual (cria entrada se não existir)."""
+    target_date = data.date or datetime.utcnow()
+    # Busca registro do dia
+    day_start = target_date.replace(hour=0, minute=0, second=0, microsecond=0)
+    day_end = target_date.replace(hour=23, minute=59, second=59, microsecond=999999)
+
+    entry = db.query(PatientDiary).filter(
+        PatientDiary.patient_id == current.patient_id,
+        PatientDiary.date >= day_start,
+        PatientDiary.date <= day_end,
+    ).first()
+
+    if entry:
+        entry.water_ml = (entry.water_ml or 0) + data.water_ml
+        db.commit()
+        db.refresh(entry)
+        return entry
+    else:
+        # Cria novo registro do dia com apenas a água
+        new_entry = PatientDiary(
+            patient_id=current.patient_id,
+            date=target_date,
+            water_ml=data.water_ml,
+        )
+        db.add(new_entry)
+        db.commit()
+        db.refresh(new_entry)
+        return new_entry
 
 
 # ── Metas ─────────────────────────────────────────────────────────────
@@ -147,6 +197,93 @@ def request_appointment(
     )
     db.add(appt); db.commit(); db.refresh(appt)
     return appt
+
+
+class AppointmentActionIn(BaseModel):
+    action: str  # confirmar | cancelar | reagendar
+    reason: Optional[str] = None
+    new_date: Optional[datetime] = None
+
+
+@router.post("/appointments/{appt_id}/action", status_code=200)
+def patient_appointment_action(
+    appt_id: int,
+    data: AppointmentActionIn,
+    current: PatientUser = Depends(get_current_patient),
+    db: Session = Depends(get_db)
+):
+    """Paciente confirma, cancela ou pede reagendamento de consulta."""
+    appt = db.query(Appointment).filter(
+        Appointment.id == appt_id,
+        Appointment.patient_id == current.patient_id
+    ).first()
+    if not appt:
+        raise HTTPException(404, "Consulta não encontrada")
+
+    if data.action == "confirmar":
+        appt.status = "confirmado"
+        msg_text = "✅ Paciente confirmou a consulta."
+    elif data.action == "cancelar":
+        appt.status = "cancelado"
+        appt.cancel_reason = data.reason
+        msg_text = f"❌ Paciente cancelou a consulta."
+        if data.reason:
+            msg_text += f"\nMotivo: {data.reason}"
+    elif data.action == "reagendar":
+        appt.status = "reagendamento_solicitado"
+        appt.cancel_reason = data.reason
+        msg_text = "🔄 Paciente solicitou reagendamento."
+        if data.reason:
+            msg_text += f"\nMotivo: {data.reason}"
+        if data.new_date:
+            msg_text += f"\nData sugerida: {data.new_date.strftime('%d/%m/%Y às %H:%M')}"
+    else:
+        raise HTTPException(400, "Ação inválida. Use: confirmar, cancelar ou reagendar")
+
+    # Envia mensagem ao nutricionista via chat
+    chat_msg = ChatMessage(
+        patient_id=current.patient_id,
+        nutritionist_id=appt.nutritionist_id,
+        sender="patient",
+        message=msg_text,
+    )
+    db.add(chat_msg)
+    db.commit()
+    db.refresh(appt)
+    return appt
+
+
+# ── Relatório diário do paciente ──────────────────────────────────────
+@router.get("/diary/report/{report_date}")
+def get_daily_report(
+    report_date: date,
+    current: PatientUser = Depends(get_current_patient),
+    db: Session = Depends(get_db)
+):
+    """Retorna o resumo do diário de um dia específico."""
+    day_start = datetime.combine(report_date, datetime.min.time())
+    day_end = datetime.combine(report_date, datetime.max.time())
+
+    entries = db.query(PatientDiary).filter(
+        PatientDiary.patient_id == current.patient_id,
+        PatientDiary.date >= day_start,
+        PatientDiary.date <= day_end,
+    ).all()
+
+    return {
+        "date": report_date.isoformat(),
+        "entries": entries,
+        "summary": {
+            "total_water_ml": sum(e.water_ml or 0 for e in entries),
+            "avg_mood": [e.mood for e in entries if e.mood],
+            "total_sleep_hours": sum(e.sleep_hours or 0 for e in entries),
+            "activities": [e.physical_activity for e in entries if e.physical_activity],
+            "avg_diet_adherence": (
+                sum(e.diet_adherence or 0 for e in entries if e.diet_adherence) //
+                max(1, len([e for e in entries if e.diet_adherence]))
+            ) if entries else 0,
+        }
+    }
 
 
 # ── Pré-consulta ──────────────────────────────────────────────────────
@@ -229,9 +366,17 @@ async def send_message(
 
 @router.get("/chat")
 def get_chat(current: PatientUser = Depends(get_current_patient), db: Session = Depends(get_db)):
-    return db.query(ChatMessage).filter(
+    msgs = db.query(ChatMessage).filter(
         ChatMessage.patient_id == current.patient_id
     ).order_by(ChatMessage.created_at.asc()).limit(100).all()
+    # Marcar mensagens do nutricionista como lidas
+    db.query(ChatMessage).filter(
+        ChatMessage.patient_id == current.patient_id,
+        ChatMessage.sender == "nutritionist",
+        ChatMessage.is_read == False
+    ).update({"is_read": True})
+    db.commit()
+    return msgs
 
 
 # ── Dieta ativa ───────────────────────────────────────────────────────
@@ -245,3 +390,4 @@ def get_active_diet(current: PatientUser = Depends(get_current_patient), db: Ses
     if not diet:
         raise HTTPException(404, "Nenhuma dieta ativa")
     return diet
+

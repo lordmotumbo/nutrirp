@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Plus, ChevronLeft, ChevronRight, X } from 'lucide-react'
+import { Plus, ChevronLeft, ChevronRight, X, CheckCircle, RefreshCw, XCircle } from 'lucide-react'
 import api from '../api'
 import toast from 'react-hot-toast'
 import {
@@ -13,6 +13,8 @@ const STATUS_COLOR = {
   confirmado: 'bg-green-500',
   realizado: 'bg-gray-400',
   cancelado: 'bg-red-400',
+  reagendado: 'bg-yellow-500',
+  reagendamento_solicitado: 'bg-orange-400',
 }
 
 const STATUS_BADGE = {
@@ -20,14 +22,31 @@ const STATUS_BADGE = {
   confirmado: 'bg-green-100 text-green-700',
   realizado: 'bg-gray-100 text-gray-600',
   cancelado: 'bg-red-100 text-red-600',
+  reagendado: 'bg-yellow-100 text-yellow-700',
+  reagendamento_solicitado: 'bg-orange-100 text-orange-700',
+}
+
+const STATUS_LABEL = {
+  agendado: 'Agendado',
+  confirmado: 'Confirmado',
+  realizado: 'Realizado',
+  cancelado: 'Cancelado',
+  reagendado: 'Reagendado',
+  reagendamento_solicitado: 'Reagend. solicitado',
 }
 
 export default function Agenda() {
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [appointments, setAppointments] = useState([])
   const [patients, setPatients] = useState([])
-  const [selected, setSelected] = useState(null)   // dia selecionado
+  const [selected, setSelected] = useState(null)
   const [showModal, setShowModal] = useState(false)
+  const [showActionModal, setShowActionModal] = useState(false)
+  const [actionAppt, setActionAppt] = useState(null)
+  const [actionType, setActionType] = useState(null) // confirmar | reagendar | cancelar
+  const [actionReason, setActionReason] = useState('')
+  const [newDate, setNewDate] = useState('')
+  const [newTime, setNewTime] = useState('09:00')
   const [form, setForm] = useState({ patient_id: '', date: '', time: '09:00', duration_minutes: 60, type: 'consulta', notes: '' })
 
   async function load() {
@@ -46,7 +65,6 @@ export default function Agenda() {
     end: endOfMonth(currentMonth),
   })
 
-  // Preencher dias antes do início do mês
   const startDay = startOfMonth(currentMonth).getDay()
   const blanks = Array(startDay).fill(null)
 
@@ -78,9 +96,38 @@ export default function Agenda() {
     }
   }
 
+  function openAction(appt, type) {
+    setActionAppt(appt)
+    setActionType(type)
+    setActionReason('')
+    setNewDate(format(parseISO(appt.scheduled_at), 'yyyy-MM-dd'))
+    setNewTime(format(parseISO(appt.scheduled_at), 'HH:mm'))
+    setShowActionModal(true)
+  }
+
+  async function handleAction(e) {
+    e.preventDefault()
+    try {
+      const payload = { status: actionType === 'confirmar' ? 'confirmado' : actionType === 'cancelar' ? 'cancelado' : 'reagendado' }
+      if (actionReason) payload.reason = actionReason
+      if (actionType === 'reagendar' && newDate) {
+        payload.new_scheduled_at = `${newDate}T${newTime}:00`
+      }
+      await api.put(`/appointments/${actionAppt.id}/status`, payload)
+      const msgs = {
+        confirmar: 'Consulta confirmada!',
+        cancelar: 'Consulta cancelada.',
+        reagendar: 'Consulta reagendada! Paciente notificado via chat.',
+      }
+      toast.success(msgs[actionType])
+      setShowActionModal(false)
+      load()
+    } catch { toast.error('Erro ao atualizar') }
+  }
+
   async function updateStatus(id, status) {
     try {
-      await api.put(`/appointments/${id}/status?status=${status}`)
+      await api.put(`/appointments/${id}/status`, { status })
       toast.success('Status atualizado')
       load()
     } catch { toast.error('Erro') }
@@ -111,7 +158,6 @@ export default function Agenda() {
       <div className="grid md:grid-cols-3 gap-5">
         {/* Calendário */}
         <div className="md:col-span-2 card">
-          {/* Navegação */}
           <div className="flex items-center justify-between mb-4">
             <button onClick={() => setCurrentMonth(m => subMonths(m, 1))} className="p-1 hover:bg-gray-100 rounded">
               <ChevronLeft className="w-5 h-5" />
@@ -124,14 +170,12 @@ export default function Agenda() {
             </button>
           </div>
 
-          {/* Dias da semana */}
           <div className="grid grid-cols-7 mb-1">
             {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map(d => (
               <div key={d} className="text-center text-xs text-gray-400 font-medium py-1">{d}</div>
             ))}
           </div>
 
-          {/* Células */}
           <div className="grid grid-cols-7 gap-0.5">
             {blanks.map((_, i) => <div key={`b${i}`} />)}
             {days.map(day => {
@@ -196,16 +240,51 @@ export default function Agenda() {
                       <X className="w-4 h-4" />
                     </button>
                   </div>
-                  <select
-                    className="input text-xs py-1"
-                    value={a.status}
-                    onChange={e => updateStatus(a.id, e.target.value)}
-                  >
-                    <option value="agendado">Agendado</option>
-                    <option value="confirmado">Confirmado</option>
-                    <option value="realizado">Realizado</option>
-                    <option value="cancelado">Cancelado</option>
-                  </select>
+
+                  <span className={`badge text-xs ${STATUS_BADGE[a.status] || 'bg-gray-100 text-gray-600'}`}>
+                    {STATUS_LABEL[a.status] || a.status}
+                  </span>
+
+                  {a.cancel_reason && (
+                    <p className="text-xs text-orange-500 italic">Motivo: {a.cancel_reason}</p>
+                  )}
+
+                  {/* Ações rápidas */}
+                  <div className="flex gap-1.5 flex-wrap">
+                    {a.status !== 'confirmado' && a.status !== 'realizado' && a.status !== 'cancelado' && (
+                      <button
+                        onClick={() => openAction(a, 'confirmar')}
+                        className="flex items-center gap-1 px-2 py-1 rounded text-xs bg-green-50 text-green-700 hover:bg-green-100"
+                      >
+                        <CheckCircle className="w-3 h-3" /> Confirmar
+                      </button>
+                    )}
+                    {a.status !== 'realizado' && a.status !== 'cancelado' && (
+                      <button
+                        onClick={() => openAction(a, 'reagendar')}
+                        className="flex items-center gap-1 px-2 py-1 rounded text-xs bg-yellow-50 text-yellow-700 hover:bg-yellow-100"
+                      >
+                        <RefreshCw className="w-3 h-3" /> Reagendar
+                      </button>
+                    )}
+                    {a.status !== 'realizado' && a.status !== 'cancelado' && (
+                      <button
+                        onClick={() => openAction(a, 'cancelar')}
+                        className="flex items-center gap-1 px-2 py-1 rounded text-xs bg-red-50 text-red-700 hover:bg-red-100"
+                      >
+                        <XCircle className="w-3 h-3" /> Cancelar
+                      </button>
+                    )}
+                    {a.status !== 'realizado' && (
+                      <button
+                        onClick={() => updateStatus(a.id, 'realizado')}
+                        className="flex items-center gap-1 px-2 py-1 rounded text-xs bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      >
+                        ✓ Realizado
+                      </button>
+                    )}
+                  </div>
+
                   {a.notes && <p className="text-xs text-gray-500 italic">{a.notes}</p>}
                 </li>
               ))}
@@ -261,6 +340,76 @@ export default function Agenda() {
               <div className="flex gap-3">
                 <button type="button" className="btn-secondary flex-1 justify-center" onClick={() => setShowModal(false)}>Cancelar</button>
                 <button type="submit" className="btn-primary flex-1 justify-center">Agendar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal ação na consulta */}
+      {showActionModal && actionAppt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-md">
+            <div className="flex items-center justify-between px-6 py-4 border-b dark:border-gray-700">
+              <h2 className="font-semibold dark:text-white">
+                {actionType === 'confirmar' && '✅ Confirmar consulta'}
+                {actionType === 'cancelar' && '❌ Cancelar consulta'}
+                {actionType === 'reagendar' && '🔄 Reagendar consulta'}
+              </h2>
+              <button onClick={() => setShowActionModal(false)}><X className="w-5 h-5 text-gray-400" /></button>
+            </div>
+            <form onSubmit={handleAction} className="px-6 py-5 space-y-4">
+              <div className="p-3 rounded-xl bg-gray-50 dark:bg-gray-800">
+                <p className="text-sm font-medium dark:text-white">{actionAppt.patient_name}</p>
+                <p className="text-xs text-gray-400">
+                  {format(parseISO(actionAppt.scheduled_at), "dd/MM/yyyy 'às' HH:mm")} · {actionAppt.type}
+                </p>
+              </div>
+
+              {actionType === 'reagendar' && (
+                <>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="label">Nova data *</label>
+                      <input type="date" className="input" value={newDate} onChange={e => setNewDate(e.target.value)} required />
+                    </div>
+                    <div>
+                      <label className="label">Novo horário *</label>
+                      <input type="time" className="input" value={newTime} onChange={e => setNewTime(e.target.value)} required />
+                    </div>
+                  </div>
+                  <p className="text-xs text-blue-600 bg-blue-50 p-2 rounded-lg">
+                    💬 O paciente receberá uma mensagem no chat informando o novo horário e precisará confirmar, reagendar ou cancelar.
+                  </p>
+                </>
+              )}
+
+              {(actionType === 'cancelar' || actionType === 'reagendar') && (
+                <div>
+                  <label className="label">
+                    {actionType === 'cancelar' ? 'Motivo do cancelamento' : 'Motivo do reagendamento'}
+                    {actionType === 'cancelar' && ' *'}
+                  </label>
+                  <textarea
+                    className="input"
+                    rows={3}
+                    value={actionReason}
+                    onChange={e => setActionReason(e.target.value)}
+                    placeholder="Descreva o motivo..."
+                    required={actionType === 'cancelar'}
+                  />
+                </div>
+              )}
+
+              <div className="flex gap-3">
+                <button type="button" className="btn-secondary flex-1 justify-center" onClick={() => setShowActionModal(false)}>
+                  Voltar
+                </button>
+                <button type="submit" className="btn-primary flex-1 justify-center">
+                  {actionType === 'confirmar' && 'Confirmar'}
+                  {actionType === 'cancelar' && 'Cancelar consulta'}
+                  {actionType === 'reagendar' && 'Reagendar e notificar'}
+                </button>
               </div>
             </form>
           </div>

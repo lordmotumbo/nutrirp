@@ -16,6 +16,7 @@ class AppointmentOut(AppointmentCreate):
     id: int
     nutritionist_id: int
     patient_name: Optional[str] = None
+    cancel_reason: Optional[str] = None
     created_at: datetime
 
     model_config = {"from_attributes": True}

@@ -6,17 +6,31 @@ import { format } from 'date-fns'
 import toast from 'react-hot-toast'
 
 const BASE = import.meta.env.VITE_API_URL || 'https://nutrirp-api.onrender.com/api'
-const api = () => axios.create({ baseURL: BASE, headers: { Authorization: `Bearer ${localStorage.getItem('nutrirp_patient_token')}` } })
+
+function patientApi() {
+  const token = localStorage.getItem('nutrirp_patient_token')
+  return axios.create({
+    baseURL: BASE,
+    headers: { Authorization: `Bearer ${token}` }
+  })
+}
 
 export default function PatientChat() {
   const [messages, setMessages] = useState([])
   const [text, setText] = useState('')
   const [sending, setSending] = useState(false)
+  const [error, setError] = useState(null)
   const bottomRef = useRef(null)
 
   async function load() {
-    const { data } = await api().get('/patient-portal/chat')
-    setMessages(data)
+    try {
+      const { data } = await patientApi().get('/patient-portal/chat')
+      setMessages(data)
+      setError(null)
+    } catch (err) {
+      const msg = err.response?.data?.detail || 'Erro ao carregar mensagens'
+      setError(msg)
+    }
   }
 
   useEffect(() => { load() }, [])
@@ -31,10 +45,12 @@ export default function PatientChat() {
     if (!text.trim()) return
     setSending(true)
     try {
-      await api().post('/patient-portal/chat', { message: text })
+      await patientApi().post('/patient-portal/chat', { message: text })
       setText('')
       load()
-    } catch { toast.error('Erro ao enviar') }
+    } catch (err) {
+      toast.error(err.response?.data?.detail || 'Erro ao enviar')
+    }
     finally { setSending(false) }
   }
 
@@ -46,7 +62,13 @@ export default function PatientChat() {
       </header>
 
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 max-w-lg mx-auto w-full">
-        {messages.length === 0 && (
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
+            <p className="text-red-600 text-sm">{error}</p>
+            <button onClick={load} className="mt-2 text-xs text-red-500 underline">Tentar novamente</button>
+          </div>
+        )}
+        {!error && messages.length === 0 && (
           <p className="text-center text-gray-400 py-10">Nenhuma mensagem ainda</p>
         )}
         {messages.map(m => (

@@ -205,3 +205,83 @@ def mark_reviewed(form_id: int, db: Session = Depends(get_db), user: User = Depe
     form.is_reviewed = True
     db.commit()
     return form
+
+
+# ── Relatório diário do paciente (para o nutricionista) ──────────────
+@router.get("/patient/{patient_id}/daily/{report_date}")
+def patient_daily_report(
+    patient_id: int,
+    report_date: str,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    """Relatório do diário do paciente em um dia específico (YYYY-MM-DD)."""
+    from app.models.financial import PatientDiary
+    from datetime import date as date_type
+
+    patient = db.query(Patient).filter(Patient.id == patient_id, Patient.nutritionist_id == user.id).first()
+    if not patient:
+        raise HTTPException(404, "Paciente não encontrado")
+
+    try:
+        target_date = datetime.strptime(report_date, "%Y-%m-%d").date()
+    except ValueError:
+        raise HTTPException(400, "Formato de data inválido. Use YYYY-MM-DD")
+
+    day_start = datetime.combine(target_date, datetime.min.time())
+    day_end = datetime.combine(target_date, datetime.max.time())
+
+    entries = db.query(PatientDiary).filter(
+        PatientDiary.patient_id == patient_id,
+        PatientDiary.date >= day_start,
+        PatientDiary.date <= day_end,
+    ).all()
+
+    mood_map = {"otimo": "😄 Ótimo", "bom": "🙂 Bom", "regular": "😐 Regular", "ruim": "😔 Ruim"}
+
+    return {
+        "patient_name": patient.name,
+        "date": report_date,
+        "has_data": len(entries) > 0,
+        "entries": [
+            {
+                "id": e.id,
+                "date": e.date.isoformat() if e.date else None,
+                "mood": mood_map.get(e.mood, e.mood) if e.mood else None,
+                "sleep_hours": e.sleep_hours,
+                "sleep_quality": e.sleep_quality,
+                "water_ml": e.water_ml,
+                "physical_activity": e.physical_activity,
+                "activity_duration_min": e.activity_duration_min,
+                "activity_intensity": e.activity_intensity,
+                "diet_adherence": e.diet_adherence,
+                "hunger_level": e.hunger_level,
+                "energy_level": e.energy_level,
+                "stress_level": e.stress_level,
+                "bowel_function": e.bowel_function,
+                "symptoms": e.symptoms,
+                "medications_taken": e.medications_taken,
+                "notes": e.notes,
+            }
+            for e in entries
+        ],
+        "summary": {
+            "total_water_ml": sum(e.water_ml or 0 for e in entries),
+            "moods": list({e.mood for e in entries if e.mood}),
+            "total_sleep_hours": sum(e.sleep_hours or 0 for e in entries),
+            "activities": [e.physical_activity for e in entries if e.physical_activity],
+            "avg_diet_adherence": (
+                sum(e.diet_adherence or 0 for e in entries if e.diet_adherence) //
+                max(1, len([e for e in entries if e.diet_adherence]))
+            ) if entries else 0,
+            "avg_energy": (
+                sum(e.energy_level or 0 for e in entries if e.energy_level) /
+                max(1, len([e for e in entries if e.energy_level]))
+            ) if entries else 0,
+            "avg_stress": (
+                sum(e.stress_level or 0 for e in entries if e.stress_level) /
+                max(1, len([e for e in entries if e.stress_level]))
+            ) if entries else 0,
+        }
+    }
+

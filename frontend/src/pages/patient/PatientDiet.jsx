@@ -62,7 +62,7 @@ export default function PatientDiet() {
             ))}
 
             <a
-              href={`${BASE}/diets/${diet.id}/pdf?token=${localStorage.getItem('nutrirp_patient_token')}`}
+              href={`${BASE}/diets/${diet.id}/pdf-for-patient?token=${localStorage.getItem('nutrirp_patient_token')}`}
               target="_blank" rel="noreferrer"
               className="btn-secondary w-full justify-center"
             >

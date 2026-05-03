@@ -13,9 +13,11 @@ class Appointment(Base):
 
     scheduled_at = Column(DateTime, nullable=False)
     duration_minutes = Column(Integer, default=60)
-    status = Column(String(20), default="agendado")  # agendado | confirmado | realizado | cancelado
+    status = Column(String(20), default="agendado")  # agendado | confirmado | realizado | cancelado | reagendado
     type = Column(String(30), default="consulta")    # consulta | retorno | avaliacao
     notes = Column(Text, nullable=True)
+    cancel_reason = Column(Text, nullable=True)       # motivo de cancelamento/reagendamento
+    reschedule_requested_at = Column(DateTime, nullable=True)  # quando nutricionista pediu reagendamento
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 

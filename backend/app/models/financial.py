@@ -57,9 +57,18 @@ class PatientDiary(Base):
     date = Column(DateTime, nullable=False)
     mood = Column(String(20))        # otimo | bom | regular | ruim
     sleep_hours = Column(Float)
+    sleep_quality = Column(String(20))   # otima | boa | regular | ruim
     water_ml = Column(Integer)       # ml consumidos
     physical_activity = Column(String(200))
+    activity_duration_min = Column(Integer)   # duração em minutos
+    activity_intensity = Column(String(20))   # leve | moderada | intensa
     diet_adherence = Column(Integer) # 0-100%
+    hunger_level = Column(Integer)   # 1-5 (nível de fome ao longo do dia)
+    energy_level = Column(Integer)   # 1-5 (disposição/energia)
+    stress_level = Column(Integer)   # 1-5 (nível de estresse)
+    bowel_function = Column(String(30))  # normal | constipado | diarreia | irregular
+    symptoms = Column(Text)          # sintomas: inchaço, gases, refluxo, etc.
+    medications_taken = Column(Text) # medicamentos/suplementos tomados
     notes = Column(Text)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 

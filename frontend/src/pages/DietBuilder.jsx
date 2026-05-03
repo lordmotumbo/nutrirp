@@ -71,7 +71,7 @@ function FoodRow({ food, onChange, onRemove }) {
 }
 
 export default function DietBuilder() {
-  const { id } = useParams()
+  const { id, dietId } = useParams()  // dietId presente quando editando
   const [patient, setPatient] = useState(null)
   const [title, setTitle] = useState('Plano Alimentar')
   const [description, setDescription] = useState('')
@@ -79,17 +79,43 @@ export default function DietBuilder() {
   const [collapsed, setCollapsed] = useState({})
   const [saving, setSaving] = useState(false)
   const [savedDietId, setSavedDietId] = useState(null)
+  const [isEditing, setIsEditing] = useState(false)
 
   useEffect(() => {
     api.get(`/patients/${id}`).then(r => setPatient(r.data))
-  }, [id])
+
+    // Se há dietId na URL, carrega a dieta para edição
+    if (dietId) {
+      setIsEditing(true)
+      setSavedDietId(Number(dietId))
+      api.get(`/diets/${dietId}`).then(r => {
+        const diet = r.data
+        setTitle(diet.title)
+        setDescription(diet.description || '')
+        setMeals(diet.meals.map(m => ({
+          name: m.name,
+          time: m.time || '',
+          order: m.order,
+          notes: m.notes || '',
+          foods: m.foods.map(f => ({
+            food_name: f.food_name,
+            quantity: String(f.quantity || ''),
+            unit: f.unit || 'g',
+            calories: String(f.calories || ''),
+            protein: String(f.protein || ''),
+            carbs: String(f.carbs || ''),
+            fat: String(f.fat || ''),
+            notes: f.notes || '',
+          }))
+        })))
+      }).catch(() => toast.error('Erro ao carregar dieta'))
+    }
+  }, [id, dietId])
 
   function toggleCollapse(i) {
     setCollapsed(c => ({ ...c, [i]: !c[i] }))
   }
 
-  // Adiciona alimento via autocomplete (com dados nutricionais preenchidos)
-  // ou manualmente (campos vazios)
   function addFood(mealIdx, foodData = null) {
     const newFood = foodData
       ? {
@@ -135,7 +161,6 @@ export default function DietBuilder() {
     setMeals(ms => ms.map((m, idx) => idx === i ? { ...m, [key]: value } : m))
   }
 
-  // Totais calculados em tempo real
   const totals = meals.reduce((acc, m) => {
     m.foods.forEach(f => {
       acc.calories += parseFloat(f.calories) || 0
@@ -172,9 +197,21 @@ export default function DietBuilder() {
             })),
         })),
       }
-      const { data } = await api.post('/diets', payload)
-      setSavedDietId(data.id)
-      toast.success('Dieta salva!')
+
+      let data
+      if (isEditing && savedDietId) {
+        // Editar dieta existente
+        const res = await api.put(`/diets/${savedDietId}`, payload)
+        data = res.data
+        toast.success('Dieta atualizada!')
+      } else {
+        // Criar nova dieta
+        const res = await api.post('/diets', payload)
+        data = res.data
+        setSavedDietId(data.id)
+        setIsEditing(true)
+        toast.success('Dieta salva!')
+      }
     } catch { toast.error('Erro ao salvar') }
     finally { setSaving(false) }
   }
@@ -186,7 +223,7 @@ export default function DietBuilder() {
           <ArrowLeft className="w-5 h-5" />
         </Link>
         <div>
-          <h1 className="text-xl font-bold">Montar Dieta</h1>
+          <h1 className="text-xl font-bold">{isEditing ? 'Editar Dieta' : 'Montar Dieta'}</h1>
           {patient && <p className="text-sm text-gray-500">{patient.name}</p>}
         </div>
       </div>
@@ -221,7 +258,6 @@ export default function DietBuilder() {
       {/* Refeições */}
       {meals.map((meal, mealIdx) => (
         <div key={mealIdx} className="card space-y-3">
-          {/* Cabeçalho da refeição */}
           <div className="flex items-center gap-2">
             <button type="button" onClick={() => toggleCollapse(mealIdx)} className="text-gray-400">
               {collapsed[mealIdx] ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
@@ -244,7 +280,6 @@ export default function DietBuilder() {
 
           {!collapsed[mealIdx] && (
             <>
-              {/* Header das colunas */}
               {meal.foods.length > 0 && (
                 <div className="grid grid-cols-12 gap-1.5 text-xs text-gray-400 px-0.5">
                   <span className="col-span-4">Alimento</span>
@@ -257,7 +292,6 @@ export default function DietBuilder() {
                 </div>
               )}
 
-              {/* Linhas de alimentos */}
               {meal.foods.map((food, foodIdx) => (
                 <FoodRow
                   key={foodIdx}
@@ -267,7 +301,6 @@ export default function DietBuilder() {
                 />
               ))}
 
-              {/* Busca de alimentos com autocomplete */}
               <div className="pt-1">
                 <p className="text-xs text-gray-400 mb-1.5 flex items-center gap-1">
                   🔍 Buscar alimento (TACO + USDA) — valores preenchidos automaticamente
@@ -278,7 +311,6 @@ export default function DietBuilder() {
                 />
               </div>
 
-              {/* Botão adicionar manualmente */}
               <button
                 type="button"
                 className="text-xs text-gray-400 hover:text-gray-600 flex items-center gap-1"
@@ -307,7 +339,7 @@ export default function DietBuilder() {
 
       <div className="flex gap-3">
         <button className="btn-primary flex-1 justify-center" onClick={handleSave} disabled={saving}>
-          <Save className="w-4 h-4" /> {saving ? 'Salvando...' : 'Salvar Dieta'}
+          <Save className="w-4 h-4" /> {saving ? 'Salvando...' : isEditing ? 'Atualizar Dieta' : 'Salvar Dieta'}
         </button>
         {savedDietId && (
           <a
