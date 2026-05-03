@@ -32,6 +32,7 @@ export default function PatientDetail() {
   const [showPortalModal, setShowPortalModal] = useState(false)
   const [portalForm, setPortalForm] = useState({ email: '', password: '' })
   const [portalLoading, setPortalLoading] = useState(false)
+  const patientPortalUrl = `${window.location.origin}/paciente`
 
   async function load() {
     const [p, d, e] = await Promise.all([
@@ -270,7 +271,15 @@ export default function PatientDetail() {
               </div>
               <p className="text-xs text-gray-400">
                 Envie o e-mail e senha para o paciente. Ele acessa em:<br />
-                <span className="font-mono text-primary-600">nutrirp-frontend.onrender.com/paciente</span>
+                <a
+                  href={patientPortalUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-block mt-1 font-mono text-primary-600 hover:underline break-all"
+                  title="Abrir login do paciente"
+                >
+                  {patientPortalUrl}
+                </a>
               </p>
               <div className="flex gap-3">
                 <button type="button" className="btn-secondary flex-1 justify-center" onClick={() => setShowPortalModal(false)}>Cancelar</button>
