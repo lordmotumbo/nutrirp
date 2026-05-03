@@ -119,8 +119,20 @@ class WaterUpdateIn(BaseModel):
 
 @router.post("/diary", status_code=201)
 def add_diary(data: DiaryIn, current: PatientUser = Depends(get_current_patient), db: Session = Depends(get_db)):
-    d = PatientDiary(**data.model_dump(), patient_id=current.patient_id)
-    db.add(d); db.commit(); db.refresh(d)
+    from sqlalchemy import text, inspect as sa_inspect
+
+    # Descobre quais colunas existem na tabela para evitar erro em banco desatualizado
+    inspector = sa_inspect(db.bind)
+    existing_cols = {c["name"] for c in inspector.get_columns("patient_diaries")}
+
+    fields = data.model_dump()
+    safe_fields = {k: v for k, v in fields.items() if k in existing_cols and v is not None}
+    safe_fields["patient_id"] = current.patient_id
+
+    d = PatientDiary(**safe_fields)
+    db.add(d)
+    db.commit()
+    db.refresh(d)
     return d
 
 
@@ -136,11 +148,13 @@ def update_water_intake(
     db: Session = Depends(get_db)
 ):
     """Adiciona água ao registro do dia atual (cria entrada se não existir)."""
+    from sqlalchemy import text
+
     target_date = data.date or datetime.utcnow()
-    # Busca registro do dia
     day_start = target_date.replace(hour=0, minute=0, second=0, microsecond=0)
     day_end = target_date.replace(hour=23, minute=59, second=59, microsecond=999999)
 
+    # Busca registro do dia usando SQL direto para evitar problemas com colunas novas
     entry = db.query(PatientDiary).filter(
         PatientDiary.patient_id == current.patient_id,
         PatientDiary.date >= day_start,
@@ -148,21 +162,38 @@ def update_water_intake(
     ).first()
 
     if entry:
-        entry.water_ml = (entry.water_ml or 0) + data.water_ml
+        # Atualiza apenas water_ml via SQL direto para evitar problemas de schema
+        db.execute(
+            text("UPDATE patient_diaries SET water_ml = COALESCE(water_ml, 0) + :ml WHERE id = :id"),
+            {"ml": data.water_ml, "id": entry.id}
+        )
         db.commit()
         db.refresh(entry)
-        return entry
+        return {
+            "id": entry.id,
+            "date": entry.date,
+            "water_ml": entry.water_ml,
+            "patient_id": entry.patient_id,
+        }
     else:
-        # Cria novo registro do dia com apenas a água
-        new_entry = PatientDiary(
-            patient_id=current.patient_id,
-            date=target_date,
-            water_ml=data.water_ml,
+        # Cria novo registro mínimo com apenas data e água
+        db.execute(
+            text("INSERT INTO patient_diaries (patient_id, date, water_ml) VALUES (:pid, :date, :ml)"),
+            {"pid": current.patient_id, "date": target_date, "ml": data.water_ml}
         )
-        db.add(new_entry)
         db.commit()
-        db.refresh(new_entry)
-        return new_entry
+        # Busca o registro recém criado
+        new_entry = db.query(PatientDiary).filter(
+            PatientDiary.patient_id == current.patient_id,
+            PatientDiary.date >= day_start,
+            PatientDiary.date <= day_end,
+        ).first()
+        return {
+            "id": new_entry.id if new_entry else None,
+            "date": target_date,
+            "water_ml": data.water_ml,
+            "patient_id": current.patient_id,
+        }
 
 
 # ── Metas ─────────────────────────────────────────────────────────────
