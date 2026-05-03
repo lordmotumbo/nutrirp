@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import {
   ArrowLeft, ClipboardList, Utensils, CalendarDays,
-  Pencil, Trash2, TrendingUp, Plus, FlaskConical, Pill, MessageSquare, Activity
+  Pencil, Trash2, TrendingUp, Plus, FlaskConical, Pill, MessageSquare, Activity, FileText
 } from 'lucide-react'
 import api from '../api'
 import toast from 'react-hot-toast'
@@ -120,7 +120,7 @@ export default function PatientDetail() {
       </div>
 
       {/* Ações rápidas */}
-      <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+      <div className="grid grid-cols-3 md:grid-cols-7 gap-3">
         {[
           { to: `/patients/${id}/anamnese`, icon: ClipboardList, label: 'Anamnese' },
           { to: `/patients/${id}/diet`, icon: Utensils, label: 'Dieta' },
@@ -134,6 +134,14 @@ export default function PatientDetail() {
             <span className="text-xs font-medium">{label}</span>
           </Link>
         ))}
+        <a
+          href={`${import.meta.env.VITE_API_URL || 'https://nutrirp-api.onrender.com/api'}/reports/patient/${id}/full?token=${localStorage.getItem('nutrirp_token')}`}
+          target="_blank" rel="noreferrer"
+          className="card flex flex-col items-center gap-2 hover:shadow-md transition-shadow text-center py-4"
+        >
+          <FileText className="w-6 h-6 text-primary-600" />
+          <span className="text-xs font-medium">Relatório</span>
+        </a>
       </div>
 
       {/* Evolução de peso */}

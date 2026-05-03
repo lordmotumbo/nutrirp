@@ -16,6 +16,13 @@ import Supplements from './pages/Supplements'
 import Exams from './pages/Exams'
 import Financial from './pages/Financial'
 import Chat from './pages/Chat'
+import PatientLogin from './pages/patient/PatientLogin'
+import PatientDashboard from './pages/patient/PatientDashboard'
+import PatientDiary from './pages/patient/PatientDiary'
+import PatientPreConsult from './pages/patient/PatientPreConsult'
+import PatientChat from './pages/patient/PatientChat'
+import PatientDiet from './pages/patient/PatientDiet'
+import PatientAppointments from './pages/patient/PatientAppointments'
 
 function PrivateRoute({ children }) {
   const { user } = useAuth()
@@ -33,6 +40,14 @@ function AppRoutes() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        {/* Portal do Paciente — rotas públicas */}
+        <Route path="/patient/login" element={<PatientLogin />} />
+        <Route path="/patient/dashboard" element={<PatientDashboard />} />
+        <Route path="/patient/diary" element={<PatientDiary />} />
+        <Route path="/patient/preconsult" element={<PatientPreConsult />} />
+        <Route path="/patient/chat" element={<PatientChat />} />
+        <Route path="/patient/diet" element={<PatientDiet />} />
+        <Route path="/patient/appointments" element={<PatientAppointments />} />
         <Route
           path="/"
           element={
