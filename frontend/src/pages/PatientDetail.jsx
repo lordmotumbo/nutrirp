@@ -73,7 +73,7 @@ export default function PatientDetail() {
         email: portalForm.email,
         password: portalForm.password,
       })
-      toast.success('Acesso criado! Paciente pode entrar em /patient/login')
+      toast.success('Acesso criado! Paciente pode entrar em /paciente')
       setShowPortalModal(false)
       setPortalForm({ email: '', password: '' })
     } catch (err) {
@@ -243,7 +243,7 @@ export default function PatientDetail() {
             <div className="flex items-center justify-between px-6 py-4 border-b dark:border-gray-700">
               <div>
                 <h2 className="font-semibold dark:text-white">Criar Acesso — Portal do Paciente</h2>
-                <p className="text-xs text-gray-400 mt-0.5">O paciente poderá acessar em <b>/patient/login</b></p>
+                <p className="text-xs text-gray-400 mt-0.5">O paciente poderá acessar em <b>/paciente</b></p>
               </div>
               <button onClick={() => setShowPortalModal(false)}><X className="w-5 h-5 text-gray-400" /></button>
             </div>
@@ -270,7 +270,7 @@ export default function PatientDetail() {
               </div>
               <p className="text-xs text-gray-400">
                 Envie o e-mail e senha para o paciente. Ele acessa em:<br />
-                <span className="font-mono text-primary-600">nutrirp-frontend.onrender.com/patient/login</span>
+                <span className="font-mono text-primary-600">nutrirp-frontend.onrender.com/paciente</span>
               </p>
               <div className="flex gap-3">
                 <button type="button" className="btn-secondary flex-1 justify-center" onClick={() => setShowPortalModal(false)}>Cancelar</button>

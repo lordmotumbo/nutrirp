@@ -19,7 +19,7 @@ export default function PatientLogin() {
       const { data } = await axios.post(`${BASE}/patient-portal/login`, form)
       localStorage.setItem('nutrirp_patient_token', data.access_token)
       localStorage.setItem('nutrirp_patient', JSON.stringify(data.patient))
-      navigate('/patient/dashboard')
+      navigate('/paciente/dashboard')
     } catch (err) {
       toast.error(err.response?.data?.detail || 'E-mail ou senha incorretos')
     } finally { setLoading(false) }

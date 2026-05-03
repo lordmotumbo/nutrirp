@@ -39,13 +39,13 @@ function AppRoutes() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/patient/login" element={<PatientLogin />} />
-        <Route path="/patient/dashboard" element={<PatientDashboard />} />
-        <Route path="/patient/diary" element={<PatientDiary />} />
-        <Route path="/patient/preconsult" element={<PatientPreConsult />} />
-        <Route path="/patient/chat" element={<PatientChat />} />
-        <Route path="/patient/diet" element={<PatientDiet />} />
-        <Route path="/patient/appointments" element={<PatientAppointments />} />
+        <Route path="/paciente" element={<PatientLogin />} />
+        <Route path="/paciente/dashboard" element={<PatientDashboard />} />
+        <Route path="/paciente/diary" element={<PatientDiary />} />
+        <Route path="/paciente/preconsult" element={<PatientPreConsult />} />
+        <Route path="/paciente/chat" element={<PatientChat />} />
+        <Route path="/paciente/diet" element={<PatientDiet />} />
+        <Route path="/paciente/appointments" element={<PatientAppointments />} />
         <Route
           path="/"
           element={

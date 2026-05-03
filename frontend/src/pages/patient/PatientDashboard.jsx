@@ -30,18 +30,18 @@ export default function PatientDashboard() {
   function logout() {
     localStorage.removeItem('nutrirp_patient_token')
     localStorage.removeItem('nutrirp_patient')
-    navigate('/patient/login')
+    navigate('/paciente/login')
   }
 
   const upcoming = appointments.filter(a => new Date(a.scheduled_at) >= new Date() && a.status !== 'cancelado').slice(0, 3)
 
   const menu = [
-    { to: '/patient/diet', icon: Utensils, label: 'Minha Dieta', color: 'bg-green-50 text-green-700' },
-    { to: '/patient/diary', icon: BookOpen, label: 'Diário', color: 'bg-blue-50 text-blue-700' },
-    { to: '/patient/goals', icon: Target, label: 'Metas', color: 'bg-purple-50 text-purple-700' },
-    { to: '/patient/appointments', icon: CalendarDays, label: 'Consultas', color: 'bg-orange-50 text-orange-700' },
-    { to: '/patient/chat', icon: MessageSquare, label: 'Chat', color: 'bg-pink-50 text-pink-700' },
-    { to: '/patient/preconsult', icon: TrendingUp, label: 'Pré-consulta', color: 'bg-teal-50 text-teal-700' },
+    { to: '/paciente/diet', icon: Utensils, label: 'Minha Dieta', color: 'bg-green-50 text-green-700' },
+    { to: '/paciente/diary', icon: BookOpen, label: 'Diário', color: 'bg-blue-50 text-blue-700' },
+    { to: '/paciente/goals', icon: Target, label: 'Metas', color: 'bg-purple-50 text-purple-700' },
+    { to: '/paciente/appointments', icon: CalendarDays, label: 'Consultas', color: 'bg-orange-50 text-orange-700' },
+    { to: '/paciente/chat', icon: MessageSquare, label: 'Chat', color: 'bg-pink-50 text-pink-700' },
+    { to: '/paciente/preconsult', icon: TrendingUp, label: 'Pré-consulta', color: 'bg-teal-50 text-teal-700' },
   ]
 
   return (

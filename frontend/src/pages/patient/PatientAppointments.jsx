@@ -37,7 +37,7 @@ export default function PatientAppointments() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <header className="text-white px-5 py-4 flex items-center gap-3" style={{ backgroundColor: 'var(--color-primary)' }}>
-        <Link to="/patient/dashboard"><ArrowLeft className="w-5 h-5" /></Link>
+        <Link to="/paciente/dashboard"><ArrowLeft className="w-5 h-5" /></Link>
         <h1 className="font-bold text-lg flex-1">Minhas Consultas</h1>
         <button onClick={() => setShowModal(true)} className="flex items-center gap-1 text-white/80 hover:text-white text-sm">
           <Plus className="w-4 h-4" /> Solicitar
