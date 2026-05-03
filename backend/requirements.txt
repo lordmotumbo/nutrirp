@@ -8,3 +8,4 @@ reportlab
 python-dotenv
 pydantic[email]
 httpx
+psycopg2-binary

@@ -6,17 +6,21 @@ import os
 
 load_dotenv()
 
-# No Render, o disco persistente é montado em /opt/render/project/src
-# O DATABASE_URL deve apontar para esse caminho para persistir entre deploys
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./nutrirp.db")
 
-# Garantir que o diretório do SQLite existe
-if DATABASE_URL.startswith("sqlite:///") and not DATABASE_URL.startswith("sqlite:///:"):
-    db_path = DATABASE_URL.replace("sqlite:///", "")
-    db_dir = os.path.dirname(os.path.abspath(db_path))
-    os.makedirs(db_dir, exist_ok=True)
+# Render fornece URLs postgres:// mas SQLAlchemy precisa de postgresql://
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
-connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
+# SQLite: check_same_thread=False | PostgreSQL: sem args extras
+if DATABASE_URL.startswith("sqlite"):
+    connect_args = {"check_same_thread": False}
+    # Garantir que o diretório existe
+    db_path = DATABASE_URL.replace("sqlite:///", "").replace("sqlite://", "")
+    if db_path and db_path != ":memory:":
+        os.makedirs(os.path.dirname(os.path.abspath(db_path)), exist_ok=True)
+else:
+    connect_args = {}
 
 engine = create_engine(DATABASE_URL, connect_args=connect_args)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
