@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import {
   ArrowLeft, ClipboardList, Utensils, CalendarDays,
-  Pencil, Trash2, TrendingUp, Plus, FlaskConical, Pill, MessageSquare, Activity, FileText
+  Pencil, Trash2, TrendingUp, Plus, FlaskConical, Pill, MessageSquare, Activity, FileText, UserPlus, X
 } from 'lucide-react'
 import api from '../api'
 import toast from 'react-hot-toast'
@@ -29,6 +29,9 @@ export default function PatientDetail() {
   const [evolutions, setEvolutions] = useState([])
   const [showEdit, setShowEdit] = useState(false)
   const [showEvo, setShowEvo] = useState(false)
+  const [showPortalModal, setShowPortalModal] = useState(false)
+  const [portalForm, setPortalForm] = useState({ email: '', password: '' })
+  const [portalLoading, setPortalLoading] = useState(false)
 
   async function load() {
     const [p, d, e] = await Promise.all([
@@ -59,6 +62,23 @@ export default function PatientDetail() {
       toast.success('Paciente removido')
       navigate('/patients')
     } catch { toast.error('Erro ao excluir') }
+  }
+
+  async function handleCreatePortalAccess(e) {
+    e.preventDefault()
+    setPortalLoading(true)
+    try {
+      await api.post('/patient-portal/register', {
+        patient_id: Number(id),
+        email: portalForm.email,
+        password: portalForm.password,
+      })
+      toast.success('Acesso criado! Paciente pode entrar em /patient/login')
+      setShowPortalModal(false)
+      setPortalForm({ email: '', password: '' })
+    } catch (err) {
+      toast.error(err.response?.data?.detail || 'Erro ao criar acesso')
+    } finally { setPortalLoading(false) }
   }
 
   async function handleAddEvolution(payload) {
@@ -98,6 +118,9 @@ export default function PatientDetail() {
         </div>
         <button className="btn-secondary" onClick={() => setShowEdit(true)}>
           <Pencil className="w-4 h-4" /> Editar
+        </button>
+        <button className="btn-secondary" onClick={() => setShowPortalModal(true)} title="Criar acesso para o paciente">
+          <UserPlus className="w-4 h-4" /> Portal
         </button>
         <button className="btn-danger" onClick={handleDelete}>
           <Trash2 className="w-4 h-4" />
@@ -211,6 +234,53 @@ export default function PatientDetail() {
       )}
       {showEvo && (
         <EvolutionModal onClose={() => setShowEvo(false)} onSave={handleAddEvolution} />
+      )}
+
+      {/* Modal criar acesso portal do paciente */}
+      {showPortalModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-sm">
+            <div className="flex items-center justify-between px-6 py-4 border-b dark:border-gray-700">
+              <div>
+                <h2 className="font-semibold dark:text-white">Criar Acesso — Portal do Paciente</h2>
+                <p className="text-xs text-gray-400 mt-0.5">O paciente poderá acessar em <b>/patient/login</b></p>
+              </div>
+              <button onClick={() => setShowPortalModal(false)}><X className="w-5 h-5 text-gray-400" /></button>
+            </div>
+            <form onSubmit={handleCreatePortalAccess} className="px-6 py-5 space-y-4">
+              <div>
+                <label className="label">E-mail do paciente *</label>
+                <input
+                  type="email" className="input"
+                  value={portalForm.email}
+                  onChange={e => setPortalForm(f => ({ ...f, email: e.target.value }))}
+                  placeholder={patient?.email || 'email@exemplo.com'}
+                  required
+                />
+              </div>
+              <div>
+                <label className="label">Senha inicial *</label>
+                <input
+                  type="password" className="input"
+                  value={portalForm.password}
+                  onChange={e => setPortalForm(f => ({ ...f, password: e.target.value }))}
+                  placeholder="Mínimo 6 caracteres"
+                  required minLength={6}
+                />
+              </div>
+              <p className="text-xs text-gray-400">
+                Envie o e-mail e senha para o paciente. Ele acessa em:<br />
+                <span className="font-mono text-primary-600">nutrirp-frontend.onrender.com/patient/login</span>
+              </p>
+              <div className="flex gap-3">
+                <button type="button" className="btn-secondary flex-1 justify-center" onClick={() => setShowPortalModal(false)}>Cancelar</button>
+                <button type="submit" className="btn-primary flex-1 justify-center" disabled={portalLoading}>
+                  <UserPlus className="w-4 h-4" /> {portalLoading ? 'Criando...' : 'Criar acesso'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
     </div>
   )
