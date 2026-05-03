@@ -2,14 +2,15 @@ const { copyFileSync, mkdirSync } = require('fs')
 const { join } = require('path')
 
 const routes = [
-  'patient/login',
-  'patient/dashboard',
-  'patient/diary',
-  'patient/chat',
-  'patient/diet',
-  'patient/appointments',
-  'patient/preconsult',
-  'patient/goals',
+  'paciente',
+  'paciente/login',
+  'paciente/dashboard',
+  'paciente/diary',
+  'paciente/chat',
+  'paciente/diet',
+  'paciente/appointments',
+  'paciente/preconsult',
+  'paciente/goals',
   'login',
   'register',
 ]
