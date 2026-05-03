@@ -32,7 +32,7 @@ export default function PatientDetail() {
   const [showPortalModal, setShowPortalModal] = useState(false)
   const [portalForm, setPortalForm] = useState({ email: '', password: '' })
   const [portalLoading, setPortalLoading] = useState(false)
-  const patientPortalUrl = `${window.location.origin}/paciente`
+  const patientPortalUrl = `${window.location.origin}/paciente/`
 
   async function load() {
     const [p, d, e] = await Promise.all([
