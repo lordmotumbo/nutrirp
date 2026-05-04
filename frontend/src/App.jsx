@@ -25,6 +25,7 @@ import PatientChat from './pages/patient/PatientChat'
 import PatientDiet from './pages/patient/PatientDiet'
 import PatientAppointments from './pages/patient/PatientAppointments'
 import PatientGoals from './pages/patient/PatientGoals'
+import PatientAlerts from './pages/patient/PatientAlerts'
 
 function PrivateRoute({ children }) {
   const { user } = useAuth()
@@ -49,6 +50,7 @@ function AppRoutes() {
         <Route path="/paciente/diet" element={<PatientDiet />} />
         <Route path="/paciente/appointments" element={<PatientAppointments />} />
         <Route path="/paciente/goals" element={<PatientGoals />} />
+        <Route path="/paciente/alerts" element={<PatientAlerts />} />
         <Route
           path="/"
           element={

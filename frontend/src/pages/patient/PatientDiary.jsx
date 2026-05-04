@@ -1,6 +1,6 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowLeft, Plus, X, Bell, BellOff, Droplets } from 'lucide-react'
+import { ArrowLeft, Plus, X, Bell, Droplets } from 'lucide-react'
 import axios from 'axios'
 import toast from 'react-hot-toast'
 import { format } from 'date-fns'
@@ -37,7 +37,6 @@ const BOWEL = [
 ]
 
 const LEVEL_LABELS = ['', '1 - Muito baixo', '2 - Baixo', '3 - Médio', '4 - Alto', '5 - Muito alto']
-
 const WATER_AMOUNTS = [150, 200, 250, 300, 500]
 
 const DEFAULT_FORM = {
@@ -59,123 +58,21 @@ const DEFAULT_FORM = {
   notes: '',
 }
 
-// ── Alertas / Notificações ────────────────────────────────────────────
-function useAlerts(diet) {
-  const [alertsEnabled, setAlertsEnabled] = useState(() => {
-    return localStorage.getItem('nutrirp_alerts_enabled') === 'true'
-  })
-  const [waterAlertsEnabled, setWaterAlertsEnabled] = useState(() => {
-    return localStorage.getItem('nutrirp_water_alerts_enabled') === 'true'
-  })
-  const [waterIntervalH, setWaterIntervalH] = useState(() => {
-    return parseInt(localStorage.getItem('nutrirp_water_interval') || '2')
-  })
-
-  const requestPermission = useCallback(async () => {
-    if (!('Notification' in window)) {
-      toast.error('Seu navegador não suporta notificações')
-      return false
-    }
-    if (Notification.permission === 'granted') return true
-    const perm = await Notification.requestPermission()
-    return perm === 'granted'
-  }, [])
-
-  const toggleMealAlerts = useCallback(async () => {
-    if (!alertsEnabled) {
-      const ok = await requestPermission()
-      if (!ok) return
-      toast.success('Alertas de refeição ativados!')
-    } else {
-      toast('Alertas de refeição desativados')
-    }
-    const next = !alertsEnabled
-    setAlertsEnabled(next)
-    localStorage.setItem('nutrirp_alerts_enabled', String(next))
-  }, [alertsEnabled, requestPermission])
-
-  const toggleWaterAlerts = useCallback(async () => {
-    if (!waterAlertsEnabled) {
-      const ok = await requestPermission()
-      if (!ok) return
-      toast.success(`Alertas de água a cada ${waterIntervalH}h ativados!`)
-    } else {
-      toast('Alertas de água desativados')
-    }
-    const next = !waterAlertsEnabled
-    setWaterAlertsEnabled(next)
-    localStorage.setItem('nutrirp_water_alerts_enabled', String(next))
-  }, [waterAlertsEnabled, waterIntervalH, requestPermission])
-
-  const changeWaterInterval = useCallback((h) => {
-    setWaterIntervalH(h)
-    localStorage.setItem('nutrirp_water_interval', String(h))
-  }, [])
-
-  // Agenda alertas de refeição baseados na dieta
-  useEffect(() => {
-    if (!alertsEnabled || !diet?.meals?.length) return
-    const timers = []
-    diet.meals.forEach(meal => {
-      if (!meal.time) return
-      const [h, m] = meal.time.split(':').map(Number)
-      const now = new Date()
-      const target = new Date()
-      target.setHours(h, m, 0, 0)
-      if (target <= now) return // já passou hoje
-      const diff = target - now
-      const t = setTimeout(() => {
-        if (Notification.permission === 'granted') {
-          new Notification(`🍽 Hora da refeição!`, {
-            body: `${meal.name} — ${meal.time}`,
-            icon: '/favicon.ico',
-          })
-        }
-      }, diff)
-      timers.push(t)
-    })
-    return () => timers.forEach(clearTimeout)
-  }, [alertsEnabled, diet])
-
-  // Agenda alertas de água
-  useEffect(() => {
-    if (!waterAlertsEnabled) return
-    const intervalMs = waterIntervalH * 60 * 60 * 1000
-    const t = setInterval(() => {
-      if (Notification.permission === 'granted') {
-        new Notification('💧 Hora de beber água!', {
-          body: 'Lembre-se de se manter hidratado.',
-          icon: '/favicon.ico',
-        })
-      }
-    }, intervalMs)
-    return () => clearInterval(t)
-  }, [waterAlertsEnabled, waterIntervalH])
-
-  return { alertsEnabled, waterAlertsEnabled, waterIntervalH, toggleMealAlerts, toggleWaterAlerts, changeWaterInterval }
-}
-
 export default function PatientDiary() {
   const [entries, setEntries] = useState([])
   const [showModal, setShowModal] = useState(false)
-  const [showAlertPanel, setShowAlertPanel] = useState(false)
   const [form, setForm] = useState(DEFAULT_FORM)
-  const [diet, setDiet] = useState(null)
   const [addingWater, setAddingWater] = useState(false)
   const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }))
 
-  const { alertsEnabled, waterAlertsEnabled, waterIntervalH, toggleMealAlerts, toggleWaterAlerts, changeWaterInterval } = useAlerts(diet)
-
   async function load() {
-    const { data } = await api().get('/patient-portal/diary')
-    setEntries(data)
+    try {
+      const { data } = await api().get('/patient-portal/diary')
+      setEntries(data)
+    } catch {}
   }
 
-  useEffect(() => {
-    load()
-    // Carrega dieta para alertas de refeição
-    api().get('/patient-portal/diet').then(r => setDiet(r.data)).catch(() => {})
-  }, [])
+  useEffect(() => { load() }, [])
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -188,22 +85,29 @@ export default function PatientDiary() {
       payload.hunger_level = parseInt(payload.hunger_level)
       payload.energy_level = parseInt(payload.energy_level)
       payload.stress_level = parseInt(payload.stress_level)
+      // Remove campos vazios
+      Object.keys(payload).forEach(k => {
+        if (payload[k] === '' || payload[k] === null || payload[k] === undefined) delete payload[k]
+      })
       await api().post('/patient-portal/diary', payload)
       toast.success('Registrado!')
       setShowModal(false)
       setForm(DEFAULT_FORM)
       load()
-    } catch { toast.error('Erro ao salvar') }
+    } catch (err) {
+      toast.error(err.response?.data?.detail || 'Erro ao salvar')
+    }
   }
 
   async function handleAddWater(ml) {
     setAddingWater(true)
     try {
       await api().patch('/patient-portal/diary/water', { water_ml: ml })
-      toast.success(`+${ml}ml de água registrado!`)
+      toast.success(`+${ml}ml registrado!`)
       load()
-    } catch { toast.error('Erro ao registrar água') }
-    finally { setAddingWater(false) }
+    } catch (err) {
+      toast.error(err.response?.data?.detail || 'Erro ao registrar água')
+    } finally { setAddingWater(false) }
   }
 
   const moodEmoji = { otimo: '😄', bom: '🙂', regular: '😐', ruim: '😔' }
@@ -218,13 +122,13 @@ export default function PatientDiary() {
       <header className="text-white px-5 py-4 flex items-center gap-3" style={{ backgroundColor: 'var(--color-primary)' }}>
         <Link to="/paciente/dashboard"><ArrowLeft className="w-5 h-5" /></Link>
         <h1 className="font-bold text-lg flex-1">Meu Diário</h1>
-        <button
-          onClick={() => setShowAlertPanel(true)}
+        <Link
+          to="/paciente/alerts"
           className="p-1.5 rounded-lg bg-white/20 hover:bg-white/30 transition-colors"
           title="Configurar alertas"
         >
-          {alertsEnabled || waterAlertsEnabled ? <Bell className="w-5 h-5" /> : <BellOff className="w-5 h-5" />}
-        </button>
+          <Bell className="w-5 h-5" />
+        </Link>
       </header>
 
       <div className="max-w-lg mx-auto px-4 py-5 space-y-4">
@@ -419,72 +323,6 @@ export default function PatientDiary() {
 
               <button type="submit" className="btn-primary w-full justify-center">Salvar</button>
             </form>
-          </div>
-        </div>
-      )}
-
-      {/* Painel de alertas */}
-      {showAlertPanel && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40">
-          <div className="bg-white dark:bg-gray-900 rounded-t-2xl w-full max-w-lg">
-            <div className="flex items-center justify-between px-5 py-4 border-b dark:border-gray-700">
-              <h2 className="font-semibold dark:text-white">⏰ Configurar Alertas</h2>
-              <button onClick={() => setShowAlertPanel(false)}><X className="w-5 h-5 text-gray-400" /></button>
-            </div>
-            <div className="px-5 py-4 space-y-4">
-              {/* Alertas de refeição */}
-              <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800">
-                <div>
-                  <p className="font-medium dark:text-white">🍽 Alertas de refeição</p>
-                  <p className="text-xs text-gray-400">Notificação nos horários da sua dieta</p>
-                  {!diet?.meals?.length && (
-                    <p className="text-xs text-orange-400 mt-0.5">Você precisa ter uma dieta ativa com horários</p>
-                  )}
-                </div>
-                <button
-                  onClick={toggleMealAlerts}
-                  className={`relative w-12 h-6 rounded-full transition-colors ${alertsEnabled ? 'bg-green-500' : 'bg-gray-300'}`}
-                >
-                  <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${alertsEnabled ? 'translate-x-6' : 'translate-x-0.5'}`} />
-                </button>
-              </div>
-
-              {/* Alertas de água */}
-              <div className="p-3 rounded-xl bg-gray-50 dark:bg-gray-800 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium dark:text-white">💧 Alertas de água</p>
-                    <p className="text-xs text-gray-400">Lembrete para se hidratar</p>
-                  </div>
-                  <button
-                    onClick={toggleWaterAlerts}
-                    className={`relative w-12 h-6 rounded-full transition-colors ${waterAlertsEnabled ? 'bg-blue-500' : 'bg-gray-300'}`}
-                  >
-                    <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${waterAlertsEnabled ? 'translate-x-6' : 'translate-x-0.5'}`} />
-                  </button>
-                </div>
-                {waterAlertsEnabled && (
-                  <div>
-                    <label className="label text-xs">Intervalo entre alertas</label>
-                    <div className="flex gap-2">
-                      {[1, 2, 3, 4].map(h => (
-                        <button
-                          key={h}
-                          onClick={() => changeWaterInterval(h)}
-                          className={`flex-1 py-1.5 rounded-lg text-sm border-2 transition-all ${waterIntervalH === h ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 text-gray-600'}`}
-                        >
-                          {h}h
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <p className="text-xs text-gray-400 text-center">
-                Os alertas funcionam enquanto o app estiver aberto no navegador.
-              </p>
-            </div>
           </div>
         </div>
       )}

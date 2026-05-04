@@ -119,21 +119,22 @@ class WaterUpdateIn(BaseModel):
 
 @router.post("/diary", status_code=201)
 def add_diary(data: DiaryIn, current: PatientUser = Depends(get_current_patient), db: Session = Depends(get_db)):
-    from sqlalchemy import text, inspect as sa_inspect
+    from sqlalchemy import text
 
-    # Descobre quais colunas existem na tabela para evitar erro em banco desatualizado
-    inspector = sa_inspect(db.bind)
-    existing_cols = {c["name"] for c in inspector.get_columns("patient_diaries")}
+    fields = {k: v for k, v in data.model_dump().items() if v is not None}
+    fields["patient_id"] = current.patient_id
 
-    fields = data.model_dump()
-    safe_fields = {k: v for k, v in fields.items() if k in existing_cols and v is not None}
-    safe_fields["patient_id"] = current.patient_id
-
-    d = PatientDiary(**safe_fields)
-    db.add(d)
+    # Monta INSERT dinâmico apenas com colunas que têm valor
+    cols = ", ".join(fields.keys())
+    placeholders = ", ".join(f":{k}" for k in fields.keys())
+    db.execute(text(f"INSERT INTO patient_diaries ({cols}) VALUES ({placeholders})"), fields)
     db.commit()
-    db.refresh(d)
-    return d
+
+    # Retorna o registro criado
+    entry = db.query(PatientDiary).filter(
+        PatientDiary.patient_id == current.patient_id
+    ).order_by(PatientDiary.id.desc()).first()
+    return entry
 
 
 @router.get("/diary")
@@ -154,46 +155,32 @@ def update_water_intake(
     day_start = target_date.replace(hour=0, minute=0, second=0, microsecond=0)
     day_end = target_date.replace(hour=23, minute=59, second=59, microsecond=999999)
 
-    # Busca registro do dia usando SQL direto para evitar problemas com colunas novas
-    entry = db.query(PatientDiary).filter(
-        PatientDiary.patient_id == current.patient_id,
-        PatientDiary.date >= day_start,
-        PatientDiary.date <= day_end,
-    ).first()
+    # Busca ID do registro do dia
+    row = db.execute(
+        text("SELECT id, water_ml FROM patient_diaries WHERE patient_id = :pid AND date >= :ds AND date <= :de LIMIT 1"),
+        {"pid": current.patient_id, "ds": day_start, "de": day_end}
+    ).fetchone()
 
-    if entry:
-        # Atualiza apenas water_ml via SQL direto para evitar problemas de schema
+    if row:
+        current_water = row[1] or 0
+        new_water = current_water + data.water_ml
         db.execute(
-            text("UPDATE patient_diaries SET water_ml = COALESCE(water_ml, 0) + :ml WHERE id = :id"),
-            {"ml": data.water_ml, "id": entry.id}
+            text("UPDATE patient_diaries SET water_ml = :ml WHERE id = :id"),
+            {"ml": new_water, "id": row[0]}
         )
         db.commit()
-        db.refresh(entry)
-        return {
-            "id": entry.id,
-            "date": entry.date,
-            "water_ml": entry.water_ml,
-            "patient_id": entry.patient_id,
-        }
+        return {"id": row[0], "water_ml": new_water, "patient_id": current.patient_id, "date": target_date}
     else:
-        # Cria novo registro mínimo com apenas data e água
         db.execute(
             text("INSERT INTO patient_diaries (patient_id, date, water_ml) VALUES (:pid, :date, :ml)"),
             {"pid": current.patient_id, "date": target_date, "ml": data.water_ml}
         )
         db.commit()
-        # Busca o registro recém criado
-        new_entry = db.query(PatientDiary).filter(
-            PatientDiary.patient_id == current.patient_id,
-            PatientDiary.date >= day_start,
-            PatientDiary.date <= day_end,
-        ).first()
-        return {
-            "id": new_entry.id if new_entry else None,
-            "date": target_date,
-            "water_ml": data.water_ml,
-            "patient_id": current.patient_id,
-        }
+        new_row = db.execute(
+            text("SELECT id FROM patient_diaries WHERE patient_id = :pid AND date >= :ds ORDER BY id DESC LIMIT 1"),
+            {"pid": current.patient_id, "ds": day_start}
+        ).fetchone()
+        return {"id": new_row[0] if new_row else None, "water_ml": data.water_ml, "patient_id": current.patient_id, "date": target_date}
 
 
 # ── Metas ─────────────────────────────────────────────────────────────

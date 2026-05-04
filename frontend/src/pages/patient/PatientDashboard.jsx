@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Utensils, CalendarDays, BookOpen, Target, MessageSquare, LogOut, TrendingUp } from 'lucide-react'
+import { Utensils, CalendarDays, BookOpen, Target, MessageSquare, LogOut, TrendingUp, Bell } from 'lucide-react'
 import axios from 'axios'
 import NutrirpLogo from '../../components/NutrirpLogo'
 import toast from 'react-hot-toast'
@@ -41,7 +41,7 @@ export default function PatientDashboard() {
     { to: '/paciente/goals', icon: Target, label: 'Metas', color: 'bg-purple-50 text-purple-700' },
     { to: '/paciente/appointments', icon: CalendarDays, label: 'Consultas', color: 'bg-orange-50 text-orange-700' },
     { to: '/paciente/chat', icon: MessageSquare, label: 'Chat', color: 'bg-pink-50 text-pink-700' },
-    { to: '/paciente/preconsult', icon: TrendingUp, label: 'Pré-consulta', color: 'bg-teal-50 text-teal-700' },
+    { to: '/paciente/alerts', icon: Bell, label: 'Alertas', color: 'bg-yellow-50 text-yellow-700' },
   ]
 
   return (

@@ -11,6 +11,7 @@ const routes = [
   'paciente/appointments',
   'paciente/preconsult',
   'paciente/goals',
+  'paciente/alerts',
   'login',
   'register',
 ]

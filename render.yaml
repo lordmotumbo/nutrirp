@@ -16,6 +16,20 @@ services:
       # Banco no disco persistente — sobrevive a deploys e restarts
       - key: DATABASE_URL
         value: sqlite:////opt/render/project/src/nutrirp.db
+      # Email SMTP — configure com suas credenciais
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        value: ""
+      - key: SMTP_PASS
+        value: ""
+      - key: SMTP_FROM
+        value: ""
+      # Cron secret para endpoints de disparo automático
+      - key: CRON_SECRET
+        value: nutrirp-cron-secret-2024
     disk:
       name: nutrirp-db
       mountPath: /opt/render/project/src

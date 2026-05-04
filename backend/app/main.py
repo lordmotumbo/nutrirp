@@ -3,12 +3,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.database import Base, engine
 from app.routers import auth, patients, anamnese, diets, appointments, foods
 from app.routers import anthropometry, exams, financial, messaging
-from app.routers import patient_portal, reports
+from app.routers import patient_portal, reports, alerts
 
 from app.models import user, patient, anamnese as anamnese_model, diet, appointment
 from app.models import anthropometry as anthro_model
 from app.models import exam, financial as fin_model, messaging as msg_model
 from app.models import patient_user, preconsult
+from app.models import alerts as alerts_model
 
 Base.metadata.create_all(bind=engine)
 
@@ -41,6 +42,7 @@ app.include_router(financial.router)
 app.include_router(messaging.router)
 app.include_router(patient_portal.router)
 app.include_router(reports.router)
+app.include_router(alerts.router)
 
 
 @app.get("/")

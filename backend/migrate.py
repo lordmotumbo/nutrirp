@@ -30,6 +30,42 @@ MIGRATIONS = [
     ("patient_diaries", "medications_taken", "TEXT"),
 ]
 
+CREATE_TABLES = [
+    """CREATE TABLE IF NOT EXISTS patient_alert_configs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        patient_id INTEGER UNIQUE NOT NULL REFERENCES patients(id),
+        email_alerts BOOLEAN DEFAULT 0,
+        alert_email VARCHAR(150),
+        telegram_alerts BOOLEAN DEFAULT 0,
+        telegram_chat_id VARCHAR(50),
+        meal_alerts BOOLEAN DEFAULT 1,
+        water_alerts BOOLEAN DEFAULT 1,
+        water_interval_hours INTEGER DEFAULT 2,
+        water_start_hour INTEGER DEFAULT 7,
+        water_end_hour INTEGER DEFAULT 22,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME
+    )"""
+]
+
+CREATE_TABLES_PG = [
+    """CREATE TABLE IF NOT EXISTS patient_alert_configs (
+        id SERIAL PRIMARY KEY,
+        patient_id INTEGER UNIQUE NOT NULL REFERENCES patients(id),
+        email_alerts BOOLEAN DEFAULT FALSE,
+        alert_email VARCHAR(150),
+        telegram_alerts BOOLEAN DEFAULT FALSE,
+        telegram_chat_id VARCHAR(50),
+        meal_alerts BOOLEAN DEFAULT TRUE,
+        water_alerts BOOLEAN DEFAULT TRUE,
+        water_interval_hours INTEGER DEFAULT 2,
+        water_start_hour INTEGER DEFAULT 7,
+        water_end_hour INTEGER DEFAULT 22,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP
+    )"""
+]
+
 if is_sqlite:
     import sqlite3
 
@@ -57,6 +93,13 @@ if is_sqlite:
                 print(f"⏭  {table}.{column} already exists")
             else:
                 print(f"❌ Error adding {table}.{column}: {e}")
+
+    for stmt in CREATE_TABLES:
+        try:
+            cursor.execute(stmt)
+            print(f"✅ Table created/verified")
+        except Exception as e:
+            print(f"❌ {e}")
 
     conn.commit()
     conn.close()
@@ -87,6 +130,15 @@ else:
                 print(f"✅ Added/verified {table}.{column}")
             except Exception as e:
                 print(f"❌ Error adding {table}.{column}: {e}")
+                conn.rollback()
+
+        for stmt in CREATE_TABLES_PG:
+            try:
+                cursor.execute(stmt)
+                conn.commit()
+                print(f"✅ Table created/verified")
+            except Exception as e:
+                print(f"❌ {e}")
                 conn.rollback()
 
         cursor.close()
