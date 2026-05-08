@@ -249,3 +249,30 @@ def root():
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+@app.get("/debug/db")
+def debug_db():
+    """Endpoint temporário de diagnóstico — remove após resolver."""
+    from sqlalchemy import text, inspect as sa_inspect
+    from app.database import engine
+    results = {}
+    try:
+        with engine.connect() as conn:
+            # Colunas da tabela users
+            try:
+                cols = conn.execute(text("PRAGMA table_info(users)")).fetchall()
+                results["users_columns"] = [r[1] for r in cols]
+            except Exception as e:
+                results["users_columns_error"] = str(e)
+
+            # Tenta um INSERT simples
+            try:
+                conn.execute(text("SELECT id, name, email FROM users LIMIT 1"))
+                results["users_select"] = "ok"
+            except Exception as e:
+                results["users_select_error"] = str(e)
+
+    except Exception as e:
+        results["engine_error"] = str(e)
+    return results
