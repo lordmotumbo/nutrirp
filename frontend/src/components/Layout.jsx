@@ -2,7 +2,7 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import {
   LayoutDashboard, Users, CalendarDays, LogOut, Menu,
-  DollarSign, Dumbbell, Activity, UserCheck
+  DollarSign, Dumbbell, Activity, Share2
 } from 'lucide-react'
 import { useState } from 'react'
 import NutrirpLogo from './NutrirpLogo'
@@ -10,24 +10,27 @@ import NutrirpLogo from './NutrirpLogo'
 // Navegação por tipo de profissional
 const NAV_BY_ROLE = {
   nutritionist: [
-    { to: '/',          label: 'Dashboard',   icon: LayoutDashboard, end: true },
-    { to: '/patients',  label: 'Pacientes',   icon: Users },
-    { to: '/agenda',    label: 'Agenda',      icon: CalendarDays },
-    { to: '/financial', label: 'Financeiro',  icon: DollarSign },
+    { to: '/',              label: 'Dashboard',   icon: LayoutDashboard, end: true },
+    { to: '/patients',      label: 'Pacientes',   icon: Users },
+    { to: '/shared',        label: 'Compartilhados', icon: Share2 },
+    { to: '/agenda',        label: 'Agenda',      icon: CalendarDays },
+    { to: '/financial',     label: 'Financeiro',  icon: DollarSign },
   ],
   personal_trainer: [
-    { to: '/',              label: 'Dashboard',   icon: LayoutDashboard, end: true },
-    { to: '/personal/clients', label: 'Alunos',   icon: Users },
-    { to: '/personal/workouts', label: 'Treinos', icon: Dumbbell },
-    { to: '/agenda',        label: 'Agenda',      icon: CalendarDays },
-    { to: '/financial',     label: 'Financeiro',  icon: DollarSign },
+    { to: '/',              label: 'Dashboard',      icon: LayoutDashboard, end: true },
+    { to: '/personal/clients', label: 'Alunos',      icon: Users },
+    { to: '/personal/workouts', label: 'Treinos',    icon: Dumbbell },
+    { to: '/shared',        label: 'Compartilhados', icon: Share2 },
+    { to: '/agenda',        label: 'Agenda',         icon: CalendarDays },
+    { to: '/financial',     label: 'Financeiro',     icon: DollarSign },
   ],
   physiotherapist: [
-    { to: '/',              label: 'Dashboard',   icon: LayoutDashboard, end: true },
-    { to: '/physio/patients', label: 'Pacientes', icon: Users },
-    { to: '/physio/records',  label: 'Prontuários', icon: Activity },
-    { to: '/agenda',        label: 'Agenda',      icon: CalendarDays },
-    { to: '/financial',     label: 'Financeiro',  icon: DollarSign },
+    { to: '/',              label: 'Dashboard',      icon: LayoutDashboard, end: true },
+    { to: '/physio/patients', label: 'Pacientes',    icon: Users },
+    { to: '/physio/records',  label: 'Prontuários',  icon: Activity },
+    { to: '/shared',        label: 'Compartilhados', icon: Share2 },
+    { to: '/agenda',        label: 'Agenda',         icon: CalendarDays },
+    { to: '/financial',     label: 'Financeiro',     icon: DollarSign },
   ],
 }
 

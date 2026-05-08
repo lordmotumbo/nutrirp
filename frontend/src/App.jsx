@@ -19,6 +19,7 @@ import Supplements from './pages/Supplements'
 import Exams from './pages/Exams'
 import Financial from './pages/Financial'
 import Chat from './pages/Chat'
+import SharedPatients from './pages/SharedPatients'
 
 // ── Portal do paciente ────────────────────────────────────────────────
 import PatientLogin from './pages/patient/PatientLogin'
@@ -95,6 +96,7 @@ function AppRoutes() {
           {/* ── Agenda e Financeiro (compartilhados) ── */}
           <Route path="agenda" element={<Agenda />} />
           <Route path="financial" element={<Financial />} />
+          <Route path="shared" element={<SharedPatients />} />
 
           {/* ── Personal Trainer ── */}
           <Route path="personal/clients" element={<PersonalClients />} />

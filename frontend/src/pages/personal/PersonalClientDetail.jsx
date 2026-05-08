@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Dumbbell, TrendingUp, CheckSquare, AlertTriangle, Plus, X } from 'lucide-react'
+import { ArrowLeft, Dumbbell, TrendingUp, CheckSquare, AlertTriangle, Plus, X, Share2 } from 'lucide-react'
 import api from '../../api'
 import toast from 'react-hot-toast'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import SharePatientModal from '../../components/SharePatientModal'
 
 export default function PersonalClientDetail() {
   const { id } = useParams()
@@ -14,6 +15,7 @@ export default function PersonalClientDetail() {
   const [evolutions, setEvolutions] = useState([])
   const [restrictions, setRestrictions] = useState([])
   const [showCheckin, setShowCheckin] = useState(false)
+  const [showShare, setShowShare] = useState(false)
   const [checkinForm, setCheckinForm] = useState({
     mood: 3, energy: 3, sleep_hours: '', stress: 3,
     workout_done: true, workout_adherence: 100,
@@ -73,6 +75,13 @@ export default function PersonalClientDetail() {
         </div>
         <button className="btn-primary" onClick={() => setShowCheckin(true)}>
           <CheckSquare className="w-4 h-4" /> Check-in
+        </button>
+        <button
+          className="btn-secondary"
+          onClick={() => setShowShare(true)}
+          title="Compartilhar com outro profissional"
+        >
+          <Share2 className="w-4 h-4" /> Compartilhar
         </button>
       </div>
 
@@ -286,6 +295,15 @@ export default function PersonalClientDetail() {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Modal compartilhar */}
+      {showShare && client && (
+        <SharePatientModal
+          patient={client}
+          onClose={() => setShowShare(false)}
+          onShared={load}
+        />
       )}
     </div>
   )

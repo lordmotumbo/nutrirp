@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Activity, AlertTriangle, Plus, X, FileText } from 'lucide-react'
+import { ArrowLeft, Activity, AlertTriangle, Plus, X, FileText, Share2 } from 'lucide-react'
 import api from '../../api'
 import toast from 'react-hot-toast'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import SharePatientModal from '../../components/SharePatientModal'
 
 export default function PhysioPatientDetail() {
   const { id } = useParams()
@@ -12,6 +13,7 @@ export default function PhysioPatientDetail() {
   const [records, setRecords] = useState([])
   const [restrictions, setRestrictions] = useState([])
   const [showRestriction, setShowRestriction] = useState(false)
+  const [showShare, setShowShare] = useState(false)
   const [restrictionForm, setRestrictionForm] = useState({
     restriction_type: 'lesao',
     severity: 'moderada',
@@ -67,6 +69,13 @@ export default function PhysioPatientDetail() {
         <Link to={`/physio/records/new?client=${id}`} className="btn-primary">
           <Plus className="w-4 h-4" /> Novo prontuário
         </Link>
+        <button
+          className="btn-secondary"
+          onClick={() => setShowShare(true)}
+          title="Compartilhar com outro profissional"
+        >
+          <Share2 className="w-4 h-4" /> Compartilhar
+        </button>
       </div>
 
       {/* Restrições */}
@@ -195,6 +204,15 @@ export default function PhysioPatientDetail() {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Modal compartilhar */}
+      {showShare && patient && (
+        <SharePatientModal
+          patient={patient}
+          onClose={() => setShowShare(false)}
+          onShared={load}
+        />
       )}
     </div>
   )

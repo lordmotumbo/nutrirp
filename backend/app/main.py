@@ -4,7 +4,7 @@ from app.database import Base, engine
 from app.routers import auth, patients, anamnese, diets, appointments, foods
 from app.routers import anthropometry, exams, financial, messaging
 from app.routers import patient_portal, reports, alerts
-from app.routers import personal, physiotherapy
+from app.routers import personal, physiotherapy, sharing
 
 # Modelos existentes
 from app.models import user, patient, anamnese as anamnese_model, diet, appointment
@@ -44,6 +44,8 @@ def run_migrations():
         ("users", "crefito", "VARCHAR(20)"),
         ("users", "specialty", "VARCHAR(100)"),
         ("users", "bio", "VARCHAR(500)"),
+        ("professional_clients", "shared_by_id", "INTEGER"),
+        ("professional_clients", "shared_data", "TEXT"),
     ]
 
     with engine.connect() as conn:
@@ -352,6 +354,7 @@ app.include_router(alerts.router)
 # ── Novos routers (Personal + Fisio) ─────────────────────────────────
 app.include_router(personal.router)
 app.include_router(physiotherapy.router)
+app.include_router(sharing.router)
 
 
 @app.get("/")

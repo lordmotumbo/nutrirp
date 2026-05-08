@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import {
   ArrowLeft, ClipboardList, Utensils, CalendarDays,
-  Pencil, Trash2, TrendingUp, Plus, FlaskConical, Pill, MessageSquare, Activity, FileText, UserPlus, X, BookOpen
+  Pencil, Trash2, TrendingUp, Plus, FlaskConical, Pill, MessageSquare, Activity, FileText, UserPlus, X, BookOpen, Share2
 } from 'lucide-react'
 import api from '../api'
 import toast from 'react-hot-toast'
 import PatientModal from '../components/PatientModal'
 import EvolutionModal from '../components/EvolutionModal'
+import SharePatientModal from '../components/SharePatientModal'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import {
@@ -32,6 +33,7 @@ export default function PatientDetail() {
   const [showPortalModal, setShowPortalModal] = useState(false)
   const [showScheduleModal, setShowScheduleModal] = useState(false)
   const [showDailyReport, setShowDailyReport] = useState(false)
+  const [showShare, setShowShare] = useState(false)
   const [dailyReportDate, setDailyReportDate] = useState(new Date().toISOString().slice(0, 10))
   const [dailyReport, setDailyReport] = useState(null)
   const [dailyReportLoading, setDailyReportLoading] = useState(false)
@@ -154,6 +156,9 @@ export default function PatientDetail() {
         </div>
         <button className="btn-secondary" onClick={() => setShowScheduleModal(true)} title="Agendar consulta">
           <CalendarDays className="w-4 h-4" /> Agendar
+        </button>
+        <button className="btn-secondary" onClick={() => setShowShare(true)} title="Compartilhar paciente">
+          <Share2 className="w-4 h-4" /> Compartilhar
         </button>
         <button className="btn-secondary" onClick={() => setShowEdit(true)}>
           <Pencil className="w-4 h-4" /> Editar
@@ -294,6 +299,13 @@ export default function PatientDetail() {
       )}
       {showEvo && (
         <EvolutionModal onClose={() => setShowEvo(false)} onSave={handleAddEvolution} />
+      )}
+      {showShare && (
+        <SharePatientModal
+          patient={patient}
+          onClose={() => setShowShare(false)}
+          onShared={load}
+        />
       )}
 
       {/* Modal agendar consulta */}
