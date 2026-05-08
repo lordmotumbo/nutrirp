@@ -70,6 +70,8 @@ def register(data: UserCreate, db: Session = Depends(get_db)):
         "name": data.name,
         "email": data.email,
         "hashed_password": hashed,
+        "is_active": True,
+        "plan": "free",
     }
 
     # Campos opcionais — só insere se a coluna existir
@@ -135,13 +137,48 @@ def register(data: UserCreate, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=Token)
 def login(data: UserLogin, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == data.email).first()
-    if not user or not verify_password(data.password, user.hashed_password):
+    # Busca via SQL puro para evitar problema com colunas novas
+    row = db.execute(
+        text("SELECT id, name, email, hashed_password, is_active, plan, created_at FROM users WHERE email = :email"),
+        {"email": data.email}
+    ).fetchone()
+
+    if not row:
         raise HTTPException(status_code=401, detail="E-mail ou senha incorretos")
-    if not user.is_active:
+
+    user_id, name, email, hashed_pw, is_active, plan, created_at = row
+
+    if not verify_password(data.password, hashed_pw):
+        raise HTTPException(status_code=401, detail="E-mail ou senha incorretos")
+
+    if is_active is False:
         raise HTTPException(status_code=401, detail="Conta desativada")
-    token = create_access_token({"sub": str(user.id)})
-    return {"access_token": token, "token_type": "bearer", "user": _safe_user_dict(user)}
+
+    # Busca campos extras com segurança
+    extra = {}
+    for col in ["role", "crn", "cref", "crefito", "phone", "specialty", "bio"]:
+        try:
+            r = db.execute(text(f"SELECT {col} FROM users WHERE id = :id"), {"id": user_id}).fetchone()
+            extra[col] = r[0] if r else None
+        except Exception:
+            extra[col] = None
+
+    token = create_access_token({"sub": str(user_id)})
+    user_dict = {
+        "id": user_id,
+        "name": name,
+        "email": email,
+        "role": extra.get("role") or "nutritionist",
+        "crn": extra.get("crn"),
+        "cref": extra.get("cref"),
+        "crefito": extra.get("crefito"),
+        "phone": extra.get("phone"),
+        "specialty": extra.get("specialty"),
+        "bio": extra.get("bio"),
+        "plan": plan or "free",
+        "created_at": created_at,
+    }
+    return {"access_token": token, "token_type": "bearer", "user": user_dict}
 
 
 @router.get("/me", response_model=UserOut)
