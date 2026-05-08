@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy import text
-from datetime import datetime
-from app.database import get_db
+from app.database import get_db, engine
 from app.models.user import User
 from app.schemas.user import UserCreate, UserOut, UserLogin, Token
 from app.services.auth import hash_password, verify_password, create_access_token, get_current_user
@@ -11,9 +10,29 @@ router = APIRouter(prefix="/api/auth", tags=["Autenticação"])
 
 VALID_ROLES = {"nutritionist", "personal_trainer", "physiotherapist", "admin"}
 
+# Detecta tipo de banco uma vez
+_DB_URL = str(engine.url)
+IS_PG = "postgresql" in _DB_URL or "postgres" in _DB_URL
 
-def _safe_user_dict(user: User) -> dict:
-    """Serializa User com segurança — campos novos podem não existir no banco antigo."""
+
+def _get_users_columns(db: Session) -> set:
+    """Retorna o conjunto de colunas existentes na tabela users."""
+    try:
+        if IS_PG:
+            rows = db.execute(text(
+                "SELECT column_name FROM information_schema.columns WHERE table_name='users'"
+            )).fetchall()
+            return {r[0] for r in rows}
+        else:
+            rows = db.execute(text("PRAGMA table_info(users)")).fetchall()
+            return {r[1] for r in rows}
+    except Exception:
+        # Fallback: assume colunas base
+        return {"id", "name", "email", "hashed_password", "phone", "crn", "is_active", "plan", "created_at"}
+
+
+def _safe_user_dict(user) -> dict:
+    """Serializa User com segurança — campos novos podem não existir."""
     return {
         "id": user.id,
         "name": user.name,
@@ -43,26 +62,17 @@ def register(data: UserCreate, db: Session = Depends(get_db)):
     role = data.role if data.role in VALID_ROLES else "nutritionist"
     hashed = hash_password(data.password)
 
-    # Descobre quais colunas existem na tabela users
-    try:
-        cols_result = db.execute(text("PRAGMA table_info(users)")).fetchall()
-        existing_cols = {row[1] for row in cols_result}
-    except Exception:
-        # PostgreSQL
-        try:
-            cols_result = db.execute(text(
-                "SELECT column_name FROM information_schema.columns WHERE table_name='users'"
-            )).fetchall()
-            existing_cols = {row[0] for row in cols_result}
-        except Exception:
-            existing_cols = {"id", "name", "email", "hashed_password", "phone", "crn", "is_active", "plan", "created_at"}
+    # Descobre colunas existentes
+    existing_cols = _get_users_columns(db)
 
-    # Monta INSERT apenas com colunas que existem
+    # Campos base — sempre existem
     fields = {
         "name": data.name,
         "email": data.email,
         "hashed_password": hashed,
     }
+
+    # Campos opcionais — só insere se a coluna existir
     optional = {
         "role": role,
         "phone": data.phone,
@@ -78,36 +88,49 @@ def register(data: UserCreate, db: Session = Depends(get_db)):
 
     cols = ", ".join(fields.keys())
     placeholders = ", ".join(f":{k}" for k in fields.keys())
-    db.execute(text(f"INSERT INTO users ({cols}) VALUES ({placeholders})"), fields)
-    db.commit()
 
-    # Busca o usuário recém criado
-    row = db.execute(
-        text("SELECT * FROM users WHERE email = :email"),
-        {"email": data.email}
-    ).fetchone()
-
-    if not row:
-        raise HTTPException(status_code=500, detail="Erro ao criar usuário")
-
-    # Mapeia resultado para dict
-    keys = row._fields if hasattr(row, '_fields') else row.keys()
-    user_dict = dict(zip(keys, row))
-
-    return {
-        "id": user_dict.get("id"),
-        "name": user_dict.get("name"),
-        "email": user_dict.get("email"),
-        "role": user_dict.get("role") or "nutritionist",
-        "crn": user_dict.get("crn"),
-        "cref": user_dict.get("cref"),
-        "crefito": user_dict.get("crefito"),
-        "phone": user_dict.get("phone"),
-        "specialty": user_dict.get("specialty"),
-        "bio": user_dict.get("bio"),
-        "plan": user_dict.get("plan") or "free",
-        "created_at": user_dict.get("created_at"),
-    }
+    if IS_PG:
+        result = db.execute(
+            text(f"INSERT INTO users ({cols}) VALUES ({placeholders}) RETURNING id, name, email, created_at"),
+            fields
+        )
+        row = result.fetchone()
+        db.commit()
+        return {
+            "id": row[0],
+            "name": row[1],
+            "email": row[2],
+            "role": role,
+            "crn": fields.get("crn"),
+            "cref": fields.get("cref"),
+            "crefito": fields.get("crefito"),
+            "phone": fields.get("phone"),
+            "specialty": fields.get("specialty"),
+            "bio": fields.get("bio"),
+            "plan": "free",
+            "created_at": row[3],
+        }
+    else:
+        db.execute(text(f"INSERT INTO users ({cols}) VALUES ({placeholders})"), fields)
+        db.commit()
+        row = db.execute(
+            text("SELECT id, name, email, created_at FROM users WHERE email = :email"),
+            {"email": data.email}
+        ).fetchone()
+        return {
+            "id": row[0],
+            "name": row[1],
+            "email": row[2],
+            "role": role,
+            "crn": fields.get("crn"),
+            "cref": fields.get("cref"),
+            "crefito": fields.get("crefito"),
+            "phone": fields.get("phone"),
+            "specialty": fields.get("specialty"),
+            "bio": fields.get("bio"),
+            "plan": "free",
+            "created_at": row[3],
+        }
 
 
 @router.post("/login", response_model=Token)
@@ -129,8 +152,9 @@ def get_me(user: User = Depends(get_current_user)):
 @router.put("/me")
 def update_me(data: dict, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
     allowed = {"name", "phone", "specialty", "bio", "crn", "cref", "crefito"}
+    existing_cols = _get_users_columns(db)
     for k, v in data.items():
-        if k in allowed:
+        if k in allowed and k in existing_cols:
             try:
                 db.execute(text(f"UPDATE users SET {k} = :{k} WHERE id = :id"), {k: v, "id": user.id})
             except Exception:
