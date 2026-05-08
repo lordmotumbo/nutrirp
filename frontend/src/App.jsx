@@ -4,6 +4,8 @@ import { AuthProvider, useAuth } from './context/AuthContext'
 import { ThemeProvider } from './context/ThemeContext'
 import ThemePanel from './components/ThemePanel'
 import Layout from './components/Layout'
+
+// ── Páginas comuns ────────────────────────────────────────────────────
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
@@ -17,6 +19,8 @@ import Supplements from './pages/Supplements'
 import Exams from './pages/Exams'
 import Financial from './pages/Financial'
 import Chat from './pages/Chat'
+
+// ── Portal do paciente ────────────────────────────────────────────────
 import PatientLogin from './pages/patient/PatientLogin'
 import PatientDashboard from './pages/patient/PatientDashboard'
 import PatientDiary from './pages/patient/PatientDiary'
@@ -26,6 +30,16 @@ import PatientDiet from './pages/patient/PatientDiet'
 import PatientAppointments from './pages/patient/PatientAppointments'
 import PatientGoals from './pages/patient/PatientGoals'
 import PatientAlerts from './pages/patient/PatientAlerts'
+
+// ── Personal Trainer ──────────────────────────────────────────────────
+import PersonalClients from './pages/personal/PersonalClients'
+import PersonalClientDetail from './pages/personal/PersonalClientDetail'
+import PersonalWorkouts from './pages/personal/PersonalWorkouts'
+
+// ── Fisioterapia ──────────────────────────────────────────────────────
+import PhysioPatients from './pages/physio/PhysioPatients'
+import PhysioPatientDetail from './pages/physio/PhysioPatientDetail'
+import PhysioRecords from './pages/physio/PhysioRecords'
 
 function PrivateRoute({ children }) {
   const { user } = useAuth()
@@ -39,8 +53,11 @@ function AppRoutes() {
       <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
       <ThemePanel />
       <Routes>
+        {/* ── Auth ── */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+
+        {/* ── Portal do paciente ── */}
         <Route path="/paciente" element={<PatientLogin />} />
         <Route path="/paciente/login" element={<PatientLogin />} />
         <Route path="/paciente/dashboard" element={<PatientDashboard />} />
@@ -51,6 +68,8 @@ function AppRoutes() {
         <Route path="/paciente/appointments" element={<PatientAppointments />} />
         <Route path="/paciente/goals" element={<PatientGoals />} />
         <Route path="/paciente/alerts" element={<PatientAlerts />} />
+
+        {/* ── Área do profissional (autenticado) ── */}
         <Route
           path="/"
           element={
@@ -59,7 +78,10 @@ function AppRoutes() {
             </PrivateRoute>
           }
         >
+          {/* Dashboard dinâmico por role */}
           <Route index element={<Dashboard />} />
+
+          {/* ── Nutrição ── */}
           <Route path="patients" element={<Patients />} />
           <Route path="patients/:id" element={<PatientDetail />} />
           <Route path="patients/:id/anamnese" element={<Anamnese />} />
@@ -69,9 +91,22 @@ function AppRoutes() {
           <Route path="patients/:id/supplements" element={<Supplements />} />
           <Route path="patients/:id/exams" element={<Exams />} />
           <Route path="patients/:id/chat" element={<Chat />} />
+
+          {/* ── Agenda e Financeiro (compartilhados) ── */}
           <Route path="agenda" element={<Agenda />} />
           <Route path="financial" element={<Financial />} />
+
+          {/* ── Personal Trainer ── */}
+          <Route path="personal/clients" element={<PersonalClients />} />
+          <Route path="personal/clients/:id" element={<PersonalClientDetail />} />
+          <Route path="personal/workouts" element={<PersonalWorkouts />} />
+
+          {/* ── Fisioterapia ── */}
+          <Route path="physio/patients" element={<PhysioPatients />} />
+          <Route path="physio/patients/:id" element={<PhysioPatientDetail />} />
+          <Route path="physio/records" element={<PhysioRecords />} />
         </Route>
+
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>

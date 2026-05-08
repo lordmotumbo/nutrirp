@@ -4,12 +4,23 @@ import { useAuth } from '../context/AuthContext'
 import NutrirpLogo from '../components/NutrirpLogo'
 import toast from 'react-hot-toast'
 
+const ROLES = [
+  { value: 'nutritionist', label: '🥗 Nutricionista', reg: 'CRN', field: 'crn' },
+  { value: 'personal_trainer', label: '💪 Personal Trainer', reg: 'CREF', field: 'cref' },
+  { value: 'physiotherapist', label: '🦴 Fisioterapeuta', reg: 'CREFITO', field: 'crefito' },
+]
+
 export default function Register() {
   const { register } = useAuth()
   const navigate = useNavigate()
-  const [form, setForm] = useState({ name: '', email: '', password: '', crn: '', phone: '' })
+  const [form, setForm] = useState({
+    name: '', email: '', password: '', phone: '',
+    role: 'nutritionist', crn: '', cref: '', crefito: '',
+  })
   const [loading, setLoading] = useState(false)
   const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }))
+
+  const selectedRole = ROLES.find(r => r.value === form.role)
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -40,6 +51,27 @@ export default function Register() {
         <div className="card shadow-lg">
           <h2 className="text-lg font-semibold mb-5 dark:text-white">Criar conta</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
+
+            {/* Tipo de profissional */}
+            <div>
+              <label className="label">Tipo de profissional</label>
+              <div className="grid grid-cols-1 gap-2">
+                {ROLES.map(r => (
+                  <button
+                    key={r.value} type="button"
+                    onClick={() => setForm(f => ({ ...f, role: r.value }))}
+                    className={`py-2.5 px-3 rounded-lg text-sm text-left border-2 transition-all font-medium ${
+                      form.role === r.value
+                        ? 'border-[var(--color-primary)] bg-[var(--color-primary-light)] text-[var(--color-primary)]'
+                        : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                    }`}
+                  >
+                    {r.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <div>
               <label className="label">Nome completo</label>
               <input className="input" value={form.name} onChange={set('name')} required autoFocus />
@@ -54,8 +86,13 @@ export default function Register() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="label">CRN (opcional)</label>
-                <input className="input" value={form.crn} onChange={set('crn')} placeholder="CRN-0 00000" />
+                <label className="label">{selectedRole?.reg} (opcional)</label>
+                <input
+                  className="input"
+                  value={form[selectedRole?.field || 'crn']}
+                  onChange={set(selectedRole?.field || 'crn')}
+                  placeholder={`${selectedRole?.reg}-0 00000`}
+                />
               </div>
               <div>
                 <label className="label">Telefone</label>

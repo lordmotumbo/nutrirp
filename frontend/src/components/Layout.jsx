@@ -1,15 +1,42 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { LayoutDashboard, Users, CalendarDays, LogOut, Menu, DollarSign } from 'lucide-react'
+import {
+  LayoutDashboard, Users, CalendarDays, LogOut, Menu,
+  DollarSign, Dumbbell, Activity, UserCheck
+} from 'lucide-react'
 import { useState } from 'react'
 import NutrirpLogo from './NutrirpLogo'
 
-const nav = [
-  { to: '/',          label: 'Dashboard', icon: LayoutDashboard, end: true },
-  { to: '/patients',  label: 'Pacientes',  icon: Users },
-  { to: '/agenda',    label: 'Agenda',     icon: CalendarDays },
-  { to: '/financial', label: 'Financeiro', icon: DollarSign },
-]
+// Navegação por tipo de profissional
+const NAV_BY_ROLE = {
+  nutritionist: [
+    { to: '/',          label: 'Dashboard',   icon: LayoutDashboard, end: true },
+    { to: '/patients',  label: 'Pacientes',   icon: Users },
+    { to: '/agenda',    label: 'Agenda',      icon: CalendarDays },
+    { to: '/financial', label: 'Financeiro',  icon: DollarSign },
+  ],
+  personal_trainer: [
+    { to: '/',              label: 'Dashboard',   icon: LayoutDashboard, end: true },
+    { to: '/personal/clients', label: 'Alunos',   icon: Users },
+    { to: '/personal/workouts', label: 'Treinos', icon: Dumbbell },
+    { to: '/agenda',        label: 'Agenda',      icon: CalendarDays },
+    { to: '/financial',     label: 'Financeiro',  icon: DollarSign },
+  ],
+  physiotherapist: [
+    { to: '/',              label: 'Dashboard',   icon: LayoutDashboard, end: true },
+    { to: '/physio/patients', label: 'Pacientes', icon: Users },
+    { to: '/physio/records',  label: 'Prontuários', icon: Activity },
+    { to: '/agenda',        label: 'Agenda',      icon: CalendarDays },
+    { to: '/financial',     label: 'Financeiro',  icon: DollarSign },
+  ],
+}
+
+const ROLE_LABEL = {
+  nutritionist: 'Nutricionista',
+  personal_trainer: 'Personal Trainer',
+  physiotherapist: 'Fisioterapeuta',
+  admin: 'Administrador',
+}
 
 export default function Layout() {
   const { user, logout } = useAuth()
@@ -17,6 +44,12 @@ export default function Layout() {
   const [open, setOpen] = useState(false)
 
   function handleLogout() { logout(); navigate('/login') }
+
+  const role = user?.role || 'nutritionist'
+  const nav = NAV_BY_ROLE[role] || NAV_BY_ROLE.nutritionist
+
+  // Registro profissional
+  const regNumber = user?.crn || user?.cref || user?.crefito
 
   return (
     <div className="flex h-screen">
@@ -33,6 +66,9 @@ export default function Layout() {
         {/* Logo */}
         <div className="px-4 py-4 border-b border-white/10">
           <NutrirpLogo size={36} textSize="text-lg" />
+          {role !== 'nutritionist' && (
+            <p className="text-xs text-white/60 mt-1">{ROLE_LABEL[role]}</p>
+          )}
         </div>
 
         {/* Nav */}
@@ -54,11 +90,12 @@ export default function Layout() {
           ))}
         </nav>
 
-        {/* User + Configurar */}
+        {/* User info */}
         <div className="px-4 py-4 border-t border-white/10">
           <p className="text-xs text-white/80 truncate font-medium">{user?.name}</p>
           <p className="text-xs text-white/50 truncate">{user?.email}</p>
-          {user?.crn && <p className="text-xs text-white/50">{user.crn}</p>}
+          {regNumber && <p className="text-xs text-white/50">{regNumber}</p>}
+          <p className="text-xs text-white/40 mt-0.5">{ROLE_LABEL[role]}</p>
 
           <div className="mt-3 flex items-center justify-between">
             <button

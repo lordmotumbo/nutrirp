@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Optional, List
 from jose import JWTError, jwt
 import bcrypt
 from fastapi import Depends, HTTPException, status, Query
@@ -13,7 +13,6 @@ SECRET_KEY = os.getenv("SECRET_KEY", "nutrirp-dev-secret-key-change-in-productio
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "1440"))
 
-# auto_error=False para não rejeitar antes de checar o query param
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login", auto_error=False)
 
 
@@ -58,3 +57,18 @@ def get_current_user(
     if user is None or not user.is_active:
         raise credentials_exception
     return user
+
+
+def require_roles(*roles: str):
+    """
+    Dependency factory para exigir um ou mais roles.
+    Uso: user: User = Depends(require_roles("nutritionist", "admin"))
+    """
+    def _check(user: User = Depends(get_current_user)) -> User:
+        if user.role not in roles:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Acesso negado. Requer perfil: {', '.join(roles)}",
+            )
+        return user
+    return _check

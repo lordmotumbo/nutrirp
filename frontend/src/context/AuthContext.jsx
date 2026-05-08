@@ -26,7 +26,6 @@ export function AuthProvider({ children }) {
     const { data } = await api.post('/auth/register', payload)
     return data
   }, [])
-
   const logout = useCallback(() => {
     localStorage.removeItem('nutrirp_token')
     localStorage.removeItem('nutrirp_user')
