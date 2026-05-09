@@ -361,7 +361,10 @@ def list_food_records(current: PatientUser = Depends(get_current_patient), db: S
 
 # ── Chat ──────────────────────────────────────────────────────────────
 class MessageIn(BaseModel):
-    message: str
+    message: Optional[str] = None
+    attachment_url: Optional[str] = None
+    attachment_type: Optional[str] = None
+    attachment_name: Optional[str] = None
 
 
 @router.post("/chat", status_code=201)
@@ -371,30 +374,59 @@ async def send_message(
     current: PatientUser = Depends(get_current_patient),
     db: Session = Depends(get_db)
 ):
+    if not data.message and not data.attachment_url:
+        raise HTTPException(400, "Mensagem ou anexo obrigatório")
     patient = db.query(Patient).filter(Patient.id == current.patient_id).first()
     msg = ChatMessage(
         patient_id=current.patient_id,
         nutritionist_id=patient.nutritionist_id,
         sender="patient",
         message=data.message,
+        attachment_url=data.attachment_url,
+        attachment_type=data.attachment_type,
+        attachment_name=data.attachment_name,
     )
     db.add(msg); db.commit(); db.refresh(msg)
-    return msg
+    return {
+        "id": msg.id, "patient_id": msg.patient_id, "nutritionist_id": msg.nutritionist_id,
+        "sender": msg.sender, "message": msg.message,
+        "attachment_url": msg.attachment_url, "attachment_type": msg.attachment_type,
+        "attachment_name": msg.attachment_name,
+        "is_read": msg.is_read, "created_at": msg.created_at,
+    }
 
 
 @router.get("/chat")
 def get_chat(current: PatientUser = Depends(get_current_patient), db: Session = Depends(get_db)):
     msgs = db.query(ChatMessage).filter(
         ChatMessage.patient_id == current.patient_id
-    ).order_by(ChatMessage.created_at.asc()).limit(100).all()
-    # Marcar mensagens do nutricionista como lidas
+    ).order_by(ChatMessage.created_at.asc()).limit(200).all()
     db.query(ChatMessage).filter(
         ChatMessage.patient_id == current.patient_id,
         ChatMessage.sender == "nutritionist",
         ChatMessage.is_read == False
     ).update({"is_read": True})
     db.commit()
-    return msgs
+    return [
+        {
+            "id": m.id, "patient_id": m.patient_id, "nutritionist_id": m.nutritionist_id,
+            "sender": m.sender, "message": m.message,
+            "attachment_url": m.attachment_url, "attachment_type": m.attachment_type,
+            "attachment_name": m.attachment_name,
+            "is_read": m.is_read, "created_at": m.created_at,
+        }
+        for m in msgs
+    ]
+
+
+@router.get("/chat/unread-count")
+def get_patient_unread(current: PatientUser = Depends(get_current_patient), db: Session = Depends(get_db)):
+    count = db.query(ChatMessage).filter(
+        ChatMessage.patient_id == current.patient_id,
+        ChatMessage.sender == "nutritionist",
+        ChatMessage.is_read == False
+    ).count()
+    return {"total": count}
 
 
 # ── Dieta ativa ───────────────────────────────────────────────────────

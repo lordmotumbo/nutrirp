@@ -46,6 +46,10 @@ def run_migrations():
         ("users", "bio", "VARCHAR(500)"),
         ("professional_clients", "shared_by_id", "INTEGER"),
         ("professional_clients", "shared_data", "TEXT"),
+        ("chat_messages", "attachment_url", "TEXT"),
+        ("chat_messages", "attachment_type", "VARCHAR(20)"),
+        ("chat_messages", "attachment_name", "VARCHAR(200)"),
+        ("chat_messages", "message", "TEXT"),  # torna nullable (já existe, ignora)
     ]
 
     with engine.connect() as conn:

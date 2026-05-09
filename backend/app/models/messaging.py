@@ -12,7 +12,10 @@ class ChatMessage(Base):
     patient_id = Column(Integer, ForeignKey("patients.id"), nullable=False)
     nutritionist_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     sender = Column(String(20), nullable=False)   # nutritionist | patient
-    message = Column(Text, nullable=False)
+    message = Column(Text, nullable=True)         # pode ser null se for só anexo
+    attachment_url = Column(Text, nullable=True)  # URL base64 ou caminho do arquivo
+    attachment_type = Column(String(20), nullable=True)  # image | file
+    attachment_name = Column(String(200), nullable=True) # nome original do arquivo
     is_read = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
