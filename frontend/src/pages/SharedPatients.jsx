@@ -13,27 +13,11 @@ const ROLE_COLORS = {
   all: 'bg-purple-100 text-purple-700',
 }
 
-const ROLE_ROUTES = {
-  nutritionist: (id) => `/patients/${id}`,
-  personal_trainer: (id) => `/personal/clients/${id}`,
-  physiotherapist: (id) => `/physio/patients/${id}`,
-  all: (id) => `/patients/${id}`,
-}
-
 const DATA_ICONS = {
-  dados_pessoais: '👤',
-  anamnese: '📋',
-  dieta: '🥗',
-  exames: '🔬',
-  suplementos: '💊',
-  antropometria: '📏',
-  metas: '🎯',
-  diario: '📓',
-  treinos: '💪',
-  checkins: '✅',
-  evolucao_corporal: '📈',
-  restricoes: '⚠️',
-  prontuarios: '🦴',
+  dados_pessoais: '👤', anamnese: '📋', dieta: '🥗', exames: '🔬',
+  suplementos: '💊', antropometria: '📏', metas: '🎯', diario: '📓',
+  treinos: '💪', checkins: '✅', evolucao_corporal: '📈',
+  restricoes: '⚠️', prontuarios: '🦴',
 }
 
 export default function SharedPatients() {
@@ -49,9 +33,20 @@ export default function SharedPatients() {
       .finally(() => setLoading(false))
   }, [])
 
+  // Rota correta baseada no role do usuário logado
+  function getRoute(patientId) {
+    const role = user?.role || 'nutritionist'
+    if (role === 'personal_trainer') return `/personal/clients/${patientId}`
+    if (role === 'physiotherapist') return `/physio/patients/${patientId}`
+    return `/patients/${patientId}`
+  }
+
   if (loading) return (
     <div className="flex items-center justify-center py-20">
-      <p className="text-gray-400">Carregando...</p>
+      <div className="text-center">
+        <div className="w-8 h-8 border-2 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+        <p className="text-gray-400 text-sm">Carregando...</p>
+      </div>
     </div>
   )
 
@@ -83,13 +78,10 @@ export default function SharedPatients() {
       ) : (
         <div className="space-y-3">
           {shared.map(item => {
-            const route = ROLE_ROUTES[item.access_role]?.(item.patient_id) || `/patients/${item.patient_id}`
             const isExpanded = expanded === item.link_id
-
             return (
               <div key={item.link_id} className="card">
                 <div className="flex items-center gap-4">
-                  {/* Avatar */}
                   <div
                     className="w-11 h-11 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
                     style={{ backgroundColor: 'var(--color-primary)' }}
@@ -97,7 +89,6 @@ export default function SharedPatients() {
                     {item.patient_name.charAt(0).toUpperCase()}
                   </div>
 
-                  {/* Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="font-semibold dark:text-white">{item.patient_name}</p>
@@ -105,7 +96,7 @@ export default function SharedPatients() {
                         {item.access_role_label}
                       </span>
                     </div>
-                    <div className="flex items-center gap-3 text-xs text-gray-400 mt-0.5">
+                    <div className="flex items-center gap-3 text-xs text-gray-400 mt-0.5 flex-wrap">
                       {item.patient_weight && <span>{item.patient_weight}kg</span>}
                       {item.patient_height && <span>{item.patient_height}cm</span>}
                       {item.patient_goal && <span>{item.patient_goal}</span>}
@@ -117,7 +108,6 @@ export default function SharedPatients() {
                     </div>
                   </div>
 
-                  {/* Ações */}
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <button
                       onClick={() => setExpanded(isExpanded ? null : item.link_id)}
@@ -127,7 +117,7 @@ export default function SharedPatients() {
                       <Info className="w-4 h-4" />
                     </button>
                     <Link
-                      to={route}
+                      to={getRoute(item.patient_id)}
                       className="btn-primary text-xs py-1.5 px-3 flex items-center gap-1"
                     >
                       Abrir <ChevronRight className="w-3 h-3" />
@@ -135,7 +125,6 @@ export default function SharedPatients() {
                   </div>
                 </div>
 
-                {/* Dados compartilhados expandidos */}
                 {isExpanded && (
                   <div className="mt-4 pt-4 border-t dark:border-gray-700">
                     <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">

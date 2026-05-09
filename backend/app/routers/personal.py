@@ -19,18 +19,17 @@ router = APIRouter(prefix="/api/personal", tags=["Personal Trainer"])
 
 # ── Helpers ───────────────────────────────────────────────────────────
 def _get_client(client_id: int, user: User, db: Session) -> Patient:
-    """Verifica se o profissional tem acesso ao cliente."""
+    """Verifica se o profissional tem acesso ao paciente."""
     link = db.query(ProfessionalClient).filter(
         ProfessionalClient.professional_id == user.id,
         ProfessionalClient.client_id == client_id,
         ProfessionalClient.is_active == True,
     ).first()
-    # Também aceita se for o nutricionista original do paciente
     patient = db.query(Patient).filter(Patient.id == client_id).first()
     if not patient:
-        raise HTTPException(404, "Cliente não encontrado")
+        raise HTTPException(404, "Paciente não encontrado")
     if not link and patient.nutritionist_id != user.id:
-        raise HTTPException(403, "Sem acesso a este cliente")
+        raise HTTPException(403, "Sem acesso a este paciente")
     return patient
 
 
@@ -407,7 +406,7 @@ def list_my_clients(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
-    """Lista todos os clientes vinculados ao profissional."""
+    """Lista todos os pacientes vinculados ao profissional."""
     links = db.query(ProfessionalClient).filter(
         ProfessionalClient.professional_id == user.id,
         ProfessionalClient.is_active == True,
@@ -429,10 +428,10 @@ def link_client(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
-    """Vincula um cliente ao profissional."""
+    """Vincula um paciente ao profissional."""
     patient = db.query(Patient).filter(Patient.id == client_id).first()
     if not patient:
-        raise HTTPException(404, "Cliente não encontrado")
+        raise HTTPException(404, "Paciente não encontrado")
 
     existing = db.query(ProfessionalClient).filter(
         ProfessionalClient.professional_id == user.id,

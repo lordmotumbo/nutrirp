@@ -129,7 +129,7 @@ export default function PersonalWorkouts() {
             </div>
             <form onSubmit={handleCreate} className="px-6 py-5 space-y-4">
               <div>
-                <label className="label">Aluno *</label>
+                <label className="label">Paciente *</label>
                 <select className="input" value={form.client_id} onChange={e => setForm(f => ({ ...f, client_id: e.target.value }))} required>
                   <option value="">Selecione...</option>
                   {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}

@@ -170,8 +170,8 @@ function PersonalDashboard({ user }) {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Alunos', value: clients.length, icon: Users, color: 'text-primary-700 bg-primary-50' },
-          { label: 'Treinos hoje', value: today.length, icon: CalendarDays, color: 'text-blue-700 bg-blue-50' },
+          { label: 'Pacientes', value: clients.length, icon: Users, color: 'text-primary-700 bg-primary-50' },
+          { label: 'Sessões hoje', value: today.length, icon: CalendarDays, color: 'text-blue-700 bg-blue-50' },
           { label: 'Planos ativos', value: plans, icon: Dumbbell, color: 'text-orange-700 bg-orange-50' },
           { label: 'Próximas sessões', value: upcoming.length, icon: Clock, color: 'text-purple-700 bg-purple-50' },
         ].map(({ label, value, icon: Icon, color }) => (
@@ -212,11 +212,11 @@ function PersonalDashboard({ user }) {
 
         <div className="card">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold">Alunos recentes</h2>
+            <h2 className="font-semibold">Pacientes recentes</h2>
             <Link to="/personal/clients" className="text-xs text-primary-700 hover:underline">Ver todos</Link>
           </div>
           {clients.length === 0 ? (
-            <p className="text-sm text-gray-400 text-center py-6">Nenhum aluno cadastrado</p>
+            <p className="text-sm text-gray-400 text-center py-6">Nenhum paciente cadastrado</p>
           ) : (
             <ul className="space-y-3">
               {clients.slice(0, 5).map(c => (

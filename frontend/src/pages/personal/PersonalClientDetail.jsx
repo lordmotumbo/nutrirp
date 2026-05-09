@@ -9,13 +9,14 @@ import SharePatientModal from '../../components/SharePatientModal'
 
 export default function PersonalClientDetail() {
   const { id } = useParams()
-  const [client, setClient] = useState(null)
+  const [patient, setPatient] = useState(null)
   const [plans, setPlans] = useState([])
   const [checkins, setCheckins] = useState([])
   const [evolutions, setEvolutions] = useState([])
   const [restrictions, setRestrictions] = useState([])
   const [showCheckin, setShowCheckin] = useState(false)
   const [showShare, setShowShare] = useState(false)
+  const [error, setError] = useState(null)
   const [checkinForm, setCheckinForm] = useState({
     mood: 3, energy: 3, sleep_hours: '', stress: 3,
     workout_done: true, workout_adherence: 100,
@@ -24,19 +25,26 @@ export default function PersonalClientDetail() {
 
   async function load() {
     try {
-      const [c, p, ci, ev, res] = await Promise.all([
+      // GET /patients/{id} agora aceita profissionais compartilhados
+      const [p, ci, ev, res] = await Promise.all([
         api.get(`/patients/${id}`),
-        api.get(`/personal/clients/${id}/plans`),
-        api.get(`/personal/clients/${id}/checkins`),
-        api.get(`/personal/clients/${id}/body-evolution`),
-        api.get(`/personal/clients/${id}/restrictions`),
+        api.get(`/personal/clients/${id}/checkins`).catch(() => ({ data: [] })),
+        api.get(`/personal/clients/${id}/body-evolution`).catch(() => ({ data: [] })),
+        api.get(`/personal/clients/${id}/restrictions`).catch(() => ({ data: [] })),
       ])
-      setClient(c.data)
-      setPlans(p.data)
+      setPatient(p.data)
       setCheckins(ci.data)
       setEvolutions(ev.data)
       setRestrictions(res.data)
-    } catch {}
+      setError(null)
+
+      // Planos — só carrega se tiver acesso
+      api.get(`/personal/clients/${id}/plans`)
+        .then(r => setPlans(r.data))
+        .catch(() => setPlans([]))
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Erro ao carregar paciente')
+    }
   }
 
   useEffect(() => { load() }, [id])
@@ -57,7 +65,24 @@ export default function PersonalClientDetail() {
     } catch { toast.error('Erro ao registrar check-in') }
   }
 
-  if (!client) return <p className="text-center py-10 text-gray-400">Carregando...</p>
+  if (error) return (
+    <div className="card text-center py-12 max-w-md mx-auto mt-10">
+      <p className="text-4xl mb-3">⚠️</p>
+      <p className="text-gray-700 font-medium">{error}</p>
+      <Link to="/personal/clients" className="btn-secondary mt-4 inline-flex">
+        <ArrowLeft className="w-4 h-4" /> Voltar
+      </Link>
+    </div>
+  )
+
+  if (!patient) return (
+    <div className="flex items-center justify-center py-20">
+      <div className="text-center">
+        <div className="w-8 h-8 border-2 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+        <p className="text-gray-400 text-sm">Carregando paciente...</p>
+      </div>
+    </div>
+  )
 
   const lastCheckin = checkins[0]
   const lastEvo = evolutions[0]
@@ -65,22 +90,18 @@ export default function PersonalClientDetail() {
   return (
     <div className="space-y-6 max-w-4xl">
       {/* Header */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 flex-wrap">
         <Link to="/personal/clients" className="text-gray-400 hover:text-gray-600">
           <ArrowLeft className="w-5 h-5" />
         </Link>
         <div className="flex-1">
-          <h1 className="text-xl font-bold">{client.name}</h1>
-          <p className="text-sm text-gray-400">{client.goal || 'Sem objetivo definido'}</p>
+          <h1 className="text-xl font-bold">{patient.name}</h1>
+          <p className="text-sm text-gray-400">{patient.goal || 'Sem objetivo definido'}</p>
         </div>
         <button className="btn-primary" onClick={() => setShowCheckin(true)}>
           <CheckSquare className="w-4 h-4" /> Check-in
         </button>
-        <button
-          className="btn-secondary"
-          onClick={() => setShowShare(true)}
-          title="Compartilhar com outro profissional"
-        >
+        <button className="btn-secondary" onClick={() => setShowShare(true)}>
           <Share2 className="w-4 h-4" /> Compartilhar
         </button>
       </div>
@@ -88,7 +109,7 @@ export default function PersonalClientDetail() {
       {/* Dados rápidos */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Peso', value: lastEvo?.weight ? `${lastEvo.weight}kg` : client.weight ? `${client.weight}kg` : '—' },
+          { label: 'Peso', value: lastEvo?.weight ? `${lastEvo.weight}kg` : patient.weight ? `${patient.weight}kg` : '—' },
           { label: '% Gordura', value: lastEvo?.body_fat ? `${lastEvo.body_fat}%` : '—' },
           { label: 'Massa Magra', value: lastEvo?.muscle_mass ? `${lastEvo.muscle_mass}kg` : '—' },
           { label: 'Último check-in', value: lastCheckin ? format(new Date(lastCheckin.date), 'dd/MM', { locale: ptBR }) : '—' },
@@ -152,7 +173,7 @@ export default function PersonalClientDetail() {
         )}
       </div>
 
-      {/* Últimos check-ins */}
+      {/* Check-ins */}
       <div className="card">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-semibold flex items-center gap-2">
@@ -225,7 +246,7 @@ export default function PersonalClientDetail() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
           <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between px-6 py-4 border-b dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-900">
-              <h2 className="font-semibold dark:text-white">Check-in — {client.name}</h2>
+              <h2 className="font-semibold dark:text-white">Check-in — {patient.name}</h2>
               <button onClick={() => setShowCheckin(false)}><X className="w-5 h-5 text-gray-400" /></button>
             </div>
             <form onSubmit={handleCheckin} className="px-6 py-5 space-y-4">
@@ -297,10 +318,9 @@ export default function PersonalClientDetail() {
         </div>
       )}
 
-      {/* Modal compartilhar */}
-      {showShare && client && (
+      {showShare && patient && (
         <SharePatientModal
-          patient={client}
+          patient={patient}
           onClose={() => setShowShare(false)}
           onShared={load}
         />

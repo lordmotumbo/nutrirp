@@ -18,7 +18,7 @@ const NAV_BY_ROLE = {
   ],
   personal_trainer: [
     { to: '/',              label: 'Dashboard',      icon: LayoutDashboard, end: true },
-    { to: '/personal/clients', label: 'Alunos',      icon: Users },
+    { to: '/personal/clients', label: 'Pacientes',   icon: Users },
     { to: '/personal/workouts', label: 'Treinos',    icon: Dumbbell },
     { to: '/shared',        label: 'Compartilhados', icon: Share2 },
     { to: '/agenda',        label: 'Agenda',         icon: CalendarDays },

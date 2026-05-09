@@ -14,6 +14,7 @@ export default function PhysioPatientDetail() {
   const [restrictions, setRestrictions] = useState([])
   const [showRestriction, setShowRestriction] = useState(false)
   const [showShare, setShowShare] = useState(false)
+  const [error, setError] = useState(null)
   const [restrictionForm, setRestrictionForm] = useState({
     restriction_type: 'lesao',
     severity: 'moderada',
@@ -25,13 +26,16 @@ export default function PhysioPatientDetail() {
     try {
       const [p, r, res] = await Promise.all([
         api.get(`/patients/${id}`),
-        api.get(`/physio/clients/${id}/records`),
-        api.get(`/physio/clients/${id}/restrictions`),
+        api.get(`/physio/clients/${id}/records`).catch(() => ({ data: [] })),
+        api.get(`/physio/clients/${id}/restrictions`).catch(() => ({ data: [] })),
       ])
       setPatient(p.data)
       setRecords(r.data)
       setRestrictions(res.data)
-    } catch {}
+      setError(null)
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Erro ao carregar paciente')
+    }
   }
 
   useEffect(() => { load() }, [id])
@@ -46,7 +50,24 @@ export default function PhysioPatientDetail() {
     } catch { toast.error('Erro ao adicionar restrição') }
   }
 
-  if (!patient) return <p className="text-center py-10 text-gray-400">Carregando...</p>
+  if (error) return (
+    <div className="card text-center py-12 max-w-md mx-auto mt-10">
+      <p className="text-4xl mb-3">⚠️</p>
+      <p className="text-gray-700 font-medium">{error}</p>
+      <Link to="/physio/patients" className="btn-secondary mt-4 inline-flex">
+        <ArrowLeft className="w-4 h-4" /> Voltar
+      </Link>
+    </div>
+  )
+
+  if (!patient) return (
+    <div className="flex items-center justify-center py-20">
+      <div className="text-center">
+        <div className="w-8 h-8 border-2 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+        <p className="text-gray-400 text-sm">Carregando paciente...</p>
+      </div>
+    </div>
+  )
 
   const RESTRICTION_TYPES = ['lesao', 'doenca', 'cirurgia', 'alergia', 'medicamento', 'outro']
   const SEVERITIES = ['leve', 'moderada', 'grave']
