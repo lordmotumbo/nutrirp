@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Plus, Trash2, X, Pill } from 'lucide-react'
+import { ArrowLeft, Plus, Trash2, X, Pill, FileDown } from 'lucide-react'
 import api from '../api'
 import toast from 'react-hot-toast'
 
+const BASE = import.meta.env.VITE_API_URL || 'https://nutrirp-api.onrender.com/api'
 const TYPES = ['suplemento', 'fitoterápico', 'vitamina', 'mineral', 'aminoácido', 'outro']
 
 export default function Supplements() {
@@ -49,7 +50,20 @@ export default function Supplements() {
           <h1 className="text-xl font-bold">Suplementos & Fitoterápicos</h1>
           {patient && <p className="text-sm text-gray-500">{patient.name}</p>}
         </div>
-        <button className="btn-primary" onClick={() => setShowModal(true)}><Plus className="w-4 h-4" /> Prescrever</button>
+        <div className="flex gap-2">
+          {supplements.length > 0 && (
+            <a
+              href={`${BASE}/exams/supplement/patient/${id}/pdf?token=${localStorage.getItem('nutrirp_token')}`}
+              target="_blank" rel="noreferrer"
+              className="btn-secondary text-sm"
+            >
+              <FileDown className="w-4 h-4" /> PDF
+            </a>
+          )}
+          <button className="btn-primary" onClick={() => setShowModal(true)}>
+            <Plus className="w-4 h-4" /> Prescrever
+          </button>
+        </div>
       </div>
 
       {supplements.length === 0 ? (

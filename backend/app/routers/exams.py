@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import Response
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel
@@ -6,12 +7,16 @@ from app.database import get_db
 from app.models.exam import ExamRequest, ExamResult, Supplement
 from app.models.patient import Patient
 from app.models.user import User
-from app.services.auth import get_current_user
+from app.models.professional_client import ProfessionalClient
+from app.models.patient_user import PatientUser
+from app.services.auth import get_current_user, SECRET_KEY, ALGORITHM
+from app.services.pdf_generator import generate_supplements_pdf
+from jose import jwt as jose_jwt, JWTError as JoseJWTError
 
 router = APIRouter(prefix="/api/exams", tags=["Exames e Suplementos"])
 
 
-# ── Solicitação de exames ────────────────────────────────────────────
+# ── Schemas ───────────────────────────────────────────────────────────
 class ExamRequestIn(BaseModel):
     patient_id: int
     title: Optional[str] = "Solicitação de Exames"
@@ -45,13 +50,24 @@ class SupplementIn(BaseModel):
     contraindications: Optional[str] = None
 
 
-def _check_patient(patient_id, user, db):
-    p = db.query(Patient).filter(Patient.id == patient_id, Patient.nutritionist_id == user.id).first()
-    if not p:
+def _check_patient(patient_id, user, db) -> Patient:
+    """Verifica acesso: dono ou profissional compartilhado."""
+    patient = db.query(Patient).filter(Patient.id == patient_id).first()
+    if not patient:
         raise HTTPException(404, "Paciente não encontrado")
-    return p
+    if patient.nutritionist_id == user.id:
+        return patient
+    link = db.query(ProfessionalClient).filter(
+        ProfessionalClient.professional_id == user.id,
+        ProfessionalClient.client_id == patient_id,
+        ProfessionalClient.is_active == True,
+    ).first()
+    if link:
+        return patient
+    raise HTTPException(403, "Sem acesso a este paciente")
 
 
+# ── Exames ────────────────────────────────────────────────────────────
 @router.post("/request", status_code=201)
 def create_request(data: ExamRequestIn, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
     _check_patient(data.patient_id, user, db)
@@ -69,7 +85,6 @@ def list_requests(patient_id: int, db: Session = Depends(get_db), user: User = D
 @router.post("/result", status_code=201)
 def add_result(data: ExamResultIn, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
     _check_patient(data.patient_id, user, db)
-    # Auto-classificar status
     if data.value and data.reference_min and data.reference_max:
         try:
             v = float(data.value)
@@ -92,7 +107,7 @@ def list_results(patient_id: int, db: Session = Depends(get_db), user: User = De
     return db.query(ExamResult).filter(ExamResult.patient_id == patient_id).order_by(ExamResult.recorded_at.desc()).all()
 
 
-# ── Suplementos ──────────────────────────────────────────────────────
+# ── Suplementos ───────────────────────────────────────────────────────
 @router.post("/supplement", status_code=201)
 def create_supplement(data: SupplementIn, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
     _check_patient(data.patient_id, user, db)
@@ -114,3 +129,59 @@ def delete_supplement(sid: int, db: Session = Depends(get_db), user: User = Depe
         raise HTTPException(404)
     s.is_active = False
     db.commit()
+
+
+# ── PDF — Suplementos ─────────────────────────────────────────────────
+
+@router.get("/supplement/patient/{patient_id}/pdf")
+def export_supplements_pdf(
+    patient_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    """PDF dos suplementos — profissional dono ou compartilhado."""
+    patient = _check_patient(patient_id, user, db)
+    supplements = db.query(Supplement).filter(
+        Supplement.patient_id == patient_id,
+        Supplement.is_active == True
+    ).all()
+    pdf = generate_supplements_pdf(supplements, patient, user)
+    filename = f"suplementos_{patient.name.replace(' ', '_')}.pdf"
+    return Response(content=pdf, media_type="application/pdf",
+                    headers={"Content-Disposition": f'attachment; filename="{filename}"'})
+
+
+@router.get("/supplement/patient/{patient_id}/pdf-for-patient")
+def export_supplements_pdf_patient(
+    patient_id: int,
+    token: str = Query(...),
+    db: Session = Depends(get_db),
+):
+    """PDF dos suplementos — acesso pelo paciente via token do portal."""
+    try:
+        payload = jose_jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        patient_sub = payload.get("patient_sub")
+        if not patient_sub:
+            raise HTTPException(401, "Token inválido")
+    except JoseJWTError:
+        raise HTTPException(401, "Token inválido ou expirado")
+
+    pu = db.query(PatientUser).filter(
+        PatientUser.id == int(patient_sub), PatientUser.is_active == True
+    ).first()
+    if not pu or pu.patient_id != patient_id:
+        raise HTTPException(403, "Acesso negado")
+
+    patient = db.query(Patient).filter(Patient.id == patient_id).first()
+    if not patient:
+        raise HTTPException(404, "Paciente não encontrado")
+
+    supplements = db.query(Supplement).filter(
+        Supplement.patient_id == patient_id,
+        Supplement.is_active == True
+    ).all()
+    professional = db.query(User).filter(User.id == patient.nutritionist_id).first()
+    pdf = generate_supplements_pdf(supplements, patient, professional)
+    filename = f"suplementos_{patient.name.replace(' ', '_')}.pdf"
+    return Response(content=pdf, media_type="application/pdf",
+                    headers={"Content-Disposition": f'attachment; filename="{filename}"'})

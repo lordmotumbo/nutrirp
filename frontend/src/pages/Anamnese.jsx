@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Save } from 'lucide-react'
+import { ArrowLeft, Save, FileDown } from 'lucide-react'
 import api from '../api'
 import toast from 'react-hot-toast'
 
+const BASE = import.meta.env.VITE_API_URL || 'https://nutrirp-api.onrender.com/api'
 const STRESS = ['baixo', 'médio', 'alto']
 const FREQ = ['Sedentário', '1-2x/semana', '3-4x/semana', '5+x/semana', 'Diariamente']
 
 export default function Anamnese() {
   const { id } = useParams()
   const [patient, setPatient] = useState(null)
+  const [lastAnamneseId, setLastAnamneseId] = useState(null)
   const [form, setForm] = useState({
     meals_per_day: '', water_intake: '', physical_activity: '', activity_frequency: '',
     pathologies: '', medications: '', allergies: '', food_intolerances: '',
@@ -25,6 +27,7 @@ export default function Anamnese() {
     api.get(`/anamnese/patient/${id}`).then(r => {
       if (r.data.length > 0) {
         const last = r.data[0]
+        setLastAnamneseId(last.id)
         setForm(prev => ({ ...prev, ...last }))
       }
     })
@@ -36,7 +39,8 @@ export default function Anamnese() {
     try {
       const payload = { ...form, patient_id: Number(id) }
       Object.keys(payload).forEach(k => { if (payload[k] === '') delete payload[k] })
-      await api.post('/anamnese', payload)
+      const { data } = await api.post('/anamnese', payload)
+      setLastAnamneseId(data.id)
       toast.success('Anamnese salva!')
     } catch { toast.error('Erro ao salvar') }
     finally { setLoading(false) }
@@ -48,10 +52,19 @@ export default function Anamnese() {
         <Link to={`/patients/${id}`} className="text-gray-400 hover:text-gray-600">
           <ArrowLeft className="w-5 h-5" />
         </Link>
-        <div>
+        <div className="flex-1">
           <h1 className="text-xl font-bold">Anamnese</h1>
           {patient && <p className="text-sm text-gray-500">{patient.name}</p>}
         </div>
+        {lastAnamneseId && (
+          <a
+            href={`${BASE}/anamnese/${lastAnamneseId}/pdf?token=${localStorage.getItem('nutrirp_token')}`}
+            target="_blank" rel="noreferrer"
+            className="btn-secondary text-sm"
+          >
+            <FileDown className="w-4 h-4" /> PDF
+          </a>
+        )}
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">

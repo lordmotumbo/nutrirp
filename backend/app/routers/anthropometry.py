@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import Response
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel
@@ -6,7 +7,11 @@ from app.database import get_db
 from app.models.anthropometry import Anthropometry
 from app.models.patient import Patient
 from app.models.user import User
-from app.services.auth import get_current_user
+from app.models.professional_client import ProfessionalClient
+from app.models.patient_user import PatientUser
+from app.services.auth import get_current_user, SECRET_KEY, ALGORITHM
+from app.services.pdf_generator import generate_anthropometry_pdf
+from jose import jwt as jose_jwt, JWTError as JoseJWTError
 import math
 
 router = APIRouter(prefix="/api/anthropometry", tags=["Antropometria"])
@@ -90,7 +95,6 @@ def create(data: AnthropometryIn, db: Session = Depends(get_db), user: User = De
     patient = db.query(Patient).filter(Patient.id == data.patient_id, Patient.nutritionist_id == user.id).first()
     if not patient:
         raise HTTPException(404, "Paciente não encontrado")
-
     gender = patient.gender or "F"
     bmi = round(data.weight / ((data.height / 100) ** 2), 1) if data.weight and data.height else None
     bf = calc_body_fat(data, gender)
@@ -118,5 +122,82 @@ def create(data: AnthropometryIn, db: Session = Depends(get_db), user: User = De
 def list_by_patient(patient_id: int, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
     patient = db.query(Patient).filter(Patient.id == patient_id, Patient.nutritionist_id == user.id).first()
     if not patient:
-        raise HTTPException(404, "Paciente não encontrado")
+        # Verifica vínculo compartilhado
+        link = db.query(ProfessionalClient).filter(
+            ProfessionalClient.professional_id == user.id,
+            ProfessionalClient.client_id == patient_id,
+            ProfessionalClient.is_active == True,
+        ).first()
+        patient = db.query(Patient).filter(Patient.id == patient_id).first()
+        if not patient or not link:
+            raise HTTPException(404, "Paciente não encontrado")
     return db.query(Anthropometry).filter(Anthropometry.patient_id == patient_id).order_by(Anthropometry.recorded_at.desc()).all()
+
+
+# ── PDF — Antropometria ───────────────────────────────────────────────
+
+@router.get("/{record_id}/pdf")
+def export_anthropometry_pdf(
+    record_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    """PDF da avaliação antropométrica — profissional dono ou compartilhado."""
+    record = db.query(Anthropometry).filter(Anthropometry.id == record_id).first()
+    if not record:
+        raise HTTPException(404, "Registro não encontrado")
+
+    patient = db.query(Patient).filter(Patient.id == record.patient_id).first()
+    if not patient:
+        raise HTTPException(404, "Paciente não encontrado")
+
+    # Verifica acesso
+    if patient.nutritionist_id != user.id:
+        link = db.query(ProfessionalClient).filter(
+            ProfessionalClient.professional_id == user.id,
+            ProfessionalClient.client_id == record.patient_id,
+            ProfessionalClient.is_active == True,
+        ).first()
+        if not link:
+            raise HTTPException(403, "Sem acesso a este paciente")
+
+    pdf = generate_anthropometry_pdf(record, patient, user)
+    filename = f"antropometria_{patient.name.replace(' ', '_')}.pdf"
+    return Response(content=pdf, media_type="application/pdf",
+                    headers={"Content-Disposition": f'attachment; filename="{filename}"'})
+
+
+@router.get("/{record_id}/pdf-for-patient")
+def export_anthropometry_pdf_patient(
+    record_id: int,
+    token: str = Query(...),
+    db: Session = Depends(get_db),
+):
+    """PDF da antropometria — acesso pelo paciente via token do portal."""
+    try:
+        payload = jose_jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        patient_sub = payload.get("patient_sub")
+        if not patient_sub:
+            raise HTTPException(401, "Token inválido")
+    except JoseJWTError:
+        raise HTTPException(401, "Token inválido ou expirado")
+
+    pu = db.query(PatientUser).filter(
+        PatientUser.id == int(patient_sub), PatientUser.is_active == True
+    ).first()
+    if not pu:
+        raise HTTPException(401, "Paciente não encontrado")
+
+    record = db.query(Anthropometry).filter(
+        Anthropometry.id == record_id,
+        Anthropometry.patient_id == pu.patient_id
+    ).first()
+    if not record:
+        raise HTTPException(404, "Registro não encontrado")
+
+    patient = db.query(Patient).filter(Patient.id == pu.patient_id).first()
+    professional = db.query(User).filter(User.id == patient.nutritionist_id).first()
+    pdf = generate_anthropometry_pdf(record, patient, professional)
+    filename = f"antropometria_{patient.name.replace(' ', '_')}.pdf"
+    return Response(content=pdf, media_type="application/pdf",
+                    headers={"Content-Disposition": f'attachment; filename="{filename}"'})

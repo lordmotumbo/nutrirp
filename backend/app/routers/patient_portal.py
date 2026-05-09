@@ -409,3 +409,29 @@ def get_active_diet(current: PatientUser = Depends(get_current_patient), db: Ses
         raise HTTPException(404, "Nenhuma dieta ativa")
     return diet
 
+
+# ── Documentos do paciente (anamnese, antropometria, suplementos) ─────
+@router.get("/documents/anamnese")
+def get_my_anamnese(current: PatientUser = Depends(get_current_patient), db: Session = Depends(get_db)):
+    from app.models.anamnese import Anamnese
+    return db.query(Anamnese).filter(
+        Anamnese.patient_id == current.patient_id
+    ).order_by(Anamnese.created_at.desc()).limit(5).all()
+
+
+@router.get("/documents/anthropometry")
+def get_my_anthropometry(current: PatientUser = Depends(get_current_patient), db: Session = Depends(get_db)):
+    from app.models.anthropometry import Anthropometry
+    return db.query(Anthropometry).filter(
+        Anthropometry.patient_id == current.patient_id
+    ).order_by(Anthropometry.recorded_at.desc()).limit(5).all()
+
+
+@router.get("/documents/supplements")
+def get_my_supplements(current: PatientUser = Depends(get_current_patient), db: Session = Depends(get_db)):
+    from app.models.exam import Supplement
+    return db.query(Supplement).filter(
+        Supplement.patient_id == current.patient_id,
+        Supplement.is_active == True
+    ).all()
+

@@ -31,6 +31,7 @@ import PatientDiet from './pages/patient/PatientDiet'
 import PatientAppointments from './pages/patient/PatientAppointments'
 import PatientGoals from './pages/patient/PatientGoals'
 import PatientAlerts from './pages/patient/PatientAlerts'
+import PatientDocuments from './pages/patient/PatientDocuments'
 
 // ── Personal Trainer ──────────────────────────────────────────────────
 import PersonalClients from './pages/personal/PersonalClients'
@@ -69,6 +70,7 @@ function AppRoutes() {
         <Route path="/paciente/appointments" element={<PatientAppointments />} />
         <Route path="/paciente/goals" element={<PatientGoals />} />
         <Route path="/paciente/alerts" element={<PatientAlerts />} />
+        <Route path="/paciente/documents" element={<PatientDocuments />} />
 
         {/* ── Área do profissional (autenticado) ── */}
         <Route

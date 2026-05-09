@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Save, TrendingUp } from 'lucide-react'
+import { ArrowLeft, Save, TrendingUp, FileDown } from 'lucide-react'
 import api from '../api'
 import toast from 'react-hot-toast'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts'
 import { format } from 'date-fns'
+
+const BASE = import.meta.env.VITE_API_URL || 'https://nutrirp-api.onrender.com/api'
 
 const PROTOCOLS = [
   { value: 'pollock7', label: 'Pollock 7 dobras' },
@@ -31,11 +33,15 @@ export default function Anthropometry() {
   })
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [lastRecordId, setLastRecordId] = useState(null)
   const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }))
 
   useEffect(() => {
     api.get(`/patients/${id}`).then(r => setPatient(r.data))
-    api.get(`/anthropometry/patient/${id}`).then(r => setHistory(r.data)).catch(() => {})
+    api.get(`/anthropometry/patient/${id}`).then(r => {
+      setHistory(r.data)
+      if (r.data.length > 0) setLastRecordId(r.data[0].id)
+    }).catch(() => {})
   }, [id])
 
   async function handleSubmit(e) {
@@ -46,8 +52,12 @@ export default function Anthropometry() {
       Object.entries(form).forEach(([k, v]) => { if (v !== '') payload[k] = isNaN(v) ? v : Number(v) })
       const { data } = await api.post('/anthropometry', payload)
       setResult(data)
+      setLastRecordId(data.id)
       toast.success('Avaliação salva!')
-      api.get(`/anthropometry/patient/${id}`).then(r => setHistory(r.data))
+      api.get(`/anthropometry/patient/${id}`).then(r => {
+        setHistory(r.data)
+        if (r.data.length > 0) setLastRecordId(r.data[0].id)
+      })
     } catch { toast.error('Erro ao salvar') }
     finally { setLoading(false) }
   }
@@ -63,10 +73,19 @@ export default function Anthropometry() {
     <div className="max-w-4xl space-y-6">
       <div className="flex items-center gap-3">
         <Link to={`/patients/${id}`} className="text-gray-400 hover:text-gray-600"><ArrowLeft className="w-5 h-5" /></Link>
-        <div>
+        <div className="flex-1">
           <h1 className="text-xl font-bold">Antropometria & Gasto Energético</h1>
           {patient && <p className="text-sm text-gray-500">{patient.name}</p>}
         </div>
+        {lastRecordId && (
+          <a
+            href={`${BASE}/anthropometry/${lastRecordId}/pdf?token=${localStorage.getItem('nutrirp_token')}`}
+            target="_blank" rel="noreferrer"
+            className="btn-secondary text-sm"
+          >
+            <FileDown className="w-4 h-4" /> PDF
+          </a>
+        )}
       </div>
 
       {/* Gráficos de evolução */}
