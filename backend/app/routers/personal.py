@@ -56,6 +56,7 @@ class WorkoutExerciseIn(BaseModel):
     session_id: int
     exercise_id: Optional[int] = None
     exercise_name: Optional[str] = None
+    muscle_group: Optional[str] = None  # grupo muscular (herdado da biblioteca ou manual)
     sets: Optional[int] = None
     reps: Optional[str] = None
     rest_time: Optional[int] = None
@@ -63,6 +64,19 @@ class WorkoutExerciseIn(BaseModel):
     tempo: Optional[str] = None
     execution_notes: Optional[str] = None
     order_index: Optional[int] = 0
+
+
+class WorkoutExerciseUpdate(BaseModel):
+    """Schema para atualizar exercício — não permite mudar session_id."""
+    exercise_name: Optional[str] = None
+    muscle_group: Optional[str] = None
+    sets: Optional[int] = None
+    reps: Optional[str] = None
+    rest_time: Optional[int] = None
+    load: Optional[str] = None
+    tempo: Optional[str] = None
+    execution_notes: Optional[str] = None
+    order_index: Optional[int] = None
 
 
 class ExerciseLibraryIn(BaseModel):
@@ -405,7 +419,7 @@ def add_exercise(
 @router.put("/exercises/{exercise_id}")
 def update_exercise(
     exercise_id: int,
-    data: WorkoutExerciseIn,
+    data: WorkoutExerciseUpdate,
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):

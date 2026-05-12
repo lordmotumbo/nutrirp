@@ -211,7 +211,7 @@ Implementação incremental do módulo de treinos: extensão dos modelos existen
     - Importar `Dumbbell` de `lucide-react`
     - _Requirements: 5.1_
 
-- [-] 9. Escrever testes de propriedade restantes e testes de exemplo
+- [x] 9. Escrever testes de propriedade restantes e testes de exemplo
   - [ ]* 9.1 Escrever teste de propriedade para herança de muscle_group (Property 6)
     - **Property 6: Herança de muscle_group da biblioteca**
     - **Validates: Requirements 3.8**
