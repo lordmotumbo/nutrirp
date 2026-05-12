@@ -5,6 +5,7 @@ from app.routers import auth, patients, anamnese, diets, appointments, foods
 from app.routers import anthropometry, exams, financial, messaging
 from app.routers import patient_portal, reports, alerts
 from app.routers import personal, physiotherapy, sharing
+from app.routers import patient_workout
 
 # Modelos existentes
 from app.models import user, patient, anamnese as anamnese_model, diet, appointment
@@ -15,6 +16,7 @@ from app.models import alerts as alerts_model
 
 # Novos modelos
 from app.models import professional_client, workout, physiotherapy as physio_model
+from app.models.workout import SessionCheckin  # noqa: F401 — garante criação da tabela session_checkins
 
 # ── Migração automática na inicialização ──────────────────────────────
 def run_migrations():
@@ -50,6 +52,8 @@ def run_migrations():
         ("chat_messages", "attachment_type", "VARCHAR(20)"),
         ("chat_messages", "attachment_name", "VARCHAR(200)"),
         ("chat_messages", "message", "TEXT"),  # torna nullable (já existe, ignora)
+        ("workout_plans", "is_published", "BOOLEAN DEFAULT FALSE"),
+        ("workout_exercises", "muscle_group", "VARCHAR(100)"),
     ]
 
     with engine.connect() as conn:
@@ -200,6 +204,18 @@ def run_migrations():
                     measurements TEXT, photos TEXT, notes TEXT,
                     recorded_at TIMESTAMP DEFAULT NOW()
                 )""",
+                """CREATE TABLE IF NOT EXISTS session_checkins (
+                    id SERIAL PRIMARY KEY,
+                    patient_id INTEGER NOT NULL REFERENCES patients(id),
+                    session_id INTEGER NOT NULL REFERENCES workout_sessions(id),
+                    plan_id INTEGER NOT NULL REFERENCES workout_plans(id),
+                    rpe INTEGER NOT NULL,
+                    performed_at TIMESTAMP NOT NULL,
+                    duration_minutes INTEGER,
+                    notes TEXT,
+                    exercise_logs TEXT,
+                    created_at TIMESTAMP DEFAULT NOW()
+                )""",
             ]
         else:
             new_tables = [
@@ -303,6 +319,18 @@ def run_migrations():
                     measurements TEXT, photos TEXT, notes TEXT,
                     recorded_at DATETIME DEFAULT CURRENT_TIMESTAMP
                 )""",
+                """CREATE TABLE IF NOT EXISTS session_checkins (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    patient_id INTEGER NOT NULL REFERENCES patients(id),
+                    session_id INTEGER NOT NULL REFERENCES workout_sessions(id),
+                    plan_id INTEGER NOT NULL REFERENCES workout_plans(id),
+                    rpe INTEGER NOT NULL,
+                    performed_at DATETIME NOT NULL,
+                    duration_minutes INTEGER,
+                    notes TEXT,
+                    exercise_logs TEXT,
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                )""",
             ]
 
         for stmt in new_tables:
@@ -357,6 +385,7 @@ app.include_router(alerts.router)
 
 # ── Novos routers (Personal + Fisio) ─────────────────────────────────
 app.include_router(personal.router)
+app.include_router(patient_workout.router)
 app.include_router(physiotherapy.router)
 app.include_router(sharing.router)
 

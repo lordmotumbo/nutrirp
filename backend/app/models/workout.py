@@ -42,6 +42,7 @@ class WorkoutPlan(Base):
     end_date = Column(Date, nullable=True)
     frequency_per_week = Column(Integer, nullable=True)  # dias por semana
     is_active = Column(Boolean, default=True)
+    is_published = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
@@ -77,6 +78,7 @@ class WorkoutExercise(Base):
     # Pode ter nome manual se não estiver na biblioteca
     exercise_name = Column(String(200), nullable=True)
 
+    muscle_group = Column(String(100), nullable=True)  # grupo muscular do exercício nesta sessão
     sets = Column(Integer, nullable=True)           # séries
     reps = Column(String(50), nullable=True)        # repetições (ex: "8-12" ou "15")
     rest_time = Column(Integer, nullable=True)      # descanso em segundos
@@ -125,3 +127,28 @@ class CheckIn(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     client = relationship("Patient", foreign_keys=[client_id], backref="checkins")
+
+
+class SessionCheckin(Base):
+    """Registro de execução de uma sessão de treino pelo paciente."""
+    __tablename__ = "session_checkins"
+
+    id = Column(Integer, primary_key=True, index=True)
+    patient_id = Column(Integer, ForeignKey("patients.id"), nullable=False)
+    session_id = Column(Integer, ForeignKey("workout_sessions.id"), nullable=False)
+    plan_id = Column(Integer, ForeignKey("workout_plans.id"), nullable=False)
+
+    rpe = Column(Integer, nullable=False)                   # Rate of Perceived Exertion (0-10)
+    performed_at = Column(DateTime, nullable=False)         # data/hora da execução
+
+    duration_minutes = Column(Integer, nullable=True)       # duração total da sessão
+    notes = Column(Text, nullable=True)                     # observações gerais
+
+    # Lista de {exercise_id, exercise_name, sets_done, reps_done, load_used, notes}
+    exercise_logs = Column(JSON, nullable=True)
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    patient = relationship("Patient", foreign_keys=[patient_id], backref="session_checkins")
+    session = relationship("WorkoutSession", foreign_keys=[session_id])
+    plan = relationship("WorkoutPlan", foreign_keys=[plan_id])

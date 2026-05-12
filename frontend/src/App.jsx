@@ -32,11 +32,15 @@ import PatientAppointments from './pages/patient/PatientAppointments'
 import PatientGoals from './pages/patient/PatientGoals'
 import PatientAlerts from './pages/patient/PatientAlerts'
 import PatientDocuments from './pages/patient/PatientDocuments'
+import PatientWorkout from './pages/patient/PatientWorkout'
+import PatientWorkoutCheckin from './pages/patient/PatientWorkoutCheckin'
+import PatientExerciseDetail from './pages/patient/PatientExerciseDetail'
 
 // ── Personal Trainer ──────────────────────────────────────────────────
 import PersonalClients from './pages/personal/PersonalClients'
 import PersonalClientDetail from './pages/personal/PersonalClientDetail'
 import PersonalWorkouts from './pages/personal/PersonalWorkouts'
+import PersonalWorkoutBuilder from './pages/personal/PersonalWorkoutBuilder'
 
 // ── Fisioterapia ──────────────────────────────────────────────────────
 import PhysioPatients from './pages/physio/PhysioPatients'
@@ -71,6 +75,9 @@ function AppRoutes() {
         <Route path="/paciente/goals" element={<PatientGoals />} />
         <Route path="/paciente/alerts" element={<PatientAlerts />} />
         <Route path="/paciente/documents" element={<PatientDocuments />} />
+        <Route path="/paciente/workout" element={<PatientWorkout />} />
+        <Route path="/paciente/workout/checkin/:sessionId" element={<PatientWorkoutCheckin />} />
+        <Route path="/paciente/workout/exercise/:exerciseId" element={<PatientExerciseDetail />} />
 
         {/* ── Área do profissional (autenticado) ── */}
         <Route
@@ -104,6 +111,7 @@ function AppRoutes() {
           <Route path="personal/clients" element={<PersonalClients />} />
           <Route path="personal/clients/:id" element={<PersonalClientDetail />} />
           <Route path="personal/workouts" element={<PersonalWorkouts />} />
+          <Route path="personal/plans/:planId" element={<PersonalWorkoutBuilder />} />
 
           {/* ── Fisioterapia ── */}
           <Route path="physio/patients" element={<PhysioPatients />} />

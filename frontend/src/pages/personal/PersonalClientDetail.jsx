@@ -6,6 +6,7 @@ import toast from 'react-hot-toast'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import SharePatientModal from '../../components/SharePatientModal'
+import SessionCheckinHistory from '../../components/SessionCheckinHistory'
 
 export default function PersonalClientDetail() {
   const { id } = useParams()
@@ -167,10 +168,21 @@ export default function PersonalClientDetail() {
                 <Link to={`/personal/plans/${p.id}`} className="btn-secondary text-xs py-1.5">
                   Ver treino
                 </Link>
+
               </div>
             ))}
           </div>
         )}
+      </div>
+
+      {/* Check-ins de Sessão */}
+      <div className="card">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-semibold flex items-center gap-2">
+            <Dumbbell className="w-4 h-4 text-primary-600" /> Check-ins de Sessão
+          </h2>
+        </div>
+        <SessionCheckinHistory clientId={id} />
       </div>
 
       {/* Check-ins */}

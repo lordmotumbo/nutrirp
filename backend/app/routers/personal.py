@@ -7,7 +7,7 @@ from typing import Optional, List
 from pydantic import BaseModel
 from datetime import date, datetime
 from app.database import get_db
-from app.models.workout import WorkoutPlan, WorkoutSession, WorkoutExercise, ExerciseLibrary, CheckIn
+from app.models.workout import WorkoutPlan, WorkoutSession, WorkoutExercise, ExerciseLibrary, CheckIn, SessionCheckin
 from app.models.physiotherapy import BodyEvolution, ClientRestriction
 from app.models.professional_client import ProfessionalClient
 from app.models.patient import Patient
@@ -181,6 +181,88 @@ def get_plan(
     ).first()
     if not plan:
         raise HTTPException(404, "Plano não encontrado")
+
+    # Carregar sessões ordenadas por order_index com exercícios aninhados
+    sessions = (
+        db.query(WorkoutSession)
+        .filter(WorkoutSession.plan_id == plan_id)
+        .order_by(WorkoutSession.order_index)
+        .all()
+    )
+    sessions_data = []
+    for s in sessions:
+        exercises = (
+            db.query(WorkoutExercise)
+            .filter(WorkoutExercise.session_id == s.id)
+            .order_by(WorkoutExercise.order_index)
+            .all()
+        )
+        sessions_data.append({
+            "id": s.id,
+            "plan_id": s.plan_id,
+            "name": s.name,
+            "day_of_week": s.day_of_week,
+            "order_index": s.order_index,
+            "notes": s.notes,
+            "exercises": [
+                {
+                    "id": ex.id,
+                    "session_id": ex.session_id,
+                    "exercise_id": ex.exercise_id,
+                    "exercise_name": ex.exercise_name,
+                    "muscle_group": ex.muscle_group,
+                    "sets": ex.sets,
+                    "reps": ex.reps,
+                    "rest_time": ex.rest_time,
+                    "load": ex.load,
+                    "tempo": ex.tempo,
+                    "execution_notes": ex.execution_notes,
+                    "order_index": ex.order_index,
+                    "video_url": ex.exercise.video_url if ex.exercise else None,
+                    "thumbnail": ex.exercise.thumbnail if ex.exercise else None,
+                }
+                for ex in exercises
+            ],
+        })
+
+    return {
+        "id": plan.id,
+        "professional_id": plan.professional_id,
+        "client_id": plan.client_id,
+        "title": plan.title,
+        "objective": plan.objective,
+        "observations": plan.observations,
+        "start_date": plan.start_date,
+        "end_date": plan.end_date,
+        "frequency_per_week": plan.frequency_per_week,
+        "is_active": plan.is_active,
+        "is_published": plan.is_published,
+        "created_at": plan.created_at,
+        "updated_at": plan.updated_at,
+        "sessions": sessions_data,
+    }
+
+
+@router.post("/plans/{plan_id}/publish")
+def publish_plan(
+    plan_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    """Publica um plano de treino para o paciente."""
+    plan = db.query(WorkoutPlan).filter(WorkoutPlan.id == plan_id).first()
+    if not plan:
+        raise HTTPException(404, "Plano não encontrado")
+    if plan.professional_id != user.id:
+        raise HTTPException(403, "Sem acesso a este plano")
+
+    session_count = db.query(WorkoutSession).filter(WorkoutSession.plan_id == plan_id).count()
+    if session_count == 0:
+        raise HTTPException(422, "O plano deve ter ao menos uma sessão antes de ser publicado")
+
+    plan.is_published = True
+    db.commit()
+    db.refresh(plan)
     return plan
 
 
@@ -345,6 +427,70 @@ def list_checkins(
     return db.query(CheckIn).filter(
         CheckIn.client_id == client_id
     ).order_by(CheckIn.date.desc()).limit(limit).all()
+
+
+@router.get("/clients/{client_id}/session-checkins")
+def list_session_checkins(
+    client_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    """Lista check-ins de sessão de treino do paciente em ordem decrescente de performed_at."""
+    _get_client(client_id, user, db)
+    checkins = (
+        db.query(SessionCheckin)
+        .filter(SessionCheckin.patient_id == client_id)
+        .order_by(SessionCheckin.performed_at.desc())
+        .all()
+    )
+    return [
+        {
+            "id": c.id,
+            "patient_id": c.patient_id,
+            "session_id": c.session_id,
+            "plan_id": c.plan_id,
+            "rpe": c.rpe,
+            "performed_at": c.performed_at,
+            "duration_minutes": c.duration_minutes,
+            "notes": c.notes,
+            "exercise_logs": c.exercise_logs,
+            "created_at": c.created_at,
+        }
+        for c in checkins
+    ]
+
+
+@router.get("/clients/{client_id}/exercise-history/{exercise_id}")
+def get_exercise_history(
+    client_id: int,
+    exercise_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    """Retorna histórico de carga de um exercício específico para o paciente."""
+    _get_client(client_id, user, db)
+
+    checkins = (
+        db.query(SessionCheckin)
+        .filter(SessionCheckin.patient_id == client_id)
+        .order_by(SessionCheckin.performed_at.asc())
+        .all()
+    )
+
+    history = []
+    for checkin in checkins:
+        logs = checkin.exercise_logs or []
+        for log in logs:
+            if log.get("exercise_id") == exercise_id:
+                history.append({
+                    "performed_at": checkin.performed_at,
+                    "load_used": log.get("load_used"),
+                    "reps_done": log.get("reps_done"),
+                    "sets_done": log.get("sets_done"),
+                    "rpe": checkin.rpe,
+                })
+
+    return history
 
 
 # ── Evolução corporal ─────────────────────────────────────────────────
