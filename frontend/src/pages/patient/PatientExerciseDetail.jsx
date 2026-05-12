@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, Dumbbell, TrendingUp, ExternalLink } from 'lucide-react'
 import axios from 'axios'
@@ -13,6 +13,31 @@ const BASE = import.meta.env.VITE_API_URL || 'https://nutrirp-api.onrender.com/a
 function patientApi() {
   const token = localStorage.getItem('nutrirp_patient_token')
   return axios.create({ baseURL: BASE, headers: { Authorization: `Bearer ${token}` } })
+}
+
+/** Componente de animação: alterna entre frame 0 e frame 1 a cada 600ms */
+function ExerciseAnimation({ thumbnail, videoUrl, name }) {
+  const [showAlt, setShowAlt] = useState(false)
+  const intervalRef = useRef(null)
+
+  useEffect(() => {
+    if (!thumbnail || !videoUrl) return
+    intervalRef.current = setInterval(() => setShowAlt(p => !p), 600)
+    return () => clearInterval(intervalRef.current)
+  }, [thumbnail, videoUrl])
+
+  const src = showAlt && videoUrl ? videoUrl : thumbnail
+  if (!src) return null
+
+  return (
+    <img
+      src={src}
+      alt={name}
+      className="w-full rounded-2xl object-cover max-h-64"
+      loading="lazy"
+      onError={e => { e.target.style.display = 'none' }}
+    />
+  )
 }
 
 const MUSCLE_GROUP_COLORS = {
@@ -93,12 +118,12 @@ export default function PatientExerciseDetail() {
           </div>
         ) : (
           <>
-            {/* Thumbnail */}
-            {exercise.thumbnail && (
-              <img
-                src={exercise.thumbnail}
-                alt={exercise.name}
-                className="w-full rounded-2xl object-cover max-h-56"
+            {/* Animação do exercício */}
+            {(exercise.thumbnail || exercise.video_url) && (
+              <ExerciseAnimation
+                thumbnail={exercise.thumbnail}
+                videoUrl={exercise.video_url}
+                name={exercise.name}
               />
             )}
 
@@ -129,33 +154,22 @@ export default function PatientExerciseDetail() {
               )}
             </div>
 
-            {/* Vídeo */}
-            {exercise.video_url && (
+            {/* Vídeo YouTube — só exibe se for URL de vídeo real (não frame de imagem) */}
+            {exercise.video_url && (exercise.video_url.includes('youtube.com') || exercise.video_url.includes('youtu.be')) && (
               <div className="card">
                 <h3 className="font-semibold mb-3 dark:text-white flex items-center gap-2">
                   <ExternalLink className="w-4 h-4 text-primary-600" /> Vídeo de execução
                 </h3>
-                {exercise.video_url.includes('youtube.com') || exercise.video_url.includes('youtu.be') ? (
-                  <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
-                    <iframe
-                      className="absolute inset-0 w-full h-full rounded-xl"
-                      src={exercise.video_url.replace('watch?v=', 'embed/').replace('youtu.be/', 'www.youtube.com/embed/')}
-                      title={exercise.name}
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  </div>
-                ) : (
-                  <a
-                    href={exercise.video_url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-2 text-primary-600 hover:underline text-sm"
-                  >
-                    <ExternalLink className="w-4 h-4" /> Ver vídeo
-                  </a>
-                )}
+                <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+                  <iframe
+                    className="absolute inset-0 w-full h-full rounded-xl"
+                    src={exercise.video_url.replace('watch?v=', 'embed/').replace('youtu.be/', 'www.youtube.com/embed/')}
+                    title={exercise.name}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
               </div>
             )}
 

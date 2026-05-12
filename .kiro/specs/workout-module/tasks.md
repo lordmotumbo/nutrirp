@@ -235,7 +235,7 @@ Implementação incremental do módulo de treinos: extensão dos modelos existen
     - `muscle_group` inválido → HTTP 422 com lista de valores válidos
     - _Requirements: 1.8, 2.5, 3.7, 4.6, 6.3, 6.7, 9.6_
 
-- [ ] 10. Checkpoint final — Garantir que todos os testes passam
+- [x] 10. Checkpoint final — Garantir que todos os testes passam
   - Executar `pytest` na pasta `backend/` e verificar que todos os testes passam
   - Verificar que não há erros de importação em `main.py` após as alterações
   - Perguntar ao usuário se há dúvidas ou ajustes antes de encerrar.

@@ -5,15 +5,15 @@ import toast from 'react-hot-toast'
 
 const MUSCLE_GROUPS = [
   { value: '', label: 'Todos os grupos' },
-  { value: 'peito', label: 'Peito' },
-  { value: 'costas', label: 'Costas' },
-  { value: 'pernas', label: 'Pernas' },
-  { value: 'ombros', label: 'Ombros' },
-  { value: 'bracos', label: 'Braços' },
-  { value: 'core', label: 'Core' },
-  { value: 'full_body', label: 'Full Body' },
-  { value: 'gluteos', label: 'Glúteos' },
-  { value: 'panturrilha', label: 'Panturrilha' },
+  { value: 'peito', label: '🔴 Peito' },
+  { value: 'costas', label: '🔵 Costas' },
+  { value: 'pernas', label: '🟢 Pernas' },
+  { value: 'ombros', label: '🟣 Ombros' },
+  { value: 'bracos', label: '🟠 Braços' },
+  { value: 'core', label: '🟡 Core' },
+  { value: 'full_body', label: '🔷 Full Body' },
+  { value: 'gluteos', label: '🩷 Glúteos' },
+  { value: 'panturrilha', label: '🩵 Panturrilha' },
 ]
 
 const DIFFICULTY_LABELS = {
@@ -22,12 +22,50 @@ const DIFFICULTY_LABELS = {
   avancado: { label: 'Avançado', color: 'bg-red-100 text-red-700' },
 }
 
+/**
+ * Componente de animação de exercício.
+ * Alterna entre thumbnail (frame 0) e video_url (frame 1) para simular animação.
+ * Quando o usuário passa o mouse, mostra o segundo frame.
+ */
+function ExerciseAnimation({ thumbnail, videoUrl, name, className = '' }) {
+  const [showAlt, setShowAlt] = useState(false)
+  const intervalRef = useRef(null)
+
+  // Auto-anima ao montar (alterna a cada 600ms)
+  useEffect(() => {
+    if (!thumbnail || !videoUrl) return
+    intervalRef.current = setInterval(() => {
+      setShowAlt(prev => !prev)
+    }, 600)
+    return () => clearInterval(intervalRef.current)
+  }, [thumbnail, videoUrl])
+
+  const src = showAlt && videoUrl ? videoUrl : thumbnail
+
+  if (!src) return (
+    <div className={`bg-gray-100 dark:bg-gray-800 flex items-center justify-center ${className}`}>
+      <Dumbbell className="w-8 h-8 text-gray-300" />
+    </div>
+  )
+
+  return (
+    <img
+      src={src}
+      alt={name}
+      className={`object-cover ${className}`}
+      loading="lazy"
+      onError={e => { e.target.style.display = 'none' }}
+    />
+  )
+}
+
 export default function ExerciseLibraryModal({ onSelect, onClose }) {
   const [query, setQuery] = useState('')
   const [muscleGroup, setMuscleGroup] = useState('')
   const [exercises, setExercises] = useState([])
   const [loading, setLoading] = useState(false)
   const [showCreate, setShowCreate] = useState(false)
+  const [preview, setPreview] = useState(null) // exercício em preview
   const [createForm, setCreateForm] = useState({
     name: '', muscle_group: 'peito', difficulty: 'iniciante',
     description: '', video_url: '', thumbnail: '',
@@ -89,7 +127,7 @@ export default function ExerciseLibraryModal({ onSelect, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] flex flex-col">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b dark:border-gray-700 shrink-0">
           <h2 className="font-semibold dark:text-white flex items-center gap-2">
@@ -107,52 +145,133 @@ export default function ExerciseLibraryModal({ onSelect, onClose }) {
               placeholder="Buscar exercício..."
               value={query}
               onChange={handleQueryChange}
+              autoFocus
             />
           </div>
-          <select className="input" value={muscleGroup} onChange={handleMuscleGroupChange}>
+          <div className="flex gap-2 flex-wrap">
             {MUSCLE_GROUPS.map(mg => (
-              <option key={mg.value} value={mg.value}>{mg.label}</option>
+              <button
+                key={mg.value}
+                type="button"
+                onClick={() => { setMuscleGroup(mg.value); fetchExercises(query, mg.value) }}
+                className={`px-3 py-1 rounded-full text-xs font-medium border transition-all ${
+                  muscleGroup === mg.value
+                    ? 'border-[var(--color-primary)] bg-[var(--color-primary-light)] text-[var(--color-primary)]'
+                    : 'border-gray-200 text-gray-600 hover:border-gray-300 dark:border-gray-700 dark:text-gray-300'
+                }`}
+              >
+                {mg.label}
+              </button>
             ))}
-          </select>
+          </div>
         </div>
 
-        {/* Lista */}
-        <div className="flex-1 overflow-y-auto px-6 py-3 space-y-2">
-          {loading ? (
-            <div className="flex items-center justify-center py-8">
-              <div className="w-6 h-6 border-2 border-primary-600 border-t-transparent rounded-full animate-spin" />
-            </div>
-          ) : exercises.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-gray-400 text-sm">Nenhum exercício encontrado</p>
-            </div>
-          ) : (
-            exercises.map(ex => (
-              <button
-                key={ex.id}
-                onClick={() => { onSelect(ex); onClose() }}
-                className="w-full text-left p-3 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-primary-400 hover:bg-primary-50 dark:hover:bg-gray-800 transition-all flex items-center gap-3"
-              >
-                {ex.thumbnail ? (
-                  <img src={ex.thumbnail} alt={ex.name} className="w-12 h-12 rounded-lg object-cover shrink-0" />
-                ) : (
-                  <div className="w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center shrink-0">
-                    <Dumbbell className="w-5 h-5 text-gray-400" />
+        <div className="flex flex-1 overflow-hidden">
+          {/* Lista de exercícios */}
+          <div className="flex-1 overflow-y-auto px-4 py-3 space-y-1.5">
+            {loading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="w-6 h-6 border-2 border-primary-600 border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : exercises.length === 0 ? (
+              <div className="text-center py-8">
+                <Dumbbell className="w-10 h-10 text-gray-300 mx-auto mb-2" />
+                <p className="text-gray-400 text-sm">Nenhum exercício encontrado</p>
+              </div>
+            ) : (
+              exercises.map(ex => (
+                <button
+                  key={ex.id}
+                  onClick={() => setPreview(ex)}
+                  className={`w-full text-left p-3 rounded-xl border transition-all flex items-center gap-3 ${
+                    preview?.id === ex.id
+                      ? 'border-[var(--color-primary)] bg-[var(--color-primary-light)]'
+                      : 'border-gray-200 dark:border-gray-700 hover:border-primary-300 hover:bg-primary-50 dark:hover:bg-gray-800'
+                  }`}
+                >
+                  {/* Miniatura animada */}
+                  <div className="w-14 h-14 rounded-lg overflow-hidden shrink-0 bg-gray-100 dark:bg-gray-800">
+                    <ExerciseAnimation
+                      thumbnail={ex.thumbnail}
+                      videoUrl={ex.video_url}
+                      name={ex.name}
+                      className="w-full h-full"
+                    />
                   </div>
-                )}
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm dark:text-white truncate">{ex.name}</p>
-                  <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                    <span className="text-xs text-gray-400 capitalize">{ex.muscle_group}</span>
-                    {ex.difficulty && (
-                      <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${DIFFICULTY_LABELS[ex.difficulty]?.color || 'bg-gray-100 text-gray-600'}`}>
-                        {DIFFICULTY_LABELS[ex.difficulty]?.label || ex.difficulty}
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm dark:text-white truncate">{ex.name}</p>
+                    <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                      <span className="text-xs text-gray-400 capitalize">{ex.muscle_group?.replace('_', ' ')}</span>
+                      {ex.difficulty && (
+                        <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${DIFFICULTY_LABELS[ex.difficulty]?.color || 'bg-gray-100 text-gray-600'}`}>
+                          {DIFFICULTY_LABELS[ex.difficulty]?.label || ex.difficulty}
+                        </span>
+                      )}
+                      {ex.equipment && (
+                        <span className="text-xs text-gray-400">· {ex.equipment}</span>
+                      )}
+                    </div>
+                  </div>
+                </button>
+              ))
+            )}
+          </div>
+
+          {/* Preview do exercício selecionado */}
+          {preview && (
+            <div className="w-72 border-l dark:border-gray-700 flex flex-col shrink-0">
+              <div className="p-4 space-y-3 overflow-y-auto flex-1">
+                {/* Animação grande */}
+                <div className="w-full h-48 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-800">
+                  <ExerciseAnimation
+                    thumbnail={preview.thumbnail}
+                    videoUrl={preview.video_url}
+                    name={preview.name}
+                    className="w-full h-full"
+                  />
+                </div>
+
+                <div>
+                  <h3 className="font-semibold dark:text-white">{preview.name}</h3>
+                  <div className="flex flex-wrap gap-1.5 mt-1">
+                    {preview.muscle_group && (
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-primary-50 text-primary-700 capitalize">
+                        {preview.muscle_group.replace('_', ' ')}
+                      </span>
+                    )}
+                    {preview.difficulty && (
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${DIFFICULTY_LABELS[preview.difficulty]?.color || 'bg-gray-100 text-gray-600'}`}>
+                        {DIFFICULTY_LABELS[preview.difficulty]?.label}
                       </span>
                     )}
                   </div>
                 </div>
-              </button>
-            ))
+
+                {preview.equipment && (
+                  <p className="text-xs text-gray-500">
+                    <span className="font-medium">Equipamento:</span> {preview.equipment}
+                  </p>
+                )}
+
+                {preview.description && (
+                  <div>
+                    <p className="text-xs font-medium text-gray-500 mb-1">Como executar:</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
+                      {preview.description}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div className="p-4 border-t dark:border-gray-700 shrink-0">
+                <button
+                  className="btn-primary w-full justify-center"
+                  onClick={() => { onSelect(preview); onClose() }}
+                >
+                  Adicionar ao treino
+                </button>
+              </div>
+            </div>
           )}
         </div>
 
@@ -163,7 +282,7 @@ export default function ExerciseLibraryModal({ onSelect, onClose }) {
               className="btn-secondary w-full justify-center text-sm"
               onClick={() => setShowCreate(true)}
             >
-              <Plus className="w-4 h-4" /> Criar exercício
+              <Plus className="w-4 h-4" /> Criar exercício personalizado
             </button>
           ) : (
             <form onSubmit={handleCreate} className="space-y-3">
@@ -198,13 +317,13 @@ export default function ExerciseLibraryModal({ onSelect, onClose }) {
               <textarea
                 className="input"
                 rows={2}
-                placeholder="Descrição (opcional)"
+                placeholder="Descrição / instruções de execução"
                 value={createForm.description}
                 onChange={e => setCreateForm(f => ({ ...f, description: e.target.value }))}
               />
               <input
                 className="input"
-                placeholder="URL do vídeo (opcional)"
+                placeholder="URL do vídeo (YouTube, etc.) — opcional"
                 value={createForm.video_url}
                 onChange={e => setCreateForm(f => ({ ...f, video_url: e.target.value }))}
               />

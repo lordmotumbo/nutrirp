@@ -352,6 +352,67 @@ Base.metadata.create_all(bind=engine)
 # Roda migrações de colunas/tabelas novas
 run_migrations()
 
+# Popula biblioteca de exercícios se estiver vazia
+def seed_exercises():
+    """Insere exercícios globais pré-carregados se a biblioteca estiver vazia."""
+    import logging
+    from sqlalchemy import text
+    from app.data.exercise_seed import build_seed_data
+    logger = logging.getLogger("seed")
+
+    db_url = str(engine.url)
+    is_pg = "postgresql" in db_url or "postgres" in db_url
+
+    with engine.connect() as conn:
+        try:
+            row = conn.execute(text(
+                "SELECT COUNT(*) FROM exercise_library WHERE created_by IS NULL"
+            )).fetchone()
+            count = row[0] if row else 0
+        except Exception:
+            count = 0
+
+        if count > 0:
+            logger.info(f"Biblioteca já tem {count} exercícios globais. Seed ignorado.")
+            return
+
+        exercises = build_seed_data()
+        inserted = 0
+        for ex in exercises:
+            try:
+                if is_pg:
+                    conn.execute(text("""
+                        INSERT INTO exercise_library
+                            (name, description, muscle_group, difficulty, equipment,
+                             category, thumbnail, video_url, is_active, created_by)
+                        VALUES
+                            (:name, :description, :muscle_group, :difficulty, :equipment,
+                             :category, :thumbnail, :video_url, TRUE, NULL)
+                        ON CONFLICT DO NOTHING
+                    """), ex)
+                else:
+                    conn.execute(text("""
+                        INSERT OR IGNORE INTO exercise_library
+                            (name, description, muscle_group, difficulty, equipment,
+                             category, thumbnail, video_url, is_active, created_by)
+                        VALUES
+                            (:name, :description, :muscle_group, :difficulty, :equipment,
+                             :category, :thumbnail, :video_url, 1, NULL)
+                    """), ex)
+                inserted += 1
+            except Exception as e:
+                logger.warning(f"Seed error for {ex.get('name')}: {e}")
+                try:
+                    conn.rollback()
+                except Exception:
+                    pass
+
+        conn.commit()
+        logger.info(f"Seed: {inserted} exercícios inseridos na biblioteca.")
+
+
+seed_exercises()
+
 # ─────────────────────────────────────────────────────────────────────
 
 app = FastAPI(
