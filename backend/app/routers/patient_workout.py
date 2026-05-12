@@ -215,27 +215,59 @@ def get_exercise_history(
 
 @router.get("/exercises/library")
 def get_exercise_library(
-    exercise_id: int = Query(...),
+    exercise_id: Optional[int] = Query(None),
+    q: Optional[str] = Query(None),
+    muscle_group: Optional[str] = Query(None),
     current: PatientUser = Depends(get_current_patient),
     db: Session = Depends(get_db),
 ):
-    """Retorna detalhes de um exercício da biblioteca pelo seu ID."""
-    exercise = (
-        db.query(ExerciseLibrary)
-        .filter(ExerciseLibrary.id == exercise_id, ExerciseLibrary.is_active == True)
-        .first()
-    )
-    if not exercise:
-        raise HTTPException(404, "Exercício não encontrado")
+    """
+    Retorna exercícios da biblioteca para o paciente.
+    - Com exercise_id: retorna detalhes de um exercício específico
+    - Com q/muscle_group: busca na biblioteca (para o paciente explorar)
+    """
+    if exercise_id:
+        exercise = (
+            db.query(ExerciseLibrary)
+            .filter(ExerciseLibrary.id == exercise_id, ExerciseLibrary.is_active == True)
+            .first()
+        )
+        if not exercise:
+            raise HTTPException(404, "Exercício não encontrado")
+        return {
+            "id": exercise.id,
+            "name": exercise.name,
+            "description": exercise.description,
+            "muscle_group": exercise.muscle_group,
+            "difficulty": exercise.difficulty,
+            "video_url": exercise.video_url,
+            "thumbnail": exercise.thumbnail,
+            "equipment": exercise.equipment,
+            "category": exercise.category,
+        }
 
-    return {
-        "id": exercise.id,
-        "name": exercise.name,
-        "description": exercise.description,
-        "muscle_group": exercise.muscle_group,
-        "difficulty": exercise.difficulty,
-        "video_url": exercise.video_url,
-        "thumbnail": exercise.thumbnail,
-        "equipment": exercise.equipment,
-        "category": exercise.category,
-    }
+    # Busca na biblioteca
+    query = db.query(ExerciseLibrary).filter(
+        ExerciseLibrary.is_active == True,
+        ExerciseLibrary.created_by == None,  # só exercícios globais para o paciente
+    )
+    if q:
+        query = query.filter(ExerciseLibrary.name.ilike(f"%{q}%"))
+    if muscle_group:
+        query = query.filter(ExerciseLibrary.muscle_group == muscle_group)
+
+    exercises = query.order_by(ExerciseLibrary.name).limit(50).all()
+    return [
+        {
+            "id": ex.id,
+            "name": ex.name,
+            "description": ex.description,
+            "muscle_group": ex.muscle_group,
+            "difficulty": ex.difficulty,
+            "video_url": ex.video_url,
+            "thumbnail": ex.thumbnail,
+            "equipment": ex.equipment,
+            "category": ex.category,
+        }
+        for ex in exercises
+    ]

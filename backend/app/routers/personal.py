@@ -310,6 +310,12 @@ def create_session(
     ).first()
     if not plan:
         raise HTTPException(404, "Plano não encontrado")
+
+    # Limite de 7 sessões por plano (Req 2.5)
+    session_count = db.query(WorkoutSession).filter(WorkoutSession.plan_id == data.plan_id).count()
+    if session_count >= 7:
+        raise HTTPException(422, "Um plano pode ter no máximo 7 sessões")
+
     session = WorkoutSession(**data.model_dump())
     db.add(session); db.commit(); db.refresh(session)
     return session
@@ -350,6 +356,12 @@ def delete_session(
 
 
 # ── Exercícios do treino ──────────────────────────────────────────────
+VALID_MUSCLE_GROUPS = {
+    "peito", "costas", "pernas", "ombros", "bracos",
+    "core", "full_body", "gluteos", "panturrilha"
+}
+
+
 @router.post("/exercises", status_code=201)
 def add_exercise(
     data: WorkoutExerciseIn,
@@ -362,7 +374,30 @@ def add_exercise(
     ).first()
     if not s:
         raise HTTPException(404, "Sessão não encontrada")
-    ex = WorkoutExercise(**data.model_dump())
+
+    # Valida exercise_id se fornecido (Req 3.7)
+    muscle_group = data.muscle_group
+    if data.exercise_id:
+        lib = db.query(ExerciseLibrary).filter(
+            ExerciseLibrary.id == data.exercise_id,
+            ExerciseLibrary.is_active == True,
+        ).first()
+        if not lib:
+            raise HTTPException(422, "Exercício não encontrado na biblioteca ou inativo")
+        # Herda muscle_group da biblioteca se não fornecido (Req 3.8)
+        if not muscle_group and lib.muscle_group:
+            muscle_group = lib.muscle_group
+
+    # Valida muscle_group se fornecido (Req 9.6)
+    if muscle_group and muscle_group not in VALID_MUSCLE_GROUPS:
+        raise HTTPException(
+            422,
+            f"Valor inválido para muscle_group. Valores aceitos: {', '.join(sorted(VALID_MUSCLE_GROUPS))}"
+        )
+
+    payload = data.model_dump()
+    payload["muscle_group"] = muscle_group
+    ex = WorkoutExercise(**payload)
     db.add(ex); db.commit(); db.refresh(ex)
     return ex
 

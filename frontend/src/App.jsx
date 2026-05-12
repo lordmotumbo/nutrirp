@@ -35,6 +35,7 @@ import PatientDocuments from './pages/patient/PatientDocuments'
 import PatientWorkout from './pages/patient/PatientWorkout'
 import PatientWorkoutCheckin from './pages/patient/PatientWorkoutCheckin'
 import PatientExerciseDetail from './pages/patient/PatientExerciseDetail'
+import PatientWorkoutHistory from './pages/patient/PatientWorkoutHistory'
 
 // ── Personal Trainer ──────────────────────────────────────────────────
 import PersonalClients from './pages/personal/PersonalClients'
@@ -78,6 +79,7 @@ function AppRoutes() {
         <Route path="/paciente/workout" element={<PatientWorkout />} />
         <Route path="/paciente/workout/checkin/:sessionId" element={<PatientWorkoutCheckin />} />
         <Route path="/paciente/workout/exercise/:exerciseId" element={<PatientExerciseDetail />} />
+        <Route path="/paciente/workout/history" element={<PatientWorkoutHistory />} />
 
         {/* ── Área do profissional (autenticado) ── */}
         <Route

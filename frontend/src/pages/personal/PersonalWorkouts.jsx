@@ -104,7 +104,7 @@ export default function PersonalWorkouts() {
                     to={`/personal/plans/${p.id}`}
                     className="btn-secondary text-xs py-1.5"
                   >
-                    Editar
+                    Abrir treino
                   </Link>
                   <button
                     onClick={() => deletePlan(p.id)}

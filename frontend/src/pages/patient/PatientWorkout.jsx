@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Dumbbell, ChevronRight, PlayCircle } from 'lucide-react'
+import { ArrowLeft, Dumbbell, ChevronRight, PlayCircle, History } from 'lucide-react'
 import axios from 'axios'
 
 const BASE = import.meta.env.VITE_API_URL || 'https://nutrirp-api.onrender.com/api'
@@ -55,7 +55,10 @@ export default function PatientWorkout() {
       {/* Header */}
       <header className="text-white px-5 py-4 flex items-center gap-3" style={{ backgroundColor: 'var(--color-primary)' }}>
         <Link to="/paciente/dashboard"><ArrowLeft className="w-5 h-5" /></Link>
-        <h1 className="font-bold text-lg">Meu Treino</h1>
+        <h1 className="font-bold text-lg flex-1">Meu Treino</h1>
+        <Link to="/paciente/workout/history" className="p-1.5 rounded-lg bg-white/20 hover:bg-white/30 transition-colors" title="Histórico de treinos">
+          <History className="w-5 h-5" />
+        </Link>
       </header>
 
       <div className="max-w-lg mx-auto px-4 py-5 space-y-4">

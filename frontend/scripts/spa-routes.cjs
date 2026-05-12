@@ -16,6 +16,7 @@ const routes = [
   'paciente/workout',
   'paciente/workout/checkin',
   'paciente/workout/exercise',
+  'paciente/workout/history',
   'login',
   'register',
 ]
