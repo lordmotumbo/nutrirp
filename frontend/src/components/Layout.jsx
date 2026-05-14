@@ -108,7 +108,7 @@ export default function Layout() {
         style={{ backgroundColor: 'var(--color-sidebar)' }}
       >
         <div className="px-4 py-4 border-b border-white/10">
-          <NexfitLogo size={36} textSize="text-lg" />
+          <NexfitLogo size={36} />
           {role !== 'nutritionist' && (
             <p className="text-xs text-white/60 mt-1">{ROLE_LABEL[role]}</p>
           )}
@@ -160,7 +160,7 @@ export default function Layout() {
             <Menu className="w-6 h-6 text-gray-300" />
           </button>
           <div className="md:hidden">
-            <NexfitLogo size={28} textSize="text-base" />
+            <NexfitLogo size={28} />
           </div>
           <div className="hidden md:block" />
 

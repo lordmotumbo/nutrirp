@@ -50,7 +50,7 @@ export default function PatientDashboard() {
     <div className="min-h-screen bg-[#080810]">
       {/* Header */}
       <header className="text-white px-5 py-4 flex items-center justify-between" style={{ backgroundColor: 'var(--color-primary)' }}>
-        <NexfitLogo size={32} textSize="text-lg" />
+        <NexfitLogo size={32} />
         <button onClick={logout} className="flex items-center gap-1 text-white/70 hover:text-white text-sm">
           <LogOut className="w-4 h-4" /> Sair
         </button>

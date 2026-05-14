@@ -31,7 +31,7 @@ export default function PatientLogin() {
         {/* Logo */}
         <div className="flex justify-center mb-8">
           <div className="px-6 py-4 rounded-2xl bg-green-700">
-            <NexfitLogo size={44} textSize="text-2xl" />
+            <NexfitLogo size={44} />
           </div>
         </div>
 

@@ -43,7 +43,7 @@ export default function Register() {
     >
       <div className="w-full max-w-sm">
         <div className="flex justify-center mb-8">
-          <NexfitLogo size={52} textSize="text-3xl" />
+          <NexfitLogo size={48} />
         </div>
 
         <div className="bg-[#0f0f1c] rounded-xl border border-purple-900/30 p-5 shadow-lg">
