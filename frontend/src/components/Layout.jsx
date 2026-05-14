@@ -155,9 +155,9 @@ export default function Layout() {
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Topbar */}
-        <header className="flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+        <header className="flex items-center justify-between px-4 py-3 bg-[#0d0d1a] border-b border-purple-900/30 flex-shrink-0">
           <button className="md:hidden" onClick={() => setOpen(true)}>
-            <Menu className="w-6 h-6 text-gray-600 dark:text-gray-300" />
+            <Menu className="w-6 h-6 text-gray-300" />
           </button>
           <div className="md:hidden">
             <NexfitLogo size={28} textSize="text-base" />
@@ -168,7 +168,7 @@ export default function Layout() {
           <div className="relative">
             <button
               onClick={() => setShowNotifPanel(p => !p)}
-              className="relative p-2 rounded-xl text-gray-500 hover:text-primary-600 hover:bg-primary-50 transition-colors"
+              className="relative p-2 rounded-xl text-gray-400 hover:text-purple-400 hover:bg-purple-900/20 transition-colors"
               title="Notificações"
             >
               <Bell className="w-5 h-5" />
@@ -181,9 +181,9 @@ export default function Layout() {
 
             {/* Painel de notificações */}
             {showNotifPanel && (
-              <div className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-gray-900 rounded-2xl shadow-xl border dark:border-gray-700 z-50 overflow-hidden">
-                <div className="flex items-center justify-between px-4 py-3 border-b dark:border-gray-700">
-                  <h3 className="font-semibold text-sm dark:text-white">Notificações</h3>
+              <div className="absolute right-0 top-full mt-2 w-80 bg-[#0f0f1c] rounded-2xl shadow-xl border border-purple-900/30 z-50 overflow-hidden">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-purple-900/30">
+                  <h3 className="font-semibold text-sm text-white">Notificações</h3>
                   {unread > 0 && (
                     <span className="badge bg-red-100 text-red-600 text-xs">{unread} não lida(s)</span>
                   )}
@@ -191,7 +191,7 @@ export default function Layout() {
                 <div className="max-h-72 overflow-y-auto">
                   {unread === 0 ? (
                     <div className="px-4 py-8 text-center">
-                      <Bell className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+                      <Bell className="w-8 h-8 text-gray-500 mx-auto mb-2" />
                       <p className="text-sm text-gray-400">Nenhuma mensagem nova</p>
                     </div>
                   ) : (
@@ -200,13 +200,13 @@ export default function Layout() {
                         key={patientId}
                         to={`/patients/${patientId}/chat`}
                         onClick={() => setShowNotifPanel(false)}
-                        className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors border-b dark:border-gray-700 last:border-0"
+                        className="flex items-center gap-3 px-4 py-3 hover:bg-purple-900/20 transition-colors border-b border-purple-900/30 last:border-0"
                       >
-                        <div className="w-9 h-9 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-bold text-sm flex-shrink-0">
+                        <div className="w-9 h-9 rounded-full bg-purple-900/30 text-purple-400 flex items-center justify-center font-bold text-sm flex-shrink-0">
                           💬
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium dark:text-white">Paciente #{patientId}</p>
+                          <p className="text-sm font-medium text-white">Paciente #{patientId}</p>
                           <p className="text-xs text-gray-400">{count} mensagem(ns) não lida(s)</p>
                         </div>
                         <span className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0" />
@@ -215,7 +215,7 @@ export default function Layout() {
                   )}
                 </div>
                 {unread > 0 && (
-                  <div className="px-4 py-2 border-t dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                  <div className="px-4 py-2 border-t border-purple-900/30 bg-[#1a1a2e]">
                     <p className="text-xs text-gray-400 text-center">
                       Clique em uma conversa para abrir
                     </p>
@@ -231,7 +231,7 @@ export default function Layout() {
           <div className="fixed inset-0 z-40" onClick={() => setShowNotifPanel(false)} />
         )}
 
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-gray-50 dark:bg-gray-950">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-[#080810]">
           <Outlet />
         </main>
       </div>

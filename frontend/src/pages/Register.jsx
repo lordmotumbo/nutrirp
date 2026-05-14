@@ -39,17 +39,15 @@ export default function Register() {
   return (
     <div
       className="min-h-screen flex items-center justify-center px-4 py-8"
-      style={{ background: 'linear-gradient(135deg, var(--color-primary-light) 0%, #fff 100%)' }}
+      style={{ background: 'linear-gradient(135deg, #080810 0%, #1a0a2e 50%, #080810 100%)' }}
     >
       <div className="w-full max-w-sm">
         <div className="flex justify-center mb-8">
-          <div className="px-6 py-4 rounded-2xl" style={{ backgroundColor: 'var(--color-primary)' }}>
-            <NexfitLogo size={44} textSize="text-2xl" />
-          </div>
+          <NexfitLogo size={52} textSize="text-3xl" />
         </div>
 
-        <div className="card shadow-lg">
-          <h2 className="text-lg font-semibold mb-5 dark:text-white">Criar conta</h2>
+        <div className="bg-[#0f0f1c] rounded-xl border border-purple-900/30 p-5 shadow-lg">
+          <h2 className="text-lg font-semibold mb-5 text-white">Criar conta</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
 
             {/* Tipo de profissional */}
@@ -62,8 +60,8 @@ export default function Register() {
                     onClick={() => setForm(f => ({ ...f, role: r.value }))}
                     className={`py-2.5 px-3 rounded-lg text-sm text-left border-2 transition-all font-medium ${
                       form.role === r.value
-                        ? 'border-[var(--color-primary)] bg-[var(--color-primary-light)] text-[var(--color-primary)]'
-                        : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                        ? 'border-purple-500 bg-purple-900/30 text-purple-300'
+                        : 'border-purple-900/40 text-gray-300 hover:border-purple-700'
                     }`}
                   >
                     {r.label}

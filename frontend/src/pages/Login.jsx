@@ -25,16 +25,14 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4"
-      style={{ background: 'linear-gradient(135deg, var(--color-primary-light) 0%, #fff 100%)' }}>
+      style={{ background: 'linear-gradient(135deg, #080810 0%, #1a0a2e 50%, #080810 100%)' }}>
       <div className="w-full max-w-sm">
         <div className="flex justify-center mb-8">
-          <div className="px-6 py-4 rounded-2xl" style={{ backgroundColor: 'var(--color-primary)' }}>
-            <NexfitLogo size={44} textSize="text-2xl" />
-          </div>
+          <NexfitLogo size={52} textSize="text-3xl" />
         </div>
 
-        <div className="card shadow-lg">
-          <h2 className="text-lg font-semibold mb-5 dark:text-white">Entrar</h2>
+        <div className="bg-[#0f0f1c] rounded-xl border border-purple-900/30 p-5 shadow-lg">
+          <h2 className="text-lg font-semibold mb-5 text-white">Entrar</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="label">E-mail</label>

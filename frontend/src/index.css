@@ -2,36 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Variáveis de tema (sobrescritas pelo ThemeContext) ─────────── */
 :root {
   --color-primary:       #7C3AED;
-  --color-primary-light: #2d1b69;
+  --color-primary-light: #a855f7;
   --color-primary-dark:  #5B21B6;
-  --color-sidebar:       #0f0f1a;
+  --color-sidebar:       #0d0d1a;
 }
 
-/* ── Base ────────────────────────────────────────────────────────── */
 @layer base {
   body {
-    @apply bg-[#0a0a0f] text-gray-100 font-sans transition-colors duration-200;
+    @apply bg-[#080810] text-white font-sans transition-colors duration-200;
   }
 }
 
-/* ── Componentes ─────────────────────────────────────────────────── */
 @layer components {
   .btn-primary {
-    @apply font-medium px-4 py-2 rounded-lg transition-colors duration-150
+    @apply font-medium px-4 py-2 rounded-lg transition-all duration-150
            flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed
-           text-white;
-    background-color: var(--color-primary);
+           text-white hover:brightness-110;
+    background: linear-gradient(135deg, #7C3AED, #5B21B6);
   }
   .btn-primary:hover {
-    filter: brightness(0.9);
+    background: linear-gradient(135deg, #a855f7, #7C3AED);
   }
 
   .btn-secondary {
-    @apply bg-[#1a1a2e] hover:bg-[#252540] text-gray-200 font-medium px-4 py-2
-           rounded-lg border border-gray-700 transition-colors duration-150
+    @apply bg-[#1a1a2e] hover:bg-[#2a2a45] text-white font-medium px-4 py-2
+           rounded-lg border border-purple-900/50 transition-all duration-150
            flex items-center gap-2;
   }
 
@@ -41,14 +38,14 @@
   }
 
   .input {
-    @apply w-full border border-gray-700 rounded-lg px-3 py-2 text-sm
-           bg-[#1a1a2e] text-gray-100 placeholder-gray-500
+    @apply w-full border border-purple-900/40 rounded-lg px-3 py-2 text-sm
+           bg-[#12121f] text-white placeholder-gray-500
            focus:outline-none focus:ring-2 focus:border-transparent
            transition-colors duration-150;
   }
   .input:focus {
-    --tw-ring-color: var(--color-primary);
-    box-shadow: 0 0 0 2px var(--color-primary);
+    --tw-ring-color: #7C3AED;
+    box-shadow: 0 0 0 2px #7C3AED;
   }
 
   .label {
@@ -56,7 +53,7 @@
   }
 
   .card {
-    @apply bg-[#12121f] rounded-xl shadow-lg border border-gray-800/50 p-5
+    @apply bg-[#0f0f1c] rounded-xl border border-purple-900/30 p-5
            transition-colors duration-200;
   }
 
@@ -64,16 +61,16 @@
     @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
   }
 
-  /* Sidebar usa variável de cor */
   .sidebar-bg {
     background-color: var(--color-sidebar);
   }
 
   .sidebar-active {
-    background-color: rgba(0,0,0,0.2);
+    background: rgba(124, 58, 237, 0.2);
+    border-left: 3px solid #7C3AED;
   }
 
   .sidebar-hover:hover {
-    background-color: rgba(0,0,0,0.15);
+    background-color: rgba(124, 58, 237, 0.1);
   }
 }

@@ -40,24 +40,24 @@ function NutritionistDashboard({ user }) {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Olá, {user?.name?.split(' ')[0]} 👋</h1>
-        <p className="text-gray-500 text-sm mt-1">
+        <h1 className="text-2xl font-bold text-white">Olá, {user?.name?.split(' ')[0]} 👋</h1>
+        <p className="text-gray-400 text-sm mt-1">
           {format(new Date(), "EEEE, dd 'de' MMMM", { locale: ptBR })}
         </p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Pacientes', value: patients.length, icon: Users, color: 'text-primary-700 bg-primary-50' },
-          { label: 'Consultas hoje', value: today.length, icon: CalendarDays, color: 'text-blue-700 bg-blue-50' },
-          { label: 'Próximas', value: upcoming.length, icon: Clock, color: 'text-orange-700 bg-orange-50' },
-          { label: 'Total consultas', value: appointments.length, icon: TrendingUp, color: 'text-purple-700 bg-purple-50' },
-        ].map(({ label, value, icon: Icon, color }) => (
+          { label: 'Pacientes', value: patients.length, icon: Users },
+          { label: 'Consultas hoje', value: today.length, icon: CalendarDays },
+          { label: 'Próximas', value: upcoming.length, icon: Clock },
+          { label: 'Total consultas', value: appointments.length, icon: TrendingUp },
+        ].map(({ label, value, icon: Icon }) => (
           <div key={label} className="card flex items-center gap-4">
-            <div className={`p-3 rounded-xl ${color}`}><Icon className="w-5 h-5" /></div>
+            <div className="p-3 rounded-xl text-purple-400 bg-purple-900/30"><Icon className="w-5 h-5" /></div>
             <div>
-              <p className="text-2xl font-bold">{loading ? '—' : value}</p>
-              <p className="text-xs text-gray-500">{label}</p>
+              <p className="text-2xl font-bold text-white">{loading ? '—' : value}</p>
+              <p className="text-xs text-gray-400">{label}</p>
             </div>
           </div>
         ))}
@@ -102,8 +102,8 @@ function NutritionistDashboard({ user }) {
               {patients.slice(0, 5).map(p => (
                 <li key={p.id}>
                   <Link to={`/patients/${p.id}`}
-                    className="flex items-center gap-3 hover:bg-gray-50 rounded-lg p-1.5 -mx-1.5 transition-colors">
-                    <div className="w-8 h-8 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-sm font-bold">
+                    className="flex items-center gap-3 hover:bg-purple-900/20 rounded-lg p-1.5 -mx-1.5 transition-colors">
+                    <div className="w-8 h-8 rounded-full bg-purple-900/30 text-purple-400 flex items-center justify-center text-sm font-bold">
                       {p.name[0].toUpperCase()}
                     </div>
                     <div>
@@ -162,24 +162,24 @@ function PersonalDashboard({ user }) {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Olá, {user?.name?.split(' ')[0]} 💪</h1>
-        <p className="text-gray-500 text-sm mt-1">
+        <h1 className="text-2xl font-bold text-white">Olá, {user?.name?.split(' ')[0]} 💪</h1>
+        <p className="text-gray-400 text-sm mt-1">
           {format(new Date(), "EEEE, dd 'de' MMMM", { locale: ptBR })}
         </p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Pacientes', value: clients.length, icon: Users, color: 'text-primary-700 bg-primary-50' },
-          { label: 'Sessões hoje', value: today.length, icon: CalendarDays, color: 'text-blue-700 bg-blue-50' },
-          { label: 'Planos ativos', value: plans, icon: Dumbbell, color: 'text-orange-700 bg-orange-50' },
-          { label: 'Próximas sessões', value: upcoming.length, icon: Clock, color: 'text-purple-700 bg-purple-50' },
-        ].map(({ label, value, icon: Icon, color }) => (
+          { label: 'Pacientes', value: clients.length, icon: Users },
+          { label: 'Sessões hoje', value: today.length, icon: CalendarDays },
+          { label: 'Planos ativos', value: plans, icon: Dumbbell },
+          { label: 'Próximas sessões', value: upcoming.length, icon: Clock },
+        ].map(({ label, value, icon: Icon }) => (
           <div key={label} className="card flex items-center gap-4">
-            <div className={`p-3 rounded-xl ${color}`}><Icon className="w-5 h-5" /></div>
+            <div className="p-3 rounded-xl text-purple-400 bg-purple-900/30"><Icon className="w-5 h-5" /></div>
             <div>
-              <p className="text-2xl font-bold">{loading ? '—' : value}</p>
-              <p className="text-xs text-gray-500">{label}</p>
+              <p className="text-2xl font-bold text-white">{loading ? '—' : value}</p>
+              <p className="text-xs text-gray-400">{label}</p>
             </div>
           </div>
         ))}
@@ -222,8 +222,8 @@ function PersonalDashboard({ user }) {
               {clients.slice(0, 5).map(c => (
                 <li key={c.id}>
                   <Link to={`/personal/clients/${c.id}`}
-                    className="flex items-center gap-3 hover:bg-gray-50 rounded-lg p-1.5 -mx-1.5 transition-colors">
-                    <div className="w-8 h-8 rounded-full bg-orange-100 text-orange-700 flex items-center justify-center text-sm font-bold">
+                    className="flex items-center gap-3 hover:bg-purple-900/20 rounded-lg p-1.5 -mx-1.5 transition-colors">
+                    <div className="w-8 h-8 rounded-full bg-purple-900/30 text-purple-400 flex items-center justify-center text-sm font-bold">
                       {c.name[0].toUpperCase()}
                     </div>
                     <div>
@@ -281,24 +281,24 @@ function PhysioDashboard({ user }) {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Olá, {user?.name?.split(' ')[0]} 🦴</h1>
-        <p className="text-gray-500 text-sm mt-1">
+        <h1 className="text-2xl font-bold text-white">Olá, {user?.name?.split(' ')[0]} 🦴</h1>
+        <p className="text-gray-400 text-sm mt-1">
           {format(new Date(), "EEEE, dd 'de' MMMM", { locale: ptBR })}
         </p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Pacientes', value: patients.length, icon: Users, color: 'text-primary-700 bg-primary-50' },
-          { label: 'Sessões hoje', value: today.length, icon: CalendarDays, color: 'text-blue-700 bg-blue-50' },
-          { label: 'Prontuários', value: records, icon: Activity, color: 'text-teal-700 bg-teal-50' },
-          { label: 'Próximas sessões', value: upcoming.length, icon: Clock, color: 'text-purple-700 bg-purple-50' },
-        ].map(({ label, value, icon: Icon, color }) => (
+          { label: 'Pacientes', value: patients.length, icon: Users },
+          { label: 'Sessões hoje', value: today.length, icon: CalendarDays },
+          { label: 'Prontuários', value: records, icon: Activity },
+          { label: 'Próximas sessões', value: upcoming.length, icon: Clock },
+        ].map(({ label, value, icon: Icon }) => (
           <div key={label} className="card flex items-center gap-4">
-            <div className={`p-3 rounded-xl ${color}`}><Icon className="w-5 h-5" /></div>
+            <div className="p-3 rounded-xl text-purple-400 bg-purple-900/30"><Icon className="w-5 h-5" /></div>
             <div>
-              <p className="text-2xl font-bold">{loading ? '—' : value}</p>
-              <p className="text-xs text-gray-500">{label}</p>
+              <p className="text-2xl font-bold text-white">{loading ? '—' : value}</p>
+              <p className="text-xs text-gray-400">{label}</p>
             </div>
           </div>
         ))}
@@ -341,8 +341,8 @@ function PhysioDashboard({ user }) {
               {patients.slice(0, 5).map(p => (
                 <li key={p.id}>
                   <Link to={`/physio/patients/${p.id}`}
-                    className="flex items-center gap-3 hover:bg-gray-50 rounded-lg p-1.5 -mx-1.5 transition-colors">
-                    <div className="w-8 h-8 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center text-sm font-bold">
+                    className="flex items-center gap-3 hover:bg-purple-900/20 rounded-lg p-1.5 -mx-1.5 transition-colors">
+                    <div className="w-8 h-8 rounded-full bg-purple-900/30 text-purple-400 flex items-center justify-center text-sm font-bold">
                       {p.name[0].toUpperCase()}
                     </div>
                     <div>

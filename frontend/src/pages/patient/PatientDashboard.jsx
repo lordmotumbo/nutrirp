@@ -47,7 +47,7 @@ export default function PatientDashboard() {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+    <div className="min-h-screen bg-[#080810]">
       {/* Header */}
       <header className="text-white px-5 py-4 flex items-center justify-between" style={{ backgroundColor: 'var(--color-primary)' }}>
         <NexfitLogo size={32} textSize="text-lg" />
