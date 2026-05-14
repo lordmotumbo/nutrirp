@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Utensils, CalendarDays, BookOpen, Target, MessageSquare, LogOut, TrendingUp, Bell, FileText, Dumbbell } from 'lucide-react'
 import axios from 'axios'
-import NutrirpLogo from '../../components/NutrirpLogo'
+import NexfitLogo from '../../components/NexfitLogo'
 import toast from 'react-hot-toast'
 
 const BASE = import.meta.env.VITE_API_URL || 'https://nutrirp-api.onrender.com/api'
@@ -50,7 +50,7 @@ export default function PatientDashboard() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       {/* Header */}
       <header className="text-white px-5 py-4 flex items-center justify-between" style={{ backgroundColor: 'var(--color-primary)' }}>
-        <NutrirpLogo size={32} textSize="text-lg" />
+        <NexfitLogo size={32} textSize="text-lg" />
         <button onClick={logout} className="flex items-center gap-1 text-white/70 hover:text-white text-sm">
           <LogOut className="w-4 h-4" /> Sair
         </button>

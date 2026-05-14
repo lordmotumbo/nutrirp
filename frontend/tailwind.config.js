@@ -5,21 +5,20 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Cores estáticas de fallback (sobrescritas pelas variáveis CSS)
         primary: {
-          50:  '#E8F5E9',
-          100: '#C8E6C9',
-          200: '#A5D6A7',
-          300: '#81C784',
-          400: '#66BB6A',
-          500: '#4CAF50',
-          600: '#43A047',
-          700: '#388E3C',
-          800: '#2E7D32',
-          900: '#1B5E20',
+          50:  '#faf5ff',
+          100: '#f3e8ff',
+          200: '#e9d5ff',
+          300: '#d8b4fe',
+          400: '#c084fc',
+          500: '#a855f7',
+          600: '#9333ea',
+          700: '#7c3aed',
+          800: '#6d28d9',
+          900: '#5b21b6',
         },
         gray: {
-          950: '#0a0a0a',
+          950: '#0a0a0f',
         },
       },
     },

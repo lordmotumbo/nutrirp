@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import NutrirpLogo from '../components/NutrirpLogo'
+import NexfitLogo from '../components/NexfitLogo'
 import toast from 'react-hot-toast'
 
 const ROLES = [
@@ -44,7 +44,7 @@ export default function Register() {
       <div className="w-full max-w-sm">
         <div className="flex justify-center mb-8">
           <div className="px-6 py-4 rounded-2xl" style={{ backgroundColor: 'var(--color-primary)' }}>
-            <NutrirpLogo size={44} textSize="text-2xl" />
+            <NexfitLogo size={44} textSize="text-2xl" />
           </div>
         </div>
 

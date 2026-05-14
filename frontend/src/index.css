@@ -4,38 +4,16 @@
 
 /* ── Variáveis de tema (sobrescritas pelo ThemeContext) ─────────── */
 :root {
-  --color-primary:       #2E7D32;
-  --color-primary-light: #E8F5E9;
-  --color-primary-dark:  #1B5E20;
-  --color-sidebar:       #2E7D32;
+  --color-primary:       #7C3AED;
+  --color-primary-light: #2d1b69;
+  --color-primary-dark:  #5B21B6;
+  --color-sidebar:       #0f0f1a;
 }
 
 /* ── Base ────────────────────────────────────────────────────────── */
 @layer base {
   body {
-    @apply bg-gray-50 text-gray-800 font-sans transition-colors duration-200;
-  }
-
-  /* Dark mode base */
-  .dark body,
-  .dark {
-    @apply bg-gray-950 text-gray-100;
-  }
-
-  .dark .card {
-    @apply bg-gray-900 border-gray-800 text-gray-100;
-  }
-
-  .dark .input {
-    @apply bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-500;
-  }
-
-  .dark .label {
-    @apply text-gray-300;
-  }
-
-  .dark .btn-secondary {
-    @apply bg-gray-800 border-gray-700 text-gray-200 hover:bg-gray-700;
+    @apply bg-[#0a0a0f] text-gray-100 font-sans transition-colors duration-200;
   }
 }
 
@@ -52,8 +30,8 @@
   }
 
   .btn-secondary {
-    @apply bg-white hover:bg-gray-50 text-gray-700 font-medium px-4 py-2
-           rounded-lg border border-gray-200 transition-colors duration-150
+    @apply bg-[#1a1a2e] hover:bg-[#252540] text-gray-200 font-medium px-4 py-2
+           rounded-lg border border-gray-700 transition-colors duration-150
            flex items-center gap-2;
   }
 
@@ -63,8 +41,9 @@
   }
 
   .input {
-    @apply w-full border border-gray-200 rounded-lg px-3 py-2 text-sm
-           focus:outline-none focus:ring-2 focus:border-transparent bg-white
+    @apply w-full border border-gray-700 rounded-lg px-3 py-2 text-sm
+           bg-[#1a1a2e] text-gray-100 placeholder-gray-500
+           focus:outline-none focus:ring-2 focus:border-transparent
            transition-colors duration-150;
   }
   .input:focus {
@@ -73,11 +52,11 @@
   }
 
   .label {
-    @apply block text-sm font-medium text-gray-700 mb-1;
+    @apply block text-sm font-medium text-gray-300 mb-1;
   }
 
   .card {
-    @apply bg-white rounded-xl shadow-sm border border-gray-100 p-5
+    @apply bg-[#12121f] rounded-xl shadow-lg border border-gray-800/50 p-5
            transition-colors duration-200;
   }
 

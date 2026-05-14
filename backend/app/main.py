@@ -416,9 +416,9 @@ seed_exercises()
 # ─────────────────────────────────────────────────────────────────────
 
 app = FastAPI(
-    title="NutriRP Platform API",
-    description="Plataforma SaaS integrada: Nutrição · Personal Trainer · Fisioterapia",
-    version="3.0.0",
+    title="NEXFIT Platform API",
+    description="Plataforma SaaS integrada de saúde e performance: Nutrição · Personal Trainer · Fisioterapia",
+    version="4.0.0",
 )
 
 app.add_middleware(
@@ -454,7 +454,7 @@ app.include_router(sharing.router)
 @app.get("/")
 def root():
     return {
-        "message": "NutriRP Platform API v3.0",
+        "message": "NEXFIT Platform API v4.0",
         "docs": "/docs",
         "modules": ["nutrition", "personal_trainer", "physiotherapy"],
     }

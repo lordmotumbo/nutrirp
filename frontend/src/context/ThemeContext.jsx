@@ -1,8 +1,15 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 
 const THEMES = {
+  nexfit: {
+    name: 'NEXFIT (padrão)',
+    primary: '#7C3AED',
+    primaryLight: '#2d1b69',
+    primaryDark: '#5B21B6',
+    sidebar: '#0f0f1a',
+  },
   verde: {
-    name: 'Verde (padrão)',
+    name: 'Verde',
     primary: '#2E7D32',
     primaryLight: '#E8F5E9',
     primaryDark: '#1B5E20',
@@ -41,7 +48,7 @@ const THEMES = {
 const ThemeContext = createContext(null)
 
 function applyTheme(themeKey, dark) {
-  const theme = THEMES[themeKey] || THEMES.verde
+  const theme = THEMES[themeKey] || THEMES.nexfit
   const root = document.documentElement
 
   root.style.setProperty('--color-primary', theme.primary)
@@ -57,8 +64,11 @@ function applyTheme(themeKey, dark) {
 }
 
 export function ThemeProvider({ children }) {
-  const [themeKey, setThemeKey] = useState(() => localStorage.getItem('nutrirp_theme') || 'verde')
-  const [dark, setDark] = useState(() => localStorage.getItem('nutrirp_dark') === 'true')
+  const [themeKey, setThemeKey] = useState(() => localStorage.getItem('nutrirp_theme') || 'nexfit')
+  const [dark, setDark] = useState(() => {
+    const stored = localStorage.getItem('nutrirp_dark')
+    return stored === null ? true : stored === 'true'
+  })
 
   useEffect(() => {
     applyTheme(themeKey, dark)

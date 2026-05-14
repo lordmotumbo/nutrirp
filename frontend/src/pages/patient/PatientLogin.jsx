@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import NutrirpLogo from '../../components/NutrirpLogo'
+import NexfitLogo from '../../components/NexfitLogo'
 import toast from 'react-hot-toast'
 
 const BASE = import.meta.env.VITE_API_URL || 'https://nutrirp-api.onrender.com/api'
@@ -31,7 +31,7 @@ export default function PatientLogin() {
         {/* Logo */}
         <div className="flex justify-center mb-8">
           <div className="px-6 py-4 rounded-2xl bg-green-700">
-            <NutrirpLogo size={44} textSize="text-2xl" />
+            <NexfitLogo size={44} textSize="text-2xl" />
           </div>
         </div>
 

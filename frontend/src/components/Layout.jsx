@@ -5,7 +5,7 @@ import {
   DollarSign, Dumbbell, Activity, Share2, Bell
 } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
-import NutrirpLogo from './NutrirpLogo'
+import NexfitLogo from './NexfitLogo'
 import api from '../api'
 
 const NAV_BY_ROLE = {
@@ -108,7 +108,7 @@ export default function Layout() {
         style={{ backgroundColor: 'var(--color-sidebar)' }}
       >
         <div className="px-4 py-4 border-b border-white/10">
-          <NutrirpLogo size={36} textSize="text-lg" />
+          <NexfitLogo size={36} textSize="text-lg" />
           {role !== 'nutritionist' && (
             <p className="text-xs text-white/60 mt-1">{ROLE_LABEL[role]}</p>
           )}
@@ -160,7 +160,7 @@ export default function Layout() {
             <Menu className="w-6 h-6 text-gray-600 dark:text-gray-300" />
           </button>
           <div className="md:hidden">
-            <NutrirpLogo size={28} textSize="text-base" />
+            <NexfitLogo size={28} textSize="text-base" />
           </div>
           <div className="hidden md:block" />
 
