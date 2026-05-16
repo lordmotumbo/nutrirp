@@ -115,6 +115,14 @@ def create(data: AnthropometryIn, db: Session = Depends(get_db), user: User = De
     db.add(record)
     db.commit()
     db.refresh(record)
+
+    # Atualiza peso e altura do paciente com os dados mais recentes
+    if data.weight:
+        patient.weight = data.weight
+    if data.height:
+        patient.height = data.height
+    db.commit()
+
     return record
 
 

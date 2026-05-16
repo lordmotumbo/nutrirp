@@ -28,6 +28,8 @@ async def search_foods(
     q_norm = _normalize(q)
 
     # ── 1. Busca local TACO ──────────────────────────────────────────
+    # Busca por múltiplas palavras (AND)
+    q_words = q_norm.split()
     local_results = [
         {
             "nome": item["nome"],
@@ -40,7 +42,7 @@ async def search_foods(
             "porcao": "100g",
         }
         for item in TACO
-        if q_norm in _normalize(item["nome"])
+        if all(word in _normalize(item["nome"]) for word in q_words)
     ]
 
     # Ordenar: começa com a query primeiro, depois contém

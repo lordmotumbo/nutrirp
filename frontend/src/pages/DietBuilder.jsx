@@ -127,8 +127,14 @@ export default function DietBuilder() {
           carbs: String(foodData.carb),
           fat: String(foodData.gord),
           notes: '',
+          // Valores base para 100g (para cálculo proporcional)
+          _base_calories: foodData.kcal,
+          _base_protein: foodData.prot,
+          _base_carbs: foodData.carb,
+          _base_fat: foodData.gord,
         }
-      : { food_name: '', quantity: '', unit: 'g', calories: '', protein: '', carbs: '', fat: '', notes: '' }
+      : { food_name: '', quantity: '', unit: 'g', calories: '', protein: '', carbs: '', fat: '', notes: '',
+          _base_calories: null, _base_protein: null, _base_carbs: null, _base_fat: null }
 
     setMeals(ms => ms.map((m, i) =>
       i === mealIdx ? { ...m, foods: [...m.foods, newFood] } : m
@@ -136,11 +142,25 @@ export default function DietBuilder() {
   }
 
   function updateFood(mealIdx, foodIdx, key, value) {
-    setMeals(ms => ms.map((m, i) =>
-      i === mealIdx
-        ? { ...m, foods: m.foods.map((f, j) => j === foodIdx ? { ...f, [key]: value } : f) }
-        : m
-    ))
+    setMeals(ms => ms.map((m, i) => {
+      if (i !== mealIdx) return m
+      return {
+        ...m,
+        foods: m.foods.map((f, j) => {
+          if (j !== foodIdx) return { ...f, [key]: value }
+          const updated = { ...f, [key]: value }
+          // Recalcula nutrientes proporcionalmente quando quantity muda
+          if (key === 'quantity' && f._base_calories != null) {
+            const ratio = (parseFloat(value) || 0) / 100
+            updated.calories = String(Math.round(f._base_calories * ratio * 10) / 10)
+            updated.protein = String(Math.round(f._base_protein * ratio * 10) / 10)
+            updated.carbs = String(Math.round(f._base_carbs * ratio * 10) / 10)
+            updated.fat = String(Math.round(f._base_fat * ratio * 10) / 10)
+          }
+          return updated
+        })
+      }
+    }))
   }
 
   function removeFood(mealIdx, foodIdx) {

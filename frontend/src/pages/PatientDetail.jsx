@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import {
   ArrowLeft, ClipboardList, Utensils, CalendarDays,
-  Pencil, Trash2, TrendingUp, Plus, FlaskConical, Pill, MessageSquare, Activity, FileText, UserPlus, X, BookOpen, Share2
+  Pencil, Trash2, TrendingUp, Plus, Pill, MessageSquare, Activity, FileText, UserPlus, X, BookOpen, Share2
 } from 'lucide-react'
 import api from '../api'
 import toast from 'react-hot-toast'
@@ -187,12 +187,11 @@ export default function PatientDetail() {
       </div>
 
       {/* Ações rápidas */}
-      <div className="grid grid-cols-3 md:grid-cols-7 gap-3">
+      <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
         {[
           { to: `/patients/${id}/anamnese`, icon: ClipboardList, label: 'Anamnese' },
           { to: `/patients/${id}/diet`, icon: Utensils, label: 'Dieta' },
           { to: `/patients/${id}/anthropometry`, icon: Activity, label: 'Antropometria' },
-          { to: `/patients/${id}/exams`, icon: FlaskConical, label: 'Exames' },
           { to: `/patients/${id}/supplements`, icon: Pill, label: 'Suplementos' },
           { to: `/patients/${id}/chat`, icon: MessageSquare, label: 'Chat' },
         ].map(({ to, icon: Icon, label }) => (
