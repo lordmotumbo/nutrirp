@@ -183,13 +183,13 @@ export default function Chat() {
 
   return (
     <div
-      className="flex flex-col bg-white dark:bg-gray-900 rounded-xl border dark:border-gray-700 overflow-hidden"
+      className="flex flex-col bg-[#0f0f1c] rounded-xl border border-purple-900/30 overflow-hidden"
       style={{ height: 'calc(100vh - 100px)' }}
       onDrop={handleDrop}
       onDragOver={e => e.preventDefault()}
     >
       {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b dark:border-gray-700 bg-white dark:bg-gray-900 flex-shrink-0">
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-purple-900/30 bg-[#0f0f1c] flex-shrink-0">
         <Link to={patient ? `/patients/${id}` : '#'} className="text-gray-400 hover:text-gray-600">
           <ArrowLeft className="w-5 h-5" />
         </Link>
@@ -225,7 +225,7 @@ export default function Chat() {
                 className={`max-w-xs lg:max-w-md rounded-2xl overflow-hidden ${
                   m.sender === 'nutritionist'
                     ? 'bg-primary-600 text-white rounded-br-sm'
-                    : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-white rounded-bl-sm shadow-sm border dark:border-gray-700'
+                    : 'bg-[#0f0f1c] text-gray-200 rounded-bl-sm shadow-sm border border-purple-900/30'
                 }`}
               >
                 {/* Imagem */}
@@ -286,7 +286,7 @@ export default function Chat() {
 
       {/* Preview do anexo */}
       {attachment && (
-        <div className="px-4 py-2 border-t dark:border-gray-700 bg-white dark:bg-gray-900 flex-shrink-0">
+        <div className="px-4 py-2 border-t border-purple-900/30 bg-[#0f0f1c] flex-shrink-0">
           <div className="flex items-center gap-3 p-2 bg-gray-50 dark:bg-gray-800 rounded-xl">
             {attachment.type === 'image' ? (
               <img src={attachment.preview} alt="" className="w-12 h-12 object-cover rounded-lg" />
@@ -307,7 +307,7 @@ export default function Chat() {
       )}
 
       {/* Input */}
-      <div className="px-4 py-3 border-t dark:border-gray-700 bg-white dark:bg-gray-900 flex-shrink-0">
+      <div className="px-4 py-3 border-t border-purple-900/30 bg-[#0f0f1c] flex-shrink-0">
         <div className="flex items-end gap-2">
           <button
             type="button"

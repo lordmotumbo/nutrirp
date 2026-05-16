@@ -296,9 +296,9 @@ export default function Agenda() {
       {/* Modal nova consulta */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
-            <div className="flex items-center justify-between px-6 py-4 border-b">
-              <h2 className="font-semibold">Nova Consulta</h2>
+          <div className="bg-[#0f0f1c] rounded-2xl shadow-xl w-full max-w-md border border-purple-900/30">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-purple-900/30">
+              <h2 className="font-semibold text-white">Nova Consulta</h2>
               <button onClick={() => setShowModal(false)}><X className="w-5 h-5 text-gray-400" /></button>
             </div>
             <form onSubmit={handleCreate} className="px-6 py-5 space-y-4">
@@ -349,9 +349,9 @@ export default function Agenda() {
       {/* Modal ação na consulta */}
       {showActionModal && actionAppt && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-md">
-            <div className="flex items-center justify-between px-6 py-4 border-b dark:border-gray-700">
-              <h2 className="font-semibold dark:text-white">
+          <div className="bg-[#0f0f1c] rounded-2xl shadow-xl w-full max-w-md border border-purple-900/30">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-purple-900/30">
+              <h2 className="font-semibold text-white">
                 {actionType === 'confirmar' && '✅ Confirmar consulta'}
                 {actionType === 'cancelar' && '❌ Cancelar consulta'}
                 {actionType === 'reagendar' && '🔄 Reagendar consulta'}
@@ -359,8 +359,8 @@ export default function Agenda() {
               <button onClick={() => setShowActionModal(false)}><X className="w-5 h-5 text-gray-400" /></button>
             </div>
             <form onSubmit={handleAction} className="px-6 py-5 space-y-4">
-              <div className="p-3 rounded-xl bg-gray-50 dark:bg-gray-800">
-                <p className="text-sm font-medium dark:text-white">{actionAppt.patient_name}</p>
+              <div className="p-3 rounded-xl bg-[#12121f]">
+                <p className="text-sm font-medium text-white">{actionAppt.patient_name}</p>
                 <p className="text-xs text-gray-400">
                   {format(parseISO(actionAppt.scheduled_at), "dd/MM/yyyy 'às' HH:mm")} · {actionAppt.type}
                 </p>

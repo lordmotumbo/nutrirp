@@ -122,9 +122,9 @@ export default function PersonalWorkouts() {
       {/* Modal novo plano */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between px-6 py-4 border-b dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-900">
-              <h2 className="font-semibold dark:text-white">Novo Plano de Treino</h2>
+          <div className="bg-[#0f0f1c] rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto border border-purple-900/30">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-purple-900/30 sticky top-0 bg-[#0f0f1c]">
+              <h2 className="font-semibold text-white">Novo Plano de Treino</h2>
               <button onClick={() => setShowModal(false)}><X className="w-5 h-5 text-gray-400" /></button>
             </div>
             <form onSubmit={handleCreate} className="px-6 py-5 space-y-4">

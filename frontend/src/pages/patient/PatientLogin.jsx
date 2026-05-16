@@ -26,7 +26,7 @@ export default function PatientLogin() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-green-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#0a0a14] px-4">
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="flex justify-center mb-8">
@@ -36,16 +36,16 @@ export default function PatientLogin() {
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-lg font-semibold mb-1 text-gray-800">Área do Paciente</h2>
+        <div className="bg-[#0f0f1c] rounded-xl shadow-sm border border-purple-900/30 p-6">
+          <h2 className="text-lg font-semibold mb-1 text-white">Área do Paciente</h2>
           <p className="text-xs text-gray-400 mb-5">Acesse seu plano alimentar e acompanhe sua evolução</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+              <label className="block text-sm font-medium text-gray-200 mb-1">E-mail</label>
               <input
                 type="email"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
+                className="w-full border border-purple-900/40 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-[#12121f] text-white"
                 value={form.email}
                 onChange={set('email')}
                 required
@@ -53,10 +53,10 @@ export default function PatientLogin() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+              <label className="block text-sm font-medium text-gray-200 mb-1">Senha</label>
               <input
                 type="password"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
+                className="w-full border border-purple-900/40 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 bg-[#12121f] text-white"
                 value={form.password}
                 onChange={set('password')}
                 required

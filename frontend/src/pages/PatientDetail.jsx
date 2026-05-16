@@ -311,9 +311,9 @@ export default function PatientDetail() {
       {/* Modal agendar consulta */}
       {showScheduleModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-md">
-            <div className="flex items-center justify-between px-6 py-4 border-b dark:border-gray-700">
-              <h2 className="font-semibold dark:text-white">📅 Agendar Consulta — {patient.name}</h2>
+          <div className="bg-[#0f0f1c] rounded-2xl shadow-xl w-full max-w-md border border-purple-900/30">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-purple-900/30">
+              <h2 className="font-semibold text-white">📅 Agendar Consulta — {patient.name}</h2>
               <button onClick={() => setShowScheduleModal(false)}><X className="w-5 h-5 text-gray-400" /></button>
             </div>
             <form onSubmit={handleSchedule} className="px-6 py-5 space-y-4">
@@ -364,9 +364,9 @@ export default function PatientDetail() {
       {/* Modal relatório diário */}
       {showDailyReport && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-lg max-h-[85vh] overflow-y-auto">
-            <div className="flex items-center justify-between px-6 py-4 border-b dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-900 z-10">
-              <h2 className="font-semibold dark:text-white">📋 Diário — {patient.name}</h2>
+          <div className="bg-[#0f0f1c] rounded-2xl shadow-xl w-full max-w-lg max-h-[85vh] overflow-y-auto border border-purple-900/30">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-purple-900/30 sticky top-0 bg-[#0f0f1c] z-10">
+              <h2 className="font-semibold text-white">📋 Diário — {patient.name}</h2>
               <button onClick={() => setShowDailyReport(false)}><X className="w-5 h-5 text-gray-400" /></button>
             </div>
             <div className="px-6 py-4 space-y-4">
@@ -447,10 +447,10 @@ export default function PatientDetail() {
       {/* Modal criar acesso portal do paciente */}
       {showPortalModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-sm">
-            <div className="flex items-center justify-between px-6 py-4 border-b dark:border-gray-700">
+          <div className="bg-[#0f0f1c] rounded-2xl shadow-xl w-full max-w-sm border border-purple-900/30">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-purple-900/30">
               <div>
-                <h2 className="font-semibold dark:text-white">Criar Acesso — Portal do Paciente</h2>
+                <h2 className="font-semibold text-white">Criar Acesso — Portal do Paciente</h2>
                 <p className="text-xs text-gray-400 mt-0.5">O paciente poderá acessar em <b>/paciente</b></p>
               </div>
               <button onClick={() => setShowPortalModal(false)}><X className="w-5 h-5 text-gray-400" /></button>

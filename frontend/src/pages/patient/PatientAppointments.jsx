@@ -188,9 +188,9 @@ export default function PatientAppointments() {
       {/* Modal solicitar consulta */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40">
-          <div className="bg-white dark:bg-gray-900 rounded-t-2xl w-full max-w-lg">
-            <div className="flex items-center justify-between px-5 py-4 border-b dark:border-gray-700">
-              <h2 className="font-semibold dark:text-white">Solicitar Consulta</h2>
+          <div className="bg-[#0f0f1c] rounded-t-2xl w-full max-w-lg border border-purple-900/30">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-purple-900/30">
+              <h2 className="font-semibold text-white">Solicitar Consulta</h2>
               <button onClick={() => setShowModal(false)}><X className="w-5 h-5 text-gray-400" /></button>
             </div>
             <form onSubmit={handleRequest} className="px-5 py-4 space-y-4">
@@ -211,9 +211,9 @@ export default function PatientAppointments() {
       {/* Modal ação na consulta */}
       {showActionModal && selectedAppt && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40">
-          <div className="bg-white dark:bg-gray-900 rounded-t-2xl w-full max-w-lg">
-            <div className="flex items-center justify-between px-5 py-4 border-b dark:border-gray-700">
-              <h2 className="font-semibold dark:text-white capitalize">
+          <div className="bg-[#0f0f1c] rounded-t-2xl w-full max-w-lg border border-purple-900/30">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-purple-900/30">
+              <h2 className="font-semibold text-white capitalize">
                 {actionType === 'confirmar' && '✅ Confirmar consulta'}
                 {actionType === 'cancelar' && '❌ Cancelar consulta'}
                 {actionType === 'reagendar' && '🔄 Solicitar reagendamento'}

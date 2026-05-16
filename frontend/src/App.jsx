@@ -2,7 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { ThemeProvider } from './context/ThemeContext'
-import ThemePanel from './components/ThemePanel'
+
 import Layout from './components/Layout'
 
 // ── Páginas comuns ────────────────────────────────────────────────────
@@ -58,7 +58,6 @@ function AppRoutes() {
   return (
     <>
       <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
-      <ThemePanel />
       <Routes>
         {/* ── Auth ── */}
         <Route path="/login" element={<Login />} />

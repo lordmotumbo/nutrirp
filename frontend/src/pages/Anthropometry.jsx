@@ -185,7 +185,7 @@ export default function Anthropometry() {
               { label: 'TMB', value: result.bmr, unit: 'kcal' },
               { label: 'GET', value: result.tdee, unit: 'kcal/dia' },
             ].filter(r => r.value).map(({ label, value, unit }) => (
-              <div key={label} className="bg-white rounded-lg p-3 text-center shadow-sm">
+              <div key={label} className="bg-[#12121f] rounded-lg p-3 text-center shadow-sm border border-purple-900/20">
                 <p className="text-lg font-bold text-primary-700">{value} <span className="text-xs font-normal text-gray-400">{unit}</span></p>
                 <p className="text-xs text-gray-500">{label}</p>
               </div>

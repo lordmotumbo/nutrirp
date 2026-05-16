@@ -193,7 +193,7 @@ export default function PatientChat() {
                 <div className={`max-w-xs rounded-2xl overflow-hidden ${
                   m.sender === 'patient'
                     ? 'text-white rounded-br-sm'
-                    : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-white rounded-bl-sm shadow-sm'
+                    : 'bg-[#0f0f1c] text-gray-200 rounded-bl-sm shadow-sm'
                 }`} style={m.sender === 'patient' ? { backgroundColor: 'var(--color-primary)' } : {}}>
 
                   {m.attachment_type === 'image' && m.attachment_url && (
@@ -235,7 +235,7 @@ export default function PatientChat() {
 
       {/* Preview anexo */}
       {attachment && (
-        <div className="px-4 py-2 bg-white dark:bg-gray-900 border-t dark:border-gray-700 flex-shrink-0">
+        <div className="px-4 py-2 bg-[#0f0f1c] border-t border-purple-900/30 flex-shrink-0">
           <div className="max-w-lg mx-auto flex items-center gap-3 p-2 bg-gray-50 dark:bg-gray-800 rounded-xl">
             {attachment.type === 'image' ? (
               <img src={attachment.preview} alt="" className="w-12 h-12 object-cover rounded-lg" />
@@ -256,7 +256,7 @@ export default function PatientChat() {
       )}
 
       {/* Input */}
-      <div className="px-4 py-3 bg-white dark:bg-gray-900 border-t dark:border-gray-700 flex-shrink-0">
+      <div className="px-4 py-3 bg-[#0f0f1c] border-t border-purple-900/30 flex-shrink-0">
         <div className="max-w-lg mx-auto flex items-end gap-2">
           <button type="button" onClick={() => fileInputRef.current?.click()}
             className="p-2 rounded-xl text-gray-400 hover:text-primary-600 hover:bg-primary-50 transition-colors flex-shrink-0"

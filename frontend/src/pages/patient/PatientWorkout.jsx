@@ -96,7 +96,7 @@ export default function PatientWorkout() {
                         className={`px-4 py-2 rounded-lg text-sm font-medium border-2 transition-all ${
                           activeSession === s.id
                             ? 'border-[var(--color-primary)] bg-[var(--color-primary-light)] text-[var(--color-primary)]'
-                            : 'border-gray-200 text-gray-600 bg-white dark:bg-gray-900 dark:border-gray-700'
+                            : 'border-gray-200 text-gray-600 bg-[#0f0f1c] dark:border-gray-700'
                         }`}
                       >
                         {s.name}

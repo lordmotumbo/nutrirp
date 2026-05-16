@@ -108,9 +108,9 @@ export default function Exams() {
       {/* Modal resultado */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg">
-            <div className="flex items-center justify-between px-6 py-4 border-b">
-              <h2 className="font-semibold">Adicionar Resultado</h2>
+          <div className="bg-[#0f0f1c] rounded-2xl shadow-xl w-full max-w-lg border border-purple-900/30">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-purple-900/30">
+              <h2 className="font-semibold text-white">Adicionar Resultado</h2>
               <button onClick={() => setShowModal(false)}><X className="w-5 h-5 text-gray-400" /></button>
             </div>
             <form onSubmit={handleAddResult} className="px-6 py-5 space-y-4">
@@ -139,9 +139,9 @@ export default function Exams() {
       {/* Modal solicitação */}
       {showRequestModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between px-6 py-4 border-b">
-              <h2 className="font-semibold">Solicitar Exames</h2>
+          <div className="bg-[#0f0f1c] rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto border border-purple-900/30">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-purple-900/30">
+              <h2 className="font-semibold text-white">Solicitar Exames</h2>
               <button onClick={() => setShowRequestModal(false)}><X className="w-5 h-5 text-gray-400" /></button>
             </div>
             <form onSubmit={handleRequest} className="px-6 py-5 space-y-4">
@@ -149,9 +149,9 @@ export default function Exams() {
                 <input className="input" value={requestForm.title} onChange={e => setRequestForm(f => ({ ...f, title: e.target.value }))} /></div>
               <div>
                 <label className="label">Selecione os exames</label>
-                <div className="grid grid-cols-2 gap-1 max-h-48 overflow-y-auto border rounded-lg p-2">
+                <div className="grid grid-cols-2 gap-1 max-h-48 overflow-y-auto border border-purple-900/30 rounded-lg p-2 bg-[#12121f]">
                   {COMMON_EXAMS.map(exam => (
-                    <label key={exam} className="flex items-center gap-2 text-sm cursor-pointer hover:bg-gray-50 px-2 py-1 rounded">
+                    <label key={exam} className="flex items-center gap-2 text-sm cursor-pointer hover:bg-purple-900/20 px-2 py-1 rounded text-gray-200">
                       <input type="checkbox" checked={selectedExams.includes(exam)} onChange={() => toggleExam(exam)} />
                       {exam}
                     </label>

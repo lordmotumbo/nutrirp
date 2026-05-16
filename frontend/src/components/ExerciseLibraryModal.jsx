@@ -127,17 +127,17 @@ export default function ExerciseLibraryModal({ onSelect, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+      <div className="bg-[#0f0f1c] rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col border border-purple-900/30">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b dark:border-gray-700 shrink-0">
-          <h2 className="font-semibold dark:text-white flex items-center gap-2">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-purple-900/30 shrink-0">
+          <h2 className="font-semibold text-white flex items-center gap-2">
             <Dumbbell className="w-4 h-4 text-primary-600" /> Biblioteca de Exercícios
           </h2>
           <button onClick={onClose}><X className="w-5 h-5 text-gray-400" /></button>
         </div>
 
         {/* Filtros */}
-        <div className="px-6 py-3 border-b dark:border-gray-700 space-y-2 shrink-0">
+        <div className="px-6 py-3 border-b border-purple-900/30 space-y-2 shrink-0">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
@@ -219,7 +219,7 @@ export default function ExerciseLibraryModal({ onSelect, onClose }) {
 
           {/* Preview do exercício selecionado */}
           {preview && (
-            <div className="w-72 border-l dark:border-gray-700 flex flex-col shrink-0">
+            <div className="w-72 border-l border-purple-900/30 flex flex-col shrink-0">
               <div className="p-4 space-y-3 overflow-y-auto flex-1">
                 {/* Animação grande */}
                 <div className="w-full h-48 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-800">
@@ -263,7 +263,7 @@ export default function ExerciseLibraryModal({ onSelect, onClose }) {
                 )}
               </div>
 
-              <div className="p-4 border-t dark:border-gray-700 shrink-0">
+              <div className="p-4 border-t border-purple-900/30 shrink-0">
                 <button
                   className="btn-primary w-full justify-center"
                   onClick={() => { onSelect(preview); onClose() }}
@@ -276,7 +276,7 @@ export default function ExerciseLibraryModal({ onSelect, onClose }) {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 border-t dark:border-gray-700 shrink-0">
+        <div className="px-6 py-3 border-t border-purple-900/30 shrink-0">
           {!showCreate ? (
             <button
               className="btn-secondary w-full justify-center text-sm"

@@ -118,16 +118,16 @@ export default function SharePatientModal({ patient, onClose, onShared }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+      <div className="bg-[#0f0f1c] rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto border border-purple-900/30">
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-900 z-10">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-purple-900/30 sticky top-0 bg-[#0f0f1c] z-10">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-primary-50">
               <Share2 className="w-5 h-5 text-primary-600" />
             </div>
             <div>
-              <h2 className="font-semibold dark:text-white">Compartilhar paciente</h2>
+              <h2 className="font-semibold text-white">Compartilhar paciente</h2>
               <p className="text-xs text-gray-400">{patient?.name}</p>
             </div>
           </div>
@@ -145,13 +145,13 @@ export default function SharePatientModal({ patient, onClose, onShared }) {
                 <CheckCircle className="w-8 h-8 text-green-600" />
               </div>
               <div>
-                <h3 className="text-lg font-bold dark:text-white">Compartilhado com sucesso!</h3>
+                <h3 className="text-lg font-bold text-white">Compartilhado com sucesso!</h3>
                 <p className="text-gray-500 text-sm mt-1">{result.message}</p>
               </div>
               <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 text-left space-y-2">
-                <p className="text-sm"><span className="font-medium">Paciente:</span> {result.patient_name}</p>
-                <p className="text-sm"><span className="font-medium">Compartilhado com:</span> {result.shared_with}</p>
-                <p className="text-sm"><span className="font-medium">Área de acesso:</span> {result.access_role}</p>
+                <p className="text-sm text-gray-200"><span className="font-medium">Paciente:</span> {result.patient_name}</p>
+                <p className="text-sm text-gray-200"><span className="font-medium">Compartilhado com:</span> {result.shared_with}</p>
+                <p className="text-sm text-gray-200"><span className="font-medium">Área de acesso:</span> {result.access_role}</p>
                 <div>
                   <p className="text-sm font-medium mb-1">Dados compartilhados:</p>
                   <div className="flex flex-wrap gap-1">
@@ -200,10 +200,10 @@ export default function SharePatientModal({ patient, onClose, onShared }) {
                       className={`w-full text-left p-3 rounded-xl border-2 transition-all ${
                         targetRole === opt.value
                           ? opt.activeColor + ' border-2'
-                          : 'border-gray-200 hover:border-gray-300 dark:border-gray-700'
+                          : 'border-purple-900/30 hover:border-purple-900/50'
                       }`}
                     >
-                      <p className="font-medium text-sm dark:text-white">{opt.label}</p>
+                      <p className="font-medium text-sm text-white">{opt.label}</p>
                       <p className="text-xs text-gray-500 mt-0.5">{opt.description}</p>
                     </button>
                   ))}
@@ -218,7 +218,7 @@ export default function SharePatientModal({ patient, onClose, onShared }) {
                   </p>
                   <div className="flex flex-wrap gap-1.5">
                     {preview.data_labels.map((label, i) => (
-                      <span key={i} className="flex items-center gap-1 px-2 py-1 bg-white dark:bg-gray-700 rounded-lg text-xs border dark:border-gray-600 dark:text-gray-300">
+                      <span key={i} className="flex items-center gap-1 px-2 py-1 bg-[#12121f] rounded-lg text-xs border border-purple-900/30 text-gray-300">
                         <span>{DATA_ICONS[preview.shared_data[i]] || '📄'}</span>
                         {label}
                       </span>
@@ -253,9 +253,9 @@ export default function SharePatientModal({ patient, onClose, onShared }) {
 
           {/* Profissionais com acesso atual */}
           {professionals.length > 0 && step < 4 && (
-            <div className="border-t dark:border-gray-700 pt-4">
+            <div className="border-t border-purple-900/30 pt-4">
               <button
-                className="flex items-center justify-between w-full text-sm font-medium text-gray-600 dark:text-gray-300"
+                className="flex items-center justify-between w-full text-sm font-medium text-gray-300"
                 onClick={() => setShowProfessionals(!showProfessionals)}
               >
                 <span className="flex items-center gap-2">

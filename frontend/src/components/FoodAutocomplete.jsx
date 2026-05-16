@@ -71,7 +71,7 @@ export default function FoodAutocomplete({ onSelect, placeholder = "Buscar alime
       </div>
 
       {open && results.length > 0 && (
-        <ul className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-72 overflow-y-auto">
+        <ul className="absolute z-50 w-full mt-1 bg-[#0f0f1c] border border-purple-900/30 rounded-xl shadow-lg max-h-72 overflow-y-auto">
           {results.map((food, i) => (
             <li key={i}>
               <button
@@ -103,7 +103,7 @@ export default function FoodAutocomplete({ onSelect, placeholder = "Buscar alime
       )}
 
       {open && query.length >= 2 && results.length === 0 && !loading && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg px-4 py-3">
+        <div className="absolute z-50 w-full mt-1 bg-[#0f0f1c] border border-purple-900/30 rounded-xl shadow-lg px-4 py-3">
           <p className="text-sm text-gray-400">Nenhum alimento encontrado para "{query}"</p>
         </div>
       )}
