@@ -1,19 +1,21 @@
 import { useEffect, useState, useRef } from 'react'
-import { X, Search, Plus, Dumbbell, Filter } from 'lucide-react'
+import { X, Search, Plus, Dumbbell } from 'lucide-react'
 import api from '../api'
 import toast from 'react-hot-toast'
 
-/* ─── Mapeamento de grupos musculares para o body map ─── */
-const BODY_MUSCLES = {
-  // Frente
-  peito: { label: 'Peito', side: 'front' },
-  ombros: { label: 'Ombros', side: 'front' },
-  bracos: { label: 'Braços', side: 'front' },
-  core: { label: 'Core', side: 'front' },
-  pernas: { label: 'Pernas', side: 'front' },
-  // Costas
-  costas: { label: 'Costas', side: 'back' },
-}
+/* ─── Grupos musculares do body map (separados individualmente) ─── */
+const BODY_MUSCLES = [
+  { id: 'peito', label: 'Peito', group: 'peito', subgroup: null },
+  { id: 'costas', label: 'Costas', group: 'costas', subgroup: null },
+  { id: 'ombros', label: 'Ombros', group: 'ombros', subgroup: null },
+  { id: 'bracos', label: 'Braços', group: 'bracos', subgroup: null },
+  { id: 'core', label: 'Core', group: 'core', subgroup: null },
+  { id: 'quadriceps', label: 'Quadríceps', group: 'pernas', subgroup: 'quadriceps' },
+  { id: 'gluteos', label: 'Glúteos', group: 'pernas', subgroup: 'gluteos' },
+  { id: 'isquiotibiais', label: 'Posterior', group: 'pernas', subgroup: 'isquiotibiais' },
+  { id: 'panturrilha', label: 'Panturrilha', group: 'pernas', subgroup: 'panturrilha' },
+  { id: 'adutores', label: 'Adutores', group: 'pernas', subgroup: 'adutores' },
+]
 
 const EQUIPMENT_OPTIONS = [
   { value: 'destaque', label: 'Destaque', icon: '⭐' },
@@ -29,7 +31,7 @@ const EQUIPMENT_OPTIONS = [
   { value: 'peso_corporal', label: 'Peso Corporal', icon: '🧍' },
   { value: 'bola_medicina', label: 'Bola de Medicina', icon: '⚽' },
   { value: 'alongamentos', label: 'Alongamentos', icon: '🤸' },
-  { value: 'banda', label: 'Banda', icon: '🎗️' },
+  { value: 'banda', label: 'Banda/Elástico', icon: '🎗️' },
   { value: 'trx', label: 'TRX', icon: '🪢' },
   { value: 'bosu_ball', label: 'Bosu Ball', icon: '🔵' },
   { value: 'smith_machine', label: 'Smith Machine', icon: '🏗️' },
@@ -83,149 +85,158 @@ function ExerciseAnimation({ thumbnail, videoUrl, name, muscleGroup, className =
 }
 
 /**
- * Body Map SVG - Corpo humano frente e costas com áreas clicáveis
+ * Body Map SVG - Corpo humano realista com áreas clicáveis separadas
+ * Cada parte das pernas é independente (quadríceps, glúteos, isquiotibiais, panturrilha)
  */
 function BodyMap({ selectedMuscle, onSelectMuscle }) {
-  const getColor = (muscle) => selectedMuscle === muscle ? '#ef4444' : '#d1d5db'
-  const getOpacity = (muscle) => selectedMuscle === muscle ? 0.8 : 0.3
+  const isSelected = (muscle) => selectedMuscle === muscle
+  const getFill = (muscle) => isSelected(muscle) ? '#ef4444' : '#b8c4ce'
+  const getStroke = (muscle) => isSelected(muscle) ? '#dc2626' : '#8899a6'
+  const getOpacity = (muscle) => isSelected(muscle) ? 0.9 : 0.6
+
+  const muscleStyle = (muscle) => ({
+    fill: getFill(muscle),
+    stroke: getStroke(muscle),
+    strokeWidth: 0.8,
+    opacity: getOpacity(muscle),
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+  })
 
   return (
-    <div className="flex items-center justify-center gap-4">
-      {/* Corpo Frente */}
+    <div className="flex items-center justify-center gap-6">
+      {/* ─── FRENTE ─── */}
       <div className="relative">
-        <svg width="140" height="320" viewBox="0 0 140 320" className="select-none">
+        <svg width="150" height="340" viewBox="0 0 150 340" className="select-none">
           {/* Cabeça */}
-          <ellipse cx="70" cy="25" rx="18" ry="22" fill="#c9c9c9" stroke="#999" strokeWidth="0.5" />
+          <ellipse cx="75" cy="28" rx="16" ry="20" fill="#d4b896" stroke="#a08060" strokeWidth="0.8" />
+          {/* Cabelo */}
+          <path d="M59 18 C59 8 91 8 91 18 C91 12 59 12 59 18Z" fill="#4a3728" opacity="0.7" />
           {/* Pescoço */}
-          <rect x="62" y="45" width="16" height="12" fill="#c9c9c9" />
+          <rect x="67" y="46" width="16" height="14" rx="3" fill="#d4b896" stroke="#a08060" strokeWidth="0.5" />
 
-          {/* Ombros - clicável */}
-          <ellipse cx="38" cy="68" rx="14" ry="10" fill={getColor('ombros')} opacity={getOpacity('ombros')}
-            className="cursor-pointer hover:opacity-70 transition-opacity"
-            onClick={() => onSelectMuscle('ombros')} />
-          <ellipse cx="102" cy="68" rx="14" ry="10" fill={getColor('ombros')} opacity={getOpacity('ombros')}
-            className="cursor-pointer hover:opacity-70 transition-opacity"
-            onClick={() => onSelectMuscle('ombros')} />
+          {/* ─ Ombros (deltóides) ─ */}
+          <path d="M45 62 C38 62 30 68 28 76 L32 80 C36 72 42 66 50 64 Z"
+            style={muscleStyle('ombros')} onClick={() => onSelectMuscle('ombros')} />
+          <path d="M105 62 C112 62 120 68 122 76 L118 80 C114 72 108 66 100 64 Z"
+            style={muscleStyle('ombros')} onClick={() => onSelectMuscle('ombros')} />
 
-          {/* Peito - clicável */}
-          <ellipse cx="52" cy="90" rx="18" ry="16" fill={getColor('peito')} opacity={getOpacity('peito')}
-            className="cursor-pointer hover:opacity-70 transition-opacity"
-            onClick={() => onSelectMuscle('peito')} />
-          <ellipse cx="88" cy="90" rx="18" ry="16" fill={getColor('peito')} opacity={getOpacity('peito')}
-            className="cursor-pointer hover:opacity-70 transition-opacity"
-            onClick={() => onSelectMuscle('peito')} />
+          {/* ─ Peito (peitoral) ─ */}
+          <path d="M50 68 C50 64 58 62 75 62 C92 62 100 64 100 68 L100 92 C100 100 92 104 75 104 C58 104 50 100 50 92 Z"
+            style={muscleStyle('peito')} onClick={() => onSelectMuscle('peito')} />
 
-          {/* Core/Abdômen - clicável */}
-          <rect x="50" y="108" width="40" height="50" rx="6" fill={getColor('core')} opacity={getOpacity('core')}
-            className="cursor-pointer hover:opacity-70 transition-opacity"
-            onClick={() => onSelectMuscle('core')} />
+          {/* ─ Core (abdômen) ─ */}
+          <path d="M54 106 L96 106 L94 158 C94 162 88 164 75 164 C62 164 56 162 56 158 Z"
+            style={muscleStyle('core')} onClick={() => onSelectMuscle('core')} />
+          {/* Linhas do abdômen */}
+          <line x1="75" y1="108" x2="75" y2="158" stroke="#8899a6" strokeWidth="0.4" opacity="0.5" />
+          <line x1="56" y1="120" x2="94" y2="120" stroke="#8899a6" strokeWidth="0.3" opacity="0.4" />
+          <line x1="57" y1="134" x2="93" y2="134" stroke="#8899a6" strokeWidth="0.3" opacity="0.4" />
+          <line x1="58" y1="148" x2="92" y2="148" stroke="#8899a6" strokeWidth="0.3" opacity="0.4" />
 
-          {/* Braços - clicável */}
-          <rect x="18" y="75" width="14" height="55" rx="7" fill={getColor('bracos')} opacity={getOpacity('bracos')}
-            className="cursor-pointer hover:opacity-70 transition-opacity"
-            onClick={() => onSelectMuscle('bracos')} />
-          <rect x="108" y="75" width="14" height="55" rx="7" fill={getColor('bracos')} opacity={getOpacity('bracos')}
-            className="cursor-pointer hover:opacity-70 transition-opacity"
-            onClick={() => onSelectMuscle('bracos')} />
+          {/* ─ Braços (bíceps + antebraço) ─ */}
+          <path d="M28 78 C24 78 20 84 18 92 L16 120 C16 126 18 130 22 130 L30 130 C34 130 36 126 36 120 L36 92 C36 84 34 78 30 78 Z"
+            style={muscleStyle('bracos')} onClick={() => onSelectMuscle('bracos')} />
+          <path d="M122 78 C126 78 130 84 132 92 L134 120 C134 126 132 130 128 130 L120 130 C116 130 114 126 114 120 L114 92 C114 84 116 78 120 78 Z"
+            style={muscleStyle('bracos')} onClick={() => onSelectMuscle('bracos')} />
           {/* Antebraços */}
-          <rect x="14" y="130" width="12" height="45" rx="6" fill={getColor('bracos')} opacity={getOpacity('bracos') * 0.7}
-            className="cursor-pointer hover:opacity-70 transition-opacity"
-            onClick={() => onSelectMuscle('bracos')} />
-          <rect x="114" y="130" width="12" height="45" rx="6" fill={getColor('bracos')} opacity={getOpacity('bracos') * 0.7}
-            className="cursor-pointer hover:opacity-70 transition-opacity"
-            onClick={() => onSelectMuscle('bracos')} />
+          <path d="M18 132 C16 132 14 138 12 150 L10 172 C10 176 12 178 16 178 L24 176 C26 174 28 170 28 166 L30 150 C30 140 28 132 26 132 Z"
+            style={{...muscleStyle('bracos'), opacity: getOpacity('bracos') * 0.8}} onClick={() => onSelectMuscle('bracos')} />
+          <path d="M132 132 C134 132 136 138 138 150 L140 172 C140 176 138 178 134 178 L126 176 C124 174 122 170 122 166 L120 150 C120 140 122 132 124 132 Z"
+            style={{...muscleStyle('bracos'), opacity: getOpacity('bracos') * 0.8}} onClick={() => onSelectMuscle('bracos')} />
 
-          {/* Pernas - clicável */}
-          <rect x="46" y="162" width="20" height="80" rx="8" fill={getColor('pernas')} opacity={getOpacity('pernas')}
-            className="cursor-pointer hover:opacity-70 transition-opacity"
-            onClick={() => onSelectMuscle('pernas')} />
-          <rect x="74" y="162" width="20" height="80" rx="8" fill={getColor('pernas')} opacity={getOpacity('pernas')}
-            className="cursor-pointer hover:opacity-70 transition-opacity"
-            onClick={() => onSelectMuscle('pernas')} />
-          {/* Panturrilhas */}
-          <rect x="48" y="248" width="16" height="55" rx="7" fill={getColor('pernas')} opacity={getOpacity('pernas') * 0.7}
-            className="cursor-pointer hover:opacity-70 transition-opacity"
-            onClick={() => onSelectMuscle('pernas')} />
-          <rect x="76" y="248" width="16" height="55" rx="7" fill={getColor('pernas')} opacity={getOpacity('pernas') * 0.7}
-            className="cursor-pointer hover:opacity-70 transition-opacity"
-            onClick={() => onSelectMuscle('pernas')} />
+          {/* ─ Quadríceps (frente da coxa) ─ */}
+          <path d="M54 166 C50 166 48 172 47 180 L45 220 C45 228 48 232 54 232 L68 232 C72 232 74 228 74 220 L74 180 C74 172 72 166 68 166 Z"
+            style={muscleStyle('quadriceps')} onClick={() => onSelectMuscle('quadriceps')} />
+          <path d="M82 166 C78 166 76 172 76 180 L76 220 C76 228 78 232 82 232 L96 232 C100 232 102 228 103 220 L105 180 C105 172 102 166 96 166 Z"
+            style={muscleStyle('quadriceps')} onClick={() => onSelectMuscle('quadriceps')} />
 
-          {/* Contorno do corpo */}
-          <path d="M70 47 C50 47 35 55 30 65 L22 75 L14 130 L10 175 L14 175 L25 130 L32 110 L45 160 L44 245 L46 305 L66 305 L68 160 L70 155 L72 160 L74 305 L94 305 L96 245 L95 160 L108 110 L115 130 L126 175 L130 175 L126 130 L118 75 L110 65 C105 55 90 47 70 47Z"
-            fill="none" stroke="#666" strokeWidth="1" opacity="0.4" />
+          {/* ─ Adutores (interno da coxa) ─ */}
+          <path d="M68 170 L74 170 L74 210 L72 215 L70 210 L68 215 L66 210 Z"
+            style={muscleStyle('adutores')} onClick={() => onSelectMuscle('adutores')} />
+          <path d="M76 170 L82 170 L84 210 L82 215 L80 210 L78 215 L76 210 Z"
+            style={muscleStyle('adutores')} onClick={() => onSelectMuscle('adutores')} />
+
+          {/* ─ Panturrilha (frente - tibial) ─ */}
+          <path d="M48 236 C46 236 44 242 44 250 L44 280 C44 288 46 292 50 292 L62 292 C66 292 68 288 68 280 L68 250 C68 242 66 236 64 236 Z"
+            style={muscleStyle('panturrilha')} onClick={() => onSelectMuscle('panturrilha')} />
+          <path d="M86 236 C84 236 82 242 82 250 L82 280 C82 288 84 292 88 292 L100 292 C104 292 106 288 106 280 L106 250 C106 242 104 236 102 236 Z"
+            style={muscleStyle('panturrilha')} onClick={() => onSelectMuscle('panturrilha')} />
+
+          {/* Pés */}
+          <ellipse cx="56" cy="300" rx="12" ry="6" fill="#d4b896" stroke="#a08060" strokeWidth="0.5" />
+          <ellipse cx="94" cy="300" rx="12" ry="6" fill="#d4b896" stroke="#a08060" strokeWidth="0.5" />
+
+          {/* Mãos */}
+          <ellipse cx="12" cy="182" rx="6" ry="8" fill="#d4b896" stroke="#a08060" strokeWidth="0.5" />
+          <ellipse cx="138" cy="182" rx="6" ry="8" fill="#d4b896" stroke="#a08060" strokeWidth="0.5" />
         </svg>
-        <p className="text-center text-xs text-gray-500 mt-1">Frente</p>
+        <p className="text-center text-xs text-gray-400 mt-1 font-medium">Frente</p>
       </div>
 
-      {/* Corpo Costas */}
+      {/* ─── COSTAS ─── */}
       <div className="relative">
-        <svg width="140" height="320" viewBox="0 0 140 320" className="select-none">
+        <svg width="150" height="340" viewBox="0 0 150 340" className="select-none">
           {/* Cabeça */}
-          <ellipse cx="70" cy="25" rx="18" ry="22" fill="#c9c9c9" stroke="#999" strokeWidth="0.5" />
+          <ellipse cx="75" cy="28" rx="16" ry="20" fill="#d4b896" stroke="#a08060" strokeWidth="0.8" />
+          {/* Cabelo */}
+          <path d="M59 28 C59 8 91 8 91 28 C91 18 80 14 75 14 C70 14 59 18 59 28Z" fill="#4a3728" opacity="0.7" />
           {/* Pescoço */}
-          <rect x="62" y="45" width="16" height="12" fill="#c9c9c9" />
+          <rect x="67" y="46" width="16" height="14" rx="3" fill="#d4b896" stroke="#a08060" strokeWidth="0.5" />
 
-          {/* Ombros traseiros - clicável */}
-          <ellipse cx="38" cy="68" rx="14" ry="10" fill={getColor('ombros')} opacity={getOpacity('ombros')}
-            className="cursor-pointer hover:opacity-70 transition-opacity"
-            onClick={() => onSelectMuscle('ombros')} />
-          <ellipse cx="102" cy="68" rx="14" ry="10" fill={getColor('ombros')} opacity={getOpacity('ombros')}
-            className="cursor-pointer hover:opacity-70 transition-opacity"
-            onClick={() => onSelectMuscle('ombros')} />
+          {/* ─ Ombros traseiros ─ */}
+          <path d="M45 62 C38 62 30 68 28 76 L32 80 C36 72 42 66 50 64 Z"
+            style={muscleStyle('ombros')} onClick={() => onSelectMuscle('ombros')} />
+          <path d="M105 62 C112 62 120 68 122 76 L118 80 C114 72 108 66 100 64 Z"
+            style={muscleStyle('ombros')} onClick={() => onSelectMuscle('ombros')} />
 
-          {/* Costas - clicável */}
-          <rect x="42" y="72" width="56" height="65" rx="8" fill={getColor('costas')} opacity={getOpacity('costas')}
-            className="cursor-pointer hover:opacity-70 transition-opacity"
-            onClick={() => onSelectMuscle('costas')} />
-
+          {/* ─ Costas (dorsal + trapézio) ─ */}
+          <path d="M48 62 L102 62 L104 70 C104 74 100 78 98 82 L98 140 C98 148 90 152 75 152 C60 152 52 148 52 140 L52 82 C50 78 46 74 46 70 Z"
+            style={muscleStyle('costas')} onClick={() => onSelectMuscle('costas')} />
+          {/* Coluna vertebral */}
+          <line x1="75" y1="62" x2="75" y2="152" stroke="#8899a6" strokeWidth="0.6" opacity="0.4" />
           {/* Lombar */}
-          <rect x="50" y="138" width="40" height="22" rx="6" fill={getColor('costas')} opacity={getOpacity('costas') * 0.7}
-            className="cursor-pointer hover:opacity-70 transition-opacity"
-            onClick={() => onSelectMuscle('costas')} />
+          <path d="M56 152 L94 152 L92 166 C92 168 86 170 75 170 C64 170 58 168 58 166 Z"
+            style={{...muscleStyle('costas'), opacity: getOpacity('costas') * 0.8}} onClick={() => onSelectMuscle('costas')} />
 
-          {/* Braços traseiros (tríceps) */}
-          <rect x="18" y="75" width="14" height="55" rx="7" fill={getColor('bracos')} opacity={getOpacity('bracos')}
-            className="cursor-pointer hover:opacity-70 transition-opacity"
-            onClick={() => onSelectMuscle('bracos')} />
-          <rect x="108" y="75" width="14" height="55" rx="7" fill={getColor('bracos')} opacity={getOpacity('bracos')}
-            className="cursor-pointer hover:opacity-70 transition-opacity"
-            onClick={() => onSelectMuscle('bracos')} />
-          <rect x="14" y="130" width="12" height="45" rx="6" fill={getColor('bracos')} opacity={getOpacity('bracos') * 0.7}
-            className="cursor-pointer hover:opacity-70 transition-opacity"
-            onClick={() => onSelectMuscle('bracos')} />
-          <rect x="114" y="130" width="12" height="45" rx="6" fill={getColor('bracos')} opacity={getOpacity('bracos') * 0.7}
-            className="cursor-pointer hover:opacity-70 transition-opacity"
-            onClick={() => onSelectMuscle('bracos')} />
+          {/* ─ Braços traseiros (tríceps) ─ */}
+          <path d="M28 78 C24 78 20 84 18 92 L16 120 C16 126 18 130 22 130 L30 130 C34 130 36 126 36 120 L36 92 C36 84 34 78 30 78 Z"
+            style={muscleStyle('bracos')} onClick={() => onSelectMuscle('bracos')} />
+          <path d="M122 78 C126 78 130 84 132 92 L134 120 C134 126 132 130 128 130 L120 130 C116 130 114 126 114 120 L114 92 C114 84 116 78 120 78 Z"
+            style={muscleStyle('bracos')} onClick={() => onSelectMuscle('bracos')} />
+          {/* Antebraços */}
+          <path d="M18 132 C16 132 14 138 12 150 L10 172 C10 176 12 178 16 178 L24 176 C26 174 28 170 28 166 L30 150 C30 140 28 132 26 132 Z"
+            style={{...muscleStyle('bracos'), opacity: getOpacity('bracos') * 0.8}} onClick={() => onSelectMuscle('bracos')} />
+          <path d="M132 132 C134 132 136 138 138 150 L140 172 C140 176 138 178 134 178 L126 176 C124 174 122 170 122 166 L120 150 C120 140 122 132 124 132 Z"
+            style={{...muscleStyle('bracos'), opacity: getOpacity('bracos') * 0.8}} onClick={() => onSelectMuscle('bracos')} />
 
-          {/* Glúteos */}
-          <ellipse cx="56" cy="168" rx="14" ry="12" fill={getColor('pernas')} opacity={getOpacity('pernas')}
-            className="cursor-pointer hover:opacity-70 transition-opacity"
-            onClick={() => onSelectMuscle('pernas')} />
-          <ellipse cx="84" cy="168" rx="14" ry="12" fill={getColor('pernas')} opacity={getOpacity('pernas')}
-            className="cursor-pointer hover:opacity-70 transition-opacity"
-            onClick={() => onSelectMuscle('pernas')} />
+          {/* ─ Glúteos ─ */}
+          <ellipse cx="62" cy="178" rx="14" ry="12"
+            style={muscleStyle('gluteos')} onClick={() => onSelectMuscle('gluteos')} />
+          <ellipse cx="88" cy="178" rx="14" ry="12"
+            style={muscleStyle('gluteos')} onClick={() => onSelectMuscle('gluteos')} />
 
-          {/* Isquiotibiais */}
-          <rect x="46" y="182" width="20" height="65" rx="8" fill={getColor('pernas')} opacity={getOpacity('pernas') * 0.8}
-            className="cursor-pointer hover:opacity-70 transition-opacity"
-            onClick={() => onSelectMuscle('pernas')} />
-          <rect x="74" y="182" width="20" height="65" rx="8" fill={getColor('pernas')} opacity={getOpacity('pernas') * 0.8}
-            className="cursor-pointer hover:opacity-70 transition-opacity"
-            onClick={() => onSelectMuscle('pernas')} />
+          {/* ─ Isquiotibiais (posterior da coxa) ─ */}
+          <path d="M48 192 C46 192 44 198 44 206 L44 240 C44 248 46 252 50 252 L64 252 C68 252 70 248 70 240 L70 206 C70 198 68 192 66 192 Z"
+            style={muscleStyle('isquiotibiais')} onClick={() => onSelectMuscle('isquiotibiais')} />
+          <path d="M80 192 C78 192 76 198 76 206 L76 240 C76 248 78 252 82 252 L96 252 C100 252 102 248 102 240 L102 206 C102 198 100 192 98 192 Z"
+            style={muscleStyle('isquiotibiais')} onClick={() => onSelectMuscle('isquiotibiais')} />
 
-          {/* Panturrilhas */}
-          <rect x="48" y="252" width="16" height="50" rx="7" fill={getColor('pernas')} opacity={getOpacity('pernas') * 0.6}
-            className="cursor-pointer hover:opacity-70 transition-opacity"
-            onClick={() => onSelectMuscle('pernas')} />
-          <rect x="76" y="252" width="16" height="50" rx="7" fill={getColor('pernas')} opacity={getOpacity('pernas') * 0.6}
-            className="cursor-pointer hover:opacity-70 transition-opacity"
-            onClick={() => onSelectMuscle('pernas')} />
+          {/* ─ Panturrilha (gastrocnêmio) ─ */}
+          <path d="M46 256 C44 256 42 262 42 268 L44 290 C44 296 48 298 52 298 L62 298 C66 298 68 296 68 290 L70 268 C70 262 68 256 66 256 Z"
+            style={muscleStyle('panturrilha')} onClick={() => onSelectMuscle('panturrilha')} />
+          <path d="M84 256 C82 256 80 262 80 268 L82 290 C82 296 84 298 88 298 L98 298 C102 298 104 296 104 290 L106 268 C106 262 104 256 102 256 Z"
+            style={muscleStyle('panturrilha')} onClick={() => onSelectMuscle('panturrilha')} />
 
-          {/* Contorno do corpo */}
-          <path d="M70 47 C50 47 35 55 30 65 L22 75 L14 130 L10 175 L14 175 L25 130 L32 110 L45 160 L44 245 L46 305 L66 305 L68 160 L70 155 L72 160 L74 305 L94 305 L96 245 L95 160 L108 110 L115 130 L126 175 L130 175 L126 130 L118 75 L110 65 C105 55 90 47 70 47Z"
-            fill="none" stroke="#666" strokeWidth="1" opacity="0.4" />
+          {/* Pés */}
+          <ellipse cx="56" cy="306" rx="12" ry="6" fill="#d4b896" stroke="#a08060" strokeWidth="0.5" />
+          <ellipse cx="94" cy="306" rx="12" ry="6" fill="#d4b896" stroke="#a08060" strokeWidth="0.5" />
+
+          {/* Mãos */}
+          <ellipse cx="12" cy="182" rx="6" ry="8" fill="#d4b896" stroke="#a08060" strokeWidth="0.5" />
+          <ellipse cx="138" cy="182" rx="6" ry="8" fill="#d4b896" stroke="#a08060" strokeWidth="0.5" />
         </svg>
-        <p className="text-center text-xs text-gray-500 mt-1">Costas</p>
+        <p className="text-center text-xs text-gray-400 mt-1 font-medium">Costas</p>
       </div>
     </div>
   )
@@ -233,37 +244,42 @@ function BodyMap({ selectedMuscle, onSelectMuscle }) {
 
 
 /**
- * Painel de Equipamentos com checkboxes (layout similar à imagem de referência)
+ * Painel de Equipamentos com checkboxes funcionais
  */
 function EquipmentPanel({ selectedEquipment, onToggle }) {
   return (
     <div className="border border-purple-900/30 rounded-xl p-3 bg-[#0a0a16]">
       <p className="text-xs font-semibold text-gray-300 mb-2 uppercase tracking-wide">Equipamento</p>
-      <div className="grid grid-cols-2 gap-1.5">
-        {EQUIPMENT_OPTIONS.map(eq => (
-          <label
-            key={eq.value}
-            className={`flex items-center gap-2 px-2 py-1.5 rounded-lg cursor-pointer transition-all text-xs select-none ${
-              selectedEquipment.includes(eq.value)
-                ? 'bg-purple-900/40 text-purple-300'
-                : 'text-gray-400 hover:bg-purple-900/20 hover:text-gray-300'
-            }`}
-          >
-            <span className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 ${
-              selectedEquipment.includes(eq.value)
-                ? 'bg-purple-600 border-purple-600'
-                : 'border-gray-600'
-            }`}>
-              {selectedEquipment.includes(eq.value) && (
-                <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 12 12" stroke="currentColor" strokeWidth="2">
-                  <path d="M2 6l3 3 5-5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              )}
-            </span>
-            <span className="shrink-0">{eq.icon}</span>
-            <span className="truncate">{eq.label}</span>
-          </label>
-        ))}
+      <div className="grid grid-cols-2 gap-1">
+        {EQUIPMENT_OPTIONS.map(eq => {
+          const isChecked = selectedEquipment.includes(eq.value)
+          return (
+            <button
+              key={eq.value}
+              type="button"
+              onClick={() => onToggle(eq.value)}
+              className={`flex items-center gap-2 px-2 py-1.5 rounded-lg transition-all text-xs text-left ${
+                isChecked
+                  ? 'bg-purple-900/40 text-purple-300'
+                  : 'text-gray-400 hover:bg-purple-900/20 hover:text-gray-300'
+              }`}
+            >
+              <span className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 ${
+                isChecked
+                  ? 'bg-purple-600 border-purple-600'
+                  : 'border-gray-600'
+              }`}>
+                {isChecked && (
+                  <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 12 12" stroke="currentColor" strokeWidth="2.5">
+                    <path d="M2 6l3 3 5-5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                )}
+              </span>
+              <span className="shrink-0">{eq.icon}</span>
+              <span className="truncate">{eq.label}</span>
+            </button>
+          )
+        })}
       </div>
     </div>
   )
@@ -271,7 +287,7 @@ function EquipmentPanel({ selectedEquipment, onToggle }) {
 
 export default function ExerciseLibraryModal({ onSelect, onClose }) {
   const [query, setQuery] = useState('')
-  const [muscleGroup, setMuscleGroup] = useState('')
+  const [selectedMuscle, setSelectedMuscle] = useState(null) // { id, group, subgroup }
   const [selectedEquipment, setSelectedEquipment] = useState([])
   const [exercises, setExercises] = useState([])
   const [loading, setLoading] = useState(false)
@@ -283,12 +299,15 @@ export default function ExerciseLibraryModal({ onSelect, onClose }) {
   })
   const debounceRef = useRef(null)
 
-  async function fetchExercises(q, mg, eqList) {
+  async function fetchExercises(q, muscle, eqList) {
     setLoading(true)
     try {
       const params = {}
       if (q) params.q = q
-      if (mg) params.muscle_group = mg
+      if (muscle) {
+        params.muscle_group = muscle.group
+        if (muscle.subgroup) params.subgroup = muscle.subgroup
+      }
       if (eqList && eqList.length > 0) params.equipment = eqList[0]
       const { data } = await api.get('/personal/exercises/library', { params })
       let filtered = data
@@ -304,7 +323,7 @@ export default function ExerciseLibraryModal({ onSelect, onClose }) {
   }
 
   useEffect(() => {
-    fetchExercises('', '', [])
+    fetchExercises('', null, [])
   }, [])
 
   function handleQueryChange(e) {
@@ -312,14 +331,20 @@ export default function ExerciseLibraryModal({ onSelect, onClose }) {
     setQuery(val)
     clearTimeout(debounceRef.current)
     debounceRef.current = setTimeout(() => {
-      fetchExercises(val, muscleGroup, selectedEquipment)
+      fetchExercises(val, selectedMuscle, selectedEquipment)
     }, 300)
   }
 
-  function handleMuscleSelect(muscle) {
-    const newVal = muscleGroup === muscle ? '' : muscle
-    setMuscleGroup(newVal)
-    fetchExercises(query, newVal, selectedEquipment)
+  function handleMuscleSelect(muscleId) {
+    if (selectedMuscle?.id === muscleId) {
+      // Deselect
+      setSelectedMuscle(null)
+      fetchExercises(query, null, selectedEquipment)
+    } else {
+      const muscle = BODY_MUSCLES.find(m => m.id === muscleId)
+      setSelectedMuscle(muscle)
+      fetchExercises(query, muscle, selectedEquipment)
+    }
   }
 
   function handleEquipmentToggle(eqValue) {
@@ -327,7 +352,7 @@ export default function ExerciseLibraryModal({ onSelect, onClose }) {
       ? selectedEquipment.filter(e => e !== eqValue)
       : [...selectedEquipment, eqValue]
     setSelectedEquipment(newList)
-    fetchExercises(query, muscleGroup, newList)
+    fetchExercises(query, selectedMuscle, newList)
   }
 
   async function handleCreate(e) {
@@ -342,7 +367,7 @@ export default function ExerciseLibraryModal({ onSelect, onClose }) {
       toast.success('Exercício criado!')
       setShowCreate(false)
       setCreateForm({ name: '', muscle_group: 'peito', difficulty: 'iniciante', description: '', video_url: '', thumbnail: '' })
-      fetchExercises(query, muscleGroup, selectedEquipment)
+      fetchExercises(query, selectedMuscle, selectedEquipment)
       onSelect(data)
     } catch (err) {
       toast.error(err.response?.data?.detail || 'Erro ao criar exercício')
@@ -368,9 +393,9 @@ export default function ExerciseLibraryModal({ onSelect, onClose }) {
             <Dumbbell className="w-5 h-5 text-purple-400" /> Biblioteca de Exercícios
           </h2>
           <div className="flex items-center gap-3">
-            {muscleGroup && (
-              <span className="text-xs px-3 py-1 rounded-full bg-red-900/30 text-red-400 border border-red-800 capitalize">
-                {muscleGroup.replace('_', ' ')}
+            {selectedMuscle && (
+              <span className="text-xs px-3 py-1 rounded-full bg-red-900/30 text-red-400 border border-red-800">
+                {selectedMuscle.label}
               </span>
             )}
             {selectedEquipment.length > 0 && (
@@ -387,32 +412,32 @@ export default function ExerciseLibraryModal({ onSelect, onClose }) {
         {/* Conteúdo principal */}
         <div className="flex flex-1 overflow-hidden min-h-0">
           {/* Painel esquerdo: Body Map + Equipamento */}
-          <div className="w-[380px] border-r border-purple-900/30 p-4 overflow-y-auto shrink-0 space-y-4">
+          <div className="w-[400px] border-r border-purple-900/30 p-4 overflow-y-auto shrink-0 space-y-4">
             {/* Instrução */}
-            <p className="text-xs text-gray-500 text-center">Clique no grupo muscular desejado</p>
+            <p className="text-xs text-gray-500 text-center">Clique no músculo desejado no corpo</p>
 
             {/* Body Map */}
-            <BodyMap selectedMuscle={muscleGroup} onSelectMuscle={handleMuscleSelect} />
+            <BodyMap selectedMuscle={selectedMuscle?.id} onSelectMuscle={handleMuscleSelect} />
 
-            {/* Legenda dos músculos */}
+            {/* Legenda / botões de seleção rápida */}
             <div className="flex flex-wrap gap-1.5 justify-center">
-              {Object.entries(BODY_MUSCLES).map(([key, val]) => (
+              {BODY_MUSCLES.map(m => (
                 <button
-                  key={key}
-                  onClick={() => handleMuscleSelect(key)}
+                  key={m.id}
+                  onClick={() => handleMuscleSelect(m.id)}
                   className={`text-xs px-2 py-1 rounded-full border transition-all ${
-                    muscleGroup === key
+                    selectedMuscle?.id === m.id
                       ? 'border-red-500 bg-red-900/30 text-red-400'
                       : 'border-gray-700 text-gray-400 hover:border-gray-500'
                   }`}
                 >
-                  {val.label}
+                  {m.label}
                 </button>
               ))}
               <button
-                onClick={() => handleMuscleSelect('')}
+                onClick={() => { setSelectedMuscle(null); fetchExercises(query, null, selectedEquipment) }}
                 className={`text-xs px-2 py-1 rounded-full border transition-all ${
-                  !muscleGroup
+                  !selectedMuscle
                     ? 'border-purple-500 bg-purple-900/30 text-purple-400'
                     : 'border-gray-700 text-gray-400 hover:border-gray-500'
                 }`}
@@ -451,7 +476,7 @@ export default function ExerciseLibraryModal({ onSelect, onClose }) {
                 <div className="text-center py-8">
                   <Dumbbell className="w-10 h-10 text-gray-600 mx-auto mb-2" />
                   <p className="text-gray-400 text-sm">Nenhum exercício encontrado</p>
-                  <p className="text-gray-500 text-xs mt-1">Tente ajustar os filtros ou clique em outro grupo muscular</p>
+                  <p className="text-gray-500 text-xs mt-1">Tente ajustar os filtros ou clique em outro músculo</p>
                 </div>
               ) : (
                 <>
@@ -479,6 +504,9 @@ export default function ExerciseLibraryModal({ onSelect, onClose }) {
                         <p className="font-medium text-sm text-white truncate">{ex.name}</p>
                         <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                           <span className="text-xs text-gray-400 capitalize">{ex.muscle_group?.replace('_', ' ')}</span>
+                          {ex.subgroup && (
+                            <span className="text-xs text-red-400">· {ex.subgroup.replace('_', ' ')}</span>
+                          )}
                           {ex.equipment && (
                             <span className="text-xs text-purple-400">· {ex.equipment.replace('_', ' ')}</span>
                           )}
@@ -567,6 +595,11 @@ export default function ExerciseLibraryModal({ onSelect, onClose }) {
                     {preview.muscle_group && (
                       <span className="text-xs px-2 py-0.5 rounded-full bg-red-900/30 text-red-400 capitalize border border-red-800">
                         {preview.muscle_group.replace('_', ' ')}
+                      </span>
+                    )}
+                    {preview.subgroup && (
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-orange-900/30 text-orange-400 capitalize border border-orange-800">
+                        {preview.subgroup.replace('_', ' ')}
                       </span>
                     )}
                     {preview.equipment && (
