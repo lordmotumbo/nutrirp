@@ -32,7 +32,7 @@ EXERCISES = [
         "equipment": "barra",
         "category": "strength",
         "description": "Deite em banco inclinado a 30-45°. Segure a barra com pegada média. Desça até o peito superior e empurre de volta.",
-        "gif_id": "Barbell_Incline_Bench_Press",
+        "gif_id": "Barbell_Incline_Bench_Press_-_Medium_Grip",
     },
     {
         "name": "Supino Inclinado com Halteres",
@@ -42,7 +42,7 @@ EXERCISES = [
         "equipment": "halteres",
         "category": "strength",
         "description": "Deite em banco inclinado a 30-45°. Segure os halteres na altura do peito com cotovelos dobrados. Empurre para cima até os braços ficarem quase estendidos.",
-        "gif_id": "Dumbbell_Incline_Bench_Press",
+        "gif_id": "Incline_Dumbbell_Press",
     },
     {
         "name": "Flexão Inclinada (pés elevados)",
@@ -104,7 +104,7 @@ EXERCISES = [
         "equipment": "peso_corporal",
         "category": "strength",
         "description": "Posição de prancha com mãos na largura dos ombros. Dobre os cotovelos abaixando o corpo até o peito quase tocar o chão. Empurre de volta.",
-        "gif_id": "Push-Up",
+        "gif_id": "Incline_Push-Up",
     },
     {
         "name": "Crucifixo com Halteres",
@@ -144,7 +144,7 @@ EXERCISES = [
         "equipment": "peso_corporal",
         "category": "strength",
         "description": "Flexão com as mãos juntas formando um diamante. Foca no tríceps e porção interna do peitoral.",
-        "gif_id": "Diamond_Push-Up",
+        "gif_id": "Close-Grip_Push-Up_off_of_a_Dumbbell",
     },
 
     # -- peitoral_inferior --
@@ -156,7 +156,7 @@ EXERCISES = [
         "equipment": "barra",
         "category": "strength",
         "description": "Deite em banco declinado. Segure a barra com pegada média. Desça a barra até a parte inferior do peito e empurre de volta.",
-        "gif_id": "Barbell_Decline_Bench_Press",
+        "gif_id": "Decline_Barbell_Bench_Press",
     },
     {
         "name": "Crossover Baixo (Polia Baixa)",
@@ -196,7 +196,7 @@ EXERCISES = [
         "equipment": "peso_corporal",
         "category": "flexibility",
         "description": "Apoie o antebraço na parede com cotovelo a 90°. Gire o tronco para o lado oposto sentindo o alongamento no peitoral.",
-        "gif_id": "Chest_Stretch",
+        "gif_id": "Chest_Stretch_on_Stability_Ball",
     },
 
     # ══════════════════════════════════════════════════════════════════
@@ -212,7 +212,7 @@ EXERCISES = [
         "equipment": "máquina",
         "category": "strength",
         "description": "Sente-se na máquina de puxada, segure a barra com pegada pronada mais larga que os ombros. Puxe a barra até a altura do queixo.",
-        "gif_id": "Wide-Grip_Lat_Pulldown",
+        "gif_id": "Full_Range-Of-Motion_Lat_Pulldown",
     },
     {
         "name": "Pulldown com Pegada Fechada",
@@ -232,7 +232,7 @@ EXERCISES = [
         "equipment": "barra",
         "category": "strength",
         "description": "Segure a barra com pegada pronada, mãos mais largas que os ombros. Puxe o corpo para cima até o queixo ultrapassar a barra.",
-        "gif_id": "Wide-Grip_Pull-Up",
+        "gif_id": "Chin-Up",
     },
     {
         "name": "Pullover com Haltere",
@@ -242,7 +242,7 @@ EXERCISES = [
         "equipment": "halteres",
         "category": "strength",
         "description": "Deite no banco segurando um haltere acima do peito. Leve o haltere para trás da cabeça em arco e retorne.",
-        "gif_id": "Dumbbell_Pullover",
+        "gif_id": "Bent-Arm_Dumbbell_Pullover",
     },
     {
         "name": "Pulldown com Triângulo",
@@ -252,7 +252,7 @@ EXERCISES = [
         "equipment": "cabos",
         "category": "strength",
         "description": "Na polia alta com pegada triângulo, puxe até o peito mantendo os cotovelos próximos ao corpo.",
-        "gif_id": "V-Bar_Pulldown",
+        "gif_id": "Close-Grip_Front_Lat_Pulldown",
     },
 
     # -- trapezio --
@@ -284,17 +284,17 @@ EXERCISES = [
         "equipment": "barra",
         "category": "strength",
         "description": "Em pé com a barra à frente, puxe a barra até a altura do queixo mantendo os cotovelos acima das mãos.",
-        "gif_id": "Barbell_Upright_Row",
+        "gif_id": "Barbell_Rear_Delt_Row",
     },
     {
-        "name": "Encolhimento na Máquina Smith",
+        "name": "Encolhimento no Cabo",
         "muscle_group": "costas",
         "subgroup": "trapezio",
         "difficulty": "iniciante",
-        "equipment": "smith_machine",
+        "equipment": "cabos",
         "category": "strength",
-        "description": "Na Smith Machine, segure a barra e eleve os ombros. A máquina guia o movimento.",
-        "gif_id": "Smith_Machine_Shrug",
+        "description": "Na polia baixa, segure a barra e eleve os ombros. O cabo mantém tensão constante.",
+        "gif_id": "Cable_Shrugs",
     },
 
     # -- romboide --
@@ -306,7 +306,7 @@ EXERCISES = [
         "equipment": "barra",
         "category": "strength",
         "description": "Incline o tronco a 45°, segure a barra com pegada pronada. Puxe a barra em direção ao abdômen, contraindo as escápulas.",
-        "gif_id": "Barbell_Bent_Over_Row",
+        "gif_id": "Bent_Over_Barbell_Row",
     },
     {
         "name": "Remada com Haltere Unilateral",
@@ -316,7 +316,7 @@ EXERCISES = [
         "equipment": "halteres",
         "category": "strength",
         "description": "Apoie um joelho e mão no banco. Com o outro braço, puxe o haltere em direção ao quadril.",
-        "gif_id": "Dumbbell_One-Arm_Row",
+        "gif_id": "One-Arm_Dumbbell_Row",
     },
     {
         "name": "Remada Sentado na Polia",
@@ -326,7 +326,7 @@ EXERCISES = [
         "equipment": "máquina",
         "category": "strength",
         "description": "Sente-se na máquina de remada, segure o cabo com as duas mãos. Puxe em direção ao abdômen mantendo as costas retas.",
-        "gif_id": "Seated_Cable_Rows",
+        "gif_id": "Elevated_Cable_Rows",
     },
     {
         "name": "Remada Cavaleiro (T-Bar)",
@@ -336,7 +336,7 @@ EXERCISES = [
         "equipment": "barra",
         "category": "strength",
         "description": "Incline o tronco sobre a barra T. Puxe o peso em direção ao peito mantendo as costas retas.",
-        "gif_id": "T-Bar_Row",
+        "gif_id": "Lying_T-Bar_Row",
     },
     {
         "name": "Remada na Máquina (Seated Row)",
@@ -346,7 +346,7 @@ EXERCISES = [
         "equipment": "máquina",
         "category": "strength",
         "description": "Sente-se na máquina de remada com apoio no peito. Puxe os pegadores para trás contraindo as escápulas.",
-        "gif_id": "Machine_Seated_Row",
+        "gif_id": "Leverage_High_Row",
     },
 
     # -- lombar --
@@ -358,7 +358,7 @@ EXERCISES = [
         "equipment": "banco",
         "category": "strength",
         "description": "No banco de hiperextensão, incline o tronco para baixo e eleve de volta contraindo a lombar e glúteos.",
-        "gif_id": "Hyperextension",
+        "gif_id": "Hyperextensions_Back_Extensions",
     },
     {
         "name": "Good Morning com Barra",
@@ -378,7 +378,7 @@ EXERCISES = [
         "equipment": "peso_corporal",
         "category": "strength",
         "description": "Deite de bruços e eleve simultaneamente braços e pernas do chão, contraindo a lombar. Segure e desça.",
-        "gif_id": "Superman",
+        "gif_id": "Floor_Glute-Ham_Raise",
     },
 
     # ══════════════════════════════════════════════════════════════════
@@ -434,7 +434,7 @@ EXERCISES = [
         "equipment": "smith_machine",
         "category": "strength",
         "description": "Na Smith Machine, posicione a barra nos trapézios. Desça em agachamento com os pés levemente à frente.",
-        "gif_id": "Smith_Machine_Squat",
+        "gif_id": "Barbell_Squat",
     },
     {
         "name": "Agachamento Frontal",
@@ -444,7 +444,7 @@ EXERCISES = [
         "equipment": "barra",
         "category": "strength",
         "description": "Com a barra apoiada nos deltóides anteriores, desça em agachamento mantendo o tronco ereto.",
-        "gif_id": "Barbell_Front_Squat",
+        "gif_id": "Front_Barbell_Squat",
     },
     {
         "name": "Avanço (Lunge) com Halteres",
@@ -464,7 +464,7 @@ EXERCISES = [
         "equipment": "halteres",
         "category": "strength",
         "description": "Com um pé apoiado no banco atrás, desça o joelho da frente até 90°. Segure halteres para adicionar carga.",
-        "gif_id": "Dumbbell_Bulgarian_Split_Squat",
+        "gif_id": "Elevated_Back_Lunge",
     },
 
     # -- isquiotibiais --
@@ -476,7 +476,7 @@ EXERCISES = [
         "equipment": "barra",
         "category": "strength",
         "description": "Em pé com a barra na frente das coxas, incline o tronco para frente mantendo as costas retas e joelhos levemente dobrados.",
-        "gif_id": "Stiff-Legged_Barbell_Deadlift",
+        "gif_id": "Barbell_Deadlift",
     },
     {
         "name": "Flexão de Pernas (Leg Curl Deitado)",
@@ -496,7 +496,7 @@ EXERCISES = [
         "equipment": "máquina",
         "category": "strength",
         "description": "Sente-se na máquina com as pernas sobre o apoio. Flexione os joelhos puxando o apoio para baixo.",
-        "gif_id": "Seated_Leg_Curl",
+        "gif_id": "Ball_Leg_Curl",
     },
     {
         "name": "Stiff com Halteres",
@@ -506,7 +506,7 @@ EXERCISES = [
         "equipment": "halteres",
         "category": "strength",
         "description": "Em pé com halteres, incline o tronco para frente mantendo as costas retas. Sinta o alongamento nos isquiotibiais.",
-        "gif_id": "Dumbbell_Stiff-Legged_Deadlift",
+        "gif_id": "Dumbbell_Step_Ups",
     },
     {
         "name": "Stiff Unilateral com Haltere",
@@ -516,7 +516,7 @@ EXERCISES = [
         "equipment": "halteres",
         "category": "strength",
         "description": "Em pé em uma perna, incline o tronco para frente com haltere na mão oposta. A perna livre vai para trás.",
-        "gif_id": "Single_Leg_Deadlift",
+        "gif_id": "Kettlebell_One-Legged_Deadlift",
     },
 
     # -- gluteos --
@@ -538,7 +538,7 @@ EXERCISES = [
         "equipment": "peso_corporal",
         "category": "strength",
         "description": "Deite de costas com joelhos dobrados. Eleve o quadril contraindo os glúteos até o corpo ficar reto.",
-        "gif_id": "Glute_Bridge",
+        "gif_id": "Butt_Lift_Bridge",
     },
     {
         "name": "Glúteo no Cabo (Kickback)",
@@ -548,7 +548,7 @@ EXERCISES = [
         "equipment": "cabos",
         "category": "strength",
         "description": "Em pé na polia baixa com o tornozelo preso ao cabo. Empurre a perna para trás contraindo o glúteo.",
-        "gif_id": "Cable_Hip_Extension",
+        "gif_id": "Hip_Extension_with_Bands",
     },
     {
         "name": "Agachamento Sumô com Haltere",
@@ -558,7 +558,7 @@ EXERCISES = [
         "equipment": "halteres",
         "category": "strength",
         "description": "Em pé com os pés mais afastados que os ombros e pontas dos pés viradas para fora. Segure um haltere e desça.",
-        "gif_id": "Dumbbell_Sumo_Squat",
+        "gif_id": "Goblet_Squat",
     },
     {
         "name": "Kickback na Máquina (Glúteo)",
@@ -580,7 +580,7 @@ EXERCISES = [
         "equipment": "máquina",
         "category": "strength",
         "description": "Sente-se na máquina e feche as pernas contra a resistência. Foca nos músculos adutores.",
-        "gif_id": "Thigh_Adductor",
+        "gif_id": "Adductor",
     },
     {
         "name": "Agachamento Sumô (Adutores)",
@@ -590,7 +590,7 @@ EXERCISES = [
         "equipment": "barra",
         "category": "strength",
         "description": "Agachamento com pés bem afastados e pontas para fora. Foca nos adutores e glúteos.",
-        "gif_id": "Sumo_Deadlift",
+        "gif_id": "Barbell_Side_Split_Squat",
     },
     {
         "name": "Adução no Cabo",
@@ -612,7 +612,7 @@ EXERCISES = [
         "equipment": "máquina",
         "category": "strength",
         "description": "Sente-se na máquina e abra as pernas contra a resistência. Foca nos músculos abdutores do quadril.",
-        "gif_id": "Thigh_Abductor",
+        "gif_id": "Band_Hip_Adductions",
     },
     {
         "name": "Abdução de Quadril no Cabo",
@@ -622,7 +622,7 @@ EXERCISES = [
         "equipment": "cabos",
         "category": "strength",
         "description": "Em pé na polia baixa, afaste a perna lateralmente contra a resistência. Foca no glúteo médio.",
-        "gif_id": "Cable_Hip_Abduction",
+        "gif_id": "Monster_Walk",
     },
     {
         "name": "Abdução Deitado (Side Lying)",
@@ -632,7 +632,7 @@ EXERCISES = [
         "equipment": "peso_corporal",
         "category": "strength",
         "description": "Deite de lado e eleve a perna de cima mantendo-a reta. Foca no glúteo médio e abdutores.",
-        "gif_id": "Side_Lying_Hip_Abduction",
+        "gif_id": "IT_Band_and_Glute_Stretch",
     },
 
     # -- panturrilha --
@@ -644,7 +644,7 @@ EXERCISES = [
         "equipment": "máquina",
         "category": "strength",
         "description": "Em pé na máquina com os ombros sob os apoios, eleve os calcanhares o máximo possível contraindo as panturrilhas.",
-        "gif_id": "Standing_Calf_Raises",
+        "gif_id": "Calf_Press",
     },
     {
         "name": "Panturrilha Sentado",
@@ -654,7 +654,7 @@ EXERCISES = [
         "equipment": "máquina",
         "category": "strength",
         "description": "Sente-se na máquina com os joelhos sob o apoio e pontas dos pés na plataforma. Eleve os calcanhares.",
-        "gif_id": "Seated_Calf_Raise",
+        "gif_id": "Barbell_Seated_Calf_Raise",
     },
     {
         "name": "Panturrilha no Leg Press",
@@ -664,7 +664,7 @@ EXERCISES = [
         "equipment": "máquina",
         "category": "strength",
         "description": "No leg press, posicione apenas as pontas dos pés na parte inferior da plataforma. Estenda os tornozelos.",
-        "gif_id": "Calf_Press_On_The_Leg_Press",
+        "gif_id": "Calf_Press_On_The_Leg_Press_Machine",
     },
     {
         "name": "Panturrilha com Halteres",
@@ -674,7 +674,7 @@ EXERCISES = [
         "equipment": "halteres",
         "category": "strength",
         "description": "Em pé com halteres nas mãos, eleve os calcanhares ficando na ponta dos pés. Desça controladamente.",
-        "gif_id": "Dumbbell_Calf_Raise",
+        "gif_id": "Calf_Raise_On_A_Dumbbell",
     },
 
     # ══════════════════════════════════════════════════════════════════
@@ -690,7 +690,7 @@ EXERCISES = [
         "equipment": "halteres",
         "category": "strength",
         "description": "Em pé com halteres à frente das coxas, eleve um braço de cada vez até a altura dos ombros.",
-        "gif_id": "Dumbbell_Front_Raise",
+        "gif_id": "Front_Dumbbell_Raise",
     },
     {
         "name": "Desenvolvimento com Halteres",
@@ -720,7 +720,7 @@ EXERCISES = [
         "equipment": "barra",
         "category": "strength",
         "description": "Em pé segurando a barra à frente das coxas, eleve a barra até a altura dos ombros mantendo os braços retos.",
-        "gif_id": "Barbell_Front_Raise",
+        "gif_id": "Front_Plate_Raise",
     },
     {
         "name": "Desenvolvimento na Máquina",
@@ -730,7 +730,7 @@ EXERCISES = [
         "equipment": "máquina",
         "category": "strength",
         "description": "Sente-se na máquina de desenvolvimento e empurre os pegadores para cima até os braços ficarem estendidos.",
-        "gif_id": "Machine_Shoulder_Press",
+        "gif_id": "Leverage_Shoulder_Press",
     },
 
     # -- deltoide_lateral --
@@ -742,7 +742,7 @@ EXERCISES = [
         "equipment": "halteres",
         "category": "strength",
         "description": "Em pé com halteres ao lado do corpo, eleve os braços lateralmente até a altura dos ombros.",
-        "gif_id": "Side_Lateral_Raise",
+        "gif_id": "Alternating_Deltoid_Raise",
     },
     {
         "name": "Desenvolvimento Arnold",
@@ -752,7 +752,7 @@ EXERCISES = [
         "equipment": "halteres",
         "category": "strength",
         "description": "Sentado com halteres na frente do rosto (pegada supinada), gire e empurre para cima terminando com pegada pronada.",
-        "gif_id": "Arnold_Press",
+        "gif_id": "Arnold_Dumbbell_Press",
     },
     {
         "name": "Elevação Lateral no Cabo",
@@ -762,7 +762,7 @@ EXERCISES = [
         "equipment": "cabos",
         "category": "strength",
         "description": "Em pé ao lado da polia baixa, eleve o braço lateralmente contra a resistência do cabo.",
-        "gif_id": "Cable_Lateral_Raise",
+        "gif_id": "Cable_Seated_Lateral_Raise",
     },
     {
         "name": "Elevação Lateral na Máquina",
@@ -772,7 +772,7 @@ EXERCISES = [
         "equipment": "máquina",
         "category": "strength",
         "description": "Sente-se na máquina de elevação lateral e eleve os braços contra a resistência.",
-        "gif_id": "Machine_Lateral_Raise",
+        "gif_id": "Lateral_Raise_-_With_Bands",
     },
 
     # -- deltoide_posterior --
@@ -784,7 +784,7 @@ EXERCISES = [
         "equipment": "halteres",
         "category": "strength",
         "description": "Incline o tronco a 90° com halteres pendurados. Eleve os braços lateralmente focando no deltóide posterior.",
-        "gif_id": "Dumbbell_Rear_Delt_Fly",
+        "gif_id": "Dumbbell_Lying_Rear_Lateral_Raise",
     },
     {
         "name": "Face Pull na Polia",
@@ -804,7 +804,7 @@ EXERCISES = [
         "equipment": "máquina",
         "category": "strength",
         "description": "Sente-se de frente para a máquina peck deck. Abra os braços para trás contra a resistência.",
-        "gif_id": "Reverse_Machine_Flyes",
+        "gif_id": "Cable_Rear_Delt_Fly",
     },
     {
         "name": "Elevação Posterior no Cabo",
@@ -814,7 +814,7 @@ EXERCISES = [
         "equipment": "cabos",
         "category": "strength",
         "description": "Inclinado com o cabo na polia baixa, eleve o braço para trás e para o lado focando no deltóide posterior.",
-        "gif_id": "Cable_Rear_Delt_Fly",
+        "gif_id": "Cable_Rope_Rear-Delt_Rows",
     },
 
     # ══════════════════════════════════════════════════════════════════
@@ -850,7 +850,7 @@ EXERCISES = [
         "equipment": "barra",
         "category": "strength",
         "description": "No banco Scott, apoie os braços e flexione a barra EZ. Isola o bíceps eliminando impulso do corpo.",
-        "gif_id": "Barbell_Preacher_Curl",
+        "gif_id": "Cable_Preacher_Curl",
     },
     {
         "name": "Rosca Martelo com Halteres",
@@ -880,7 +880,7 @@ EXERCISES = [
         "equipment": "cabos",
         "category": "strength",
         "description": "Em pé na polia baixa com barra reta, flexione os cotovelos trazendo a barra até os ombros.",
-        "gif_id": "Cable_Curl",
+        "gif_id": "Cable_Hammer_Curls_-_Rope_Attachment",
     },
     {
         "name": "Rosca Inclinada com Halteres",
@@ -902,7 +902,7 @@ EXERCISES = [
         "equipment": "cabos",
         "category": "strength",
         "description": "Em pé na polia alta, segure a corda. Estenda os cotovelos empurrando para baixo e abrindo no final.",
-        "gif_id": "Triceps_Pushdown",
+        "gif_id": "Cable_Rope_Overhead_Triceps_Extension",
     },
     {
         "name": "Tríceps Testa com Barra",
@@ -912,7 +912,7 @@ EXERCISES = [
         "equipment": "barra",
         "category": "strength",
         "description": "Deite no banco com a barra acima do peito, pegada fechada. Dobre os cotovelos abaixando a barra em direção à testa.",
-        "gif_id": "Barbell_Lying_Triceps_Extension",
+        "gif_id": "EZ-Bar_Skullcrusher",
     },
     {
         "name": "Tríceps Francês com Haltere",
@@ -922,7 +922,7 @@ EXERCISES = [
         "equipment": "halteres",
         "category": "strength",
         "description": "Sentado, segure um haltere atrás da cabeça com as duas mãos. Estenda os cotovelos elevando o peso.",
-        "gif_id": "Dumbbell_Overhead_Triceps_Extension",
+        "gif_id": "Dumbbell_One-Arm_Triceps_Extension",
     },
     {
         "name": "Mergulho no Banco (Tríceps)",
@@ -942,7 +942,7 @@ EXERCISES = [
         "equipment": "halteres",
         "category": "strength",
         "description": "Inclinado com o cotovelo a 90°, estenda o braço para trás contraindo o tríceps.",
-        "gif_id": "Dumbbell_Kickback",
+        "gif_id": "Dumbbell_Tricep_Extension_-Pronated_Grip",
     },
     {
         "name": "Supino Fechado (Close Grip Bench)",
@@ -974,7 +974,7 @@ EXERCISES = [
         "equipment": "barra",
         "category": "strength",
         "description": "Sentado com os antebraços apoiados nas coxas, flexione os punhos para cima segurando a barra.",
-        "gif_id": "Wrist_Curl",
+        "gif_id": "Cable_Wrist_Curl",
     },
     {
         "name": "Rosca Inversa com Barra",
@@ -984,7 +984,7 @@ EXERCISES = [
         "equipment": "barra",
         "category": "strength",
         "description": "Em pé com a barra em pegada pronada, flexione os cotovelos. Trabalha braquiorradial e extensores.",
-        "gif_id": "Reverse_Barbell_Curl",
+        "gif_id": "EZ-Bar_Curl",
     },
     {
         "name": "Rosca de Punho Inversa",
@@ -994,7 +994,7 @@ EXERCISES = [
         "equipment": "halteres",
         "category": "strength",
         "description": "Sentado com antebraços apoiados, pegada pronada. Estenda os punhos para cima contra a gravidade.",
-        "gif_id": "Reverse_Wrist_Curl",
+        "gif_id": "Finger_Curls",
     },
 
     # ══════════════════════════════════════════════════════════════════
@@ -1010,7 +1010,7 @@ EXERCISES = [
         "equipment": "peso_corporal",
         "category": "strength",
         "description": "Deite de costas com joelhos dobrados. Contraia o abdômen elevando os ombros do chão.",
-        "gif_id": "Crunch",
+        "gif_id": "Crunches",
     },
     {
         "name": "Abdominal na Máquina",
@@ -1020,7 +1020,7 @@ EXERCISES = [
         "equipment": "máquina",
         "category": "strength",
         "description": "Sente-se na máquina de abdominal e flexione o tronco para frente contra a resistência.",
-        "gif_id": "Machine_Crunch",
+        "gif_id": "Ab_Crunch_Machine",
     },
     {
         "name": "Abdominal no Cabo (Cable Crunch)",
@@ -1072,7 +1072,7 @@ EXERCISES = [
         "equipment": "peso_corporal",
         "category": "strength",
         "description": "Deite de costas e eleve as pernas. Alterne cruzando uma sobre a outra em movimento de tesoura.",
-        "gif_id": "Scissor_Kick",
+        "gif_id": "Flutter_Kicks",
     },
     {
         "name": "Abdominal Infra (Elevação de Quadril)",
@@ -1082,7 +1082,7 @@ EXERCISES = [
         "equipment": "peso_corporal",
         "category": "strength",
         "description": "Deite de costas e eleve as pernas retas. No topo, eleve o quadril do chão contraindo o abdômen inferior.",
-        "gif_id": "Hip_Raise",
+        "gif_id": "Bent-Knee_Hip_Raise",
     },
     {
         "name": "Joelho ao Peito Pendurado",
@@ -1092,7 +1092,7 @@ EXERCISES = [
         "equipment": "barra",
         "category": "strength",
         "description": "Pendurado na barra, traga os joelhos em direção ao peito contraindo o abdômen.",
-        "gif_id": "Hanging_Knee_Raise",
+        "gif_id": "Knee_Hip_Raise_On_Parallel_Bars",
     },
 
     # -- obliquos --
@@ -1104,7 +1104,7 @@ EXERCISES = [
         "equipment": "peso_corporal",
         "category": "strength",
         "description": "Sente-se com joelhos dobrados e tronco inclinado a 45°. Gire o tronco de um lado para o outro.",
-        "gif_id": "Russian_Twist",
+        "gif_id": "Cable_Russian_Twists",
     },
     {
         "name": "Prancha Lateral",
@@ -1114,7 +1114,7 @@ EXERCISES = [
         "equipment": "peso_corporal",
         "category": "strength",
         "description": "Apoie-se em um antebraço com o corpo de lado. Mantenha o quadril elevado formando uma linha reta.",
-        "gif_id": "Side_Plank",
+        "gif_id": "Elbow_to_Knee",
     },
     {
         "name": "Abdominal Oblíquo (Crunch com Rotação)",
@@ -1134,7 +1134,7 @@ EXERCISES = [
         "equipment": "cabos",
         "category": "strength",
         "description": "Na polia alta, puxe o cabo diagonalmente de cima para baixo girando o tronco. Trabalha oblíquos.",
-        "gif_id": "Cable_Woodchop",
+        "gif_id": "Cable_Judo_Flip",
     },
     {
         "name": "Abdominal Bicicleta",
@@ -1144,7 +1144,7 @@ EXERCISES = [
         "equipment": "peso_corporal",
         "category": "strength",
         "description": "Deite de costas, pedale no ar alternando cotovelo ao joelho oposto.",
-        "gif_id": "Bicycle_Crunch",
+        "gif_id": "Air_Bike",
     },
 
     # -- transverso --
@@ -1156,7 +1156,7 @@ EXERCISES = [
         "equipment": "peso_corporal",
         "category": "strength",
         "description": "Apoie os antebraços e pontas dos pés no chão, mantendo o corpo reto como uma prancha. Mantenha a posição.",
-        "gif_id": "Plank",
+        "gif_id": "Bodyweight_Flyes",
     },
     {
         "name": "Vacuum Abdominal",
@@ -1166,7 +1166,7 @@ EXERCISES = [
         "equipment": "peso_corporal",
         "category": "strength",
         "description": "Em pé ou de quatro, expire todo o ar e puxe o umbigo em direção à coluna. Segure por 10-30 segundos.",
-        "gif_id": "Stomach_Vacuum",
+        "gif_id": "Cocoons",
     },
     {
         "name": "Abdominal na Roda",
@@ -1196,7 +1196,7 @@ EXERCISES = [
         "equipment": "peso_corporal",
         "category": "strength",
         "description": "De quatro, estenda simultaneamente o braço direito e perna esquerda. Alterne os lados mantendo o core estável.",
-        "gif_id": "Bird_Dog",
+        "gif_id": "Downward_Facing_Balance",
     },
 
     # ══════════════════════════════════════════════════════════════════
@@ -1222,7 +1222,7 @@ EXERCISES = [
         "equipment": "barra",
         "category": "strength",
         "description": "Do chão, puxe a barra explosivamente até os ombros em um movimento fluido. Requer técnica avançada.",
-        "gif_id": "Power_Clean",
+        "gif_id": "Clean",
     },
     {
         "name": "Snatch (Arranco)",
@@ -1232,7 +1232,7 @@ EXERCISES = [
         "equipment": "barra",
         "category": "strength",
         "description": "Do chão, puxe a barra explosivamente até acima da cabeça em um único movimento. Exercício olímpico.",
-        "gif_id": "Snatch",
+        "gif_id": "Hang_Snatch",
     },
     {
         "name": "Burpee",
@@ -1242,7 +1242,7 @@ EXERCISES = [
         "equipment": "peso_corporal",
         "category": "cardio",
         "description": "Em pé, agache e apoie as mãos no chão. Jogue os pés para trás, faça uma flexão, pule os pés de volta e salte.",
-        "gif_id": "Burpee",
+        "gif_id": "Frog_Hops",
     },
     {
         "name": "Kettlebell Swing",
@@ -1252,7 +1252,7 @@ EXERCISES = [
         "equipment": "kettlebell",
         "category": "strength",
         "description": "Em pé com o kettlebell entre as pernas. Balance o kettlebell para trás e empurre o quadril para frente.",
-        "gif_id": "Kettlebell_Swing",
+        "gif_id": "One-Arm_Kettlebell_Swings",
     },
     {
         "name": "Thruster com Halteres",
@@ -1262,7 +1262,7 @@ EXERCISES = [
         "equipment": "halteres",
         "category": "strength",
         "description": "Com halteres nos ombros, faça um agachamento e ao subir empurre os halteres acima da cabeça em um movimento contínuo.",
-        "gif_id": "Dumbbell_Thruster",
+        "gif_id": "Kettlebell_Thruster",
     },
     {
         "name": "Turkish Get-Up",
@@ -1272,7 +1272,7 @@ EXERCISES = [
         "equipment": "kettlebell",
         "category": "strength",
         "description": "Deitado com kettlebell em uma mão estendida, levante-se do chão mantendo o peso acima da cabeça.",
-        "gif_id": "Turkish_Get-Up",
+        "gif_id": "Kettlebell_Turkish_Get-Up_Squat_style",
     },
     {
         "name": "Levantamento Terra Sumô",
@@ -1282,7 +1282,7 @@ EXERCISES = [
         "equipment": "barra",
         "category": "strength",
         "description": "Levantamento terra com pés bem afastados e mãos entre as pernas. Foca mais em pernas e glúteos.",
-        "gif_id": "Sumo_Deadlift",
+        "gif_id": "Jefferson_Squats",
     },
 
     # -- cardio --
@@ -1294,7 +1294,7 @@ EXERCISES = [
         "equipment": "peso_corporal",
         "category": "cardio",
         "description": "Em posição de flexão, traga alternadamente os joelhos em direção ao peito em movimento rápido.",
-        "gif_id": "Mountain_Climber",
+        "gif_id": "Mountain_Climbers",
     },
     {
         "name": "Jumping Jack",
@@ -1304,7 +1304,7 @@ EXERCISES = [
         "equipment": "peso_corporal",
         "category": "cardio",
         "description": "Em pé, salte abrindo as pernas e levantando os braços acima da cabeça simultaneamente.",
-        "gif_id": "Jumping_Jacks",
+        "gif_id": "Double_Leg_Butt_Kick",
     },
     {
         "name": "Corda (Jump Rope)",
@@ -1314,7 +1314,7 @@ EXERCISES = [
         "equipment": "corda",
         "category": "cardio",
         "description": "Segure as alças da corda e gire-a sobre a cabeça. Salte com os dois pés juntos cada vez que a corda passar.",
-        "gif_id": "Jump_Rope",
+        "gif_id": "Fast_Skipping",
     },
     {
         "name": "Box Jump",
@@ -1324,7 +1324,7 @@ EXERCISES = [
         "equipment": "caixa",
         "category": "cardio",
         "description": "Em frente a uma caixa, salte com os dois pés aterrissando em cima. Desça controladamente.",
-        "gif_id": "Box_Jump",
+        "gif_id": "Front_Box_Jump",
     },
     {
         "name": "Agachamento com Salto",
@@ -1334,7 +1334,7 @@ EXERCISES = [
         "equipment": "peso_corporal",
         "category": "cardio",
         "description": "Faça um agachamento e ao subir, salte o mais alto possível. Aterrisse suavemente.",
-        "gif_id": "Jump_Squat",
+        "gif_id": "Freehand_Jump_Squat",
     },
     {
         "name": "Corrida Estacionária (High Knees)",
@@ -1344,7 +1344,7 @@ EXERCISES = [
         "equipment": "peso_corporal",
         "category": "cardio",
         "description": "Corra no lugar elevando os joelhos o mais alto possível. Mantenha ritmo acelerado.",
-        "gif_id": "High_Knee_Jog",
+        "gif_id": "Knee_Tuck_Jump",
     },
     {
         "name": "Skater Jump",
@@ -1354,7 +1354,7 @@ EXERCISES = [
         "equipment": "peso_corporal",
         "category": "cardio",
         "description": "Salte lateralmente de um pé para o outro, como um patinador. Mantenha o equilíbrio em cada aterrissagem.",
-        "gif_id": "Skater",
+        "gif_id": "Lateral_Bound",
     },
 
     # ══════════════════════════════════════════════════════════════════
@@ -1368,7 +1368,7 @@ EXERCISES = [
         "equipment": "peso_corporal",
         "category": "flexibility",
         "description": "Em pé, incline o tronco para frente com as pernas retas. Sinta o alongamento na parte posterior das coxas.",
-        "gif_id": "Standing_Hamstring_Stretch",
+        "gif_id": "Hamstring_Stretch",
     },
     {
         "name": "Alongamento de Quadríceps",
@@ -1378,7 +1378,7 @@ EXERCISES = [
         "equipment": "peso_corporal",
         "category": "flexibility",
         "description": "Em pé, segure o pé atrás puxando o calcanhar em direção ao glúteo.",
-        "gif_id": "Standing_Quad_Stretch",
+        "gif_id": "All_Fours_Quad_Stretch",
     },
     {
         "name": "Cat-Cow (Gato-Vaca)",
@@ -1404,7 +1404,7 @@ EXERCISES = [
         "equipment": "smith_machine",
         "category": "strength",
         "description": "No banco inclinado na Smith Machine, empurre a barra guiada para cima focando no peitoral superior.",
-        "gif_id": "Smith_Machine_Incline_Bench_Press",
+        "gif_id": "Leverage_Incline_Chest_Press",
     },
     {
         "name": "Peck Deck (Voador)",
@@ -1414,7 +1414,7 @@ EXERCISES = [
         "equipment": "máquina",
         "category": "strength",
         "description": "Sente-se na máquina peck deck e feche os braços à frente contraindo o peitoral.",
-        "gif_id": "Pec_Deck_Fly",
+        "gif_id": "Butterfly",
     },
 
     # -- Costas extras --
@@ -1426,7 +1426,7 @@ EXERCISES = [
         "equipment": "halteres",
         "category": "strength",
         "description": "Inclinado a 45° com halteres, puxe ambos em direção ao abdômen contraindo as escápulas.",
-        "gif_id": "Dumbbell_Bent_Over_Row",
+        "gif_id": "Bent_Over_Two-Dumbbell_Row",
     },
     {
         "name": "Pulldown Reto (Braços Estendidos)",
@@ -1436,7 +1436,7 @@ EXERCISES = [
         "equipment": "cabos",
         "category": "strength",
         "description": "Na polia alta, com braços quase retos, puxe a barra até as coxas focando no dorsal.",
-        "gif_id": "Straight-Arm_Pulldown",
+        "gif_id": "Cable_Incline_Pushdown",
     },
 
     # -- Pernas extras --
@@ -1448,7 +1448,7 @@ EXERCISES = [
         "equipment": "máquina",
         "category": "strength",
         "description": "Sente-se na máquina de leg press horizontal e empurre a plataforma à frente.",
-        "gif_id": "Horizontal_Leg_Press",
+        "gif_id": "Narrow_Stance_Leg_Press",
     },
     {
         "name": "Passada (Walking Lunge)",
@@ -1458,7 +1458,7 @@ EXERCISES = [
         "equipment": "halteres",
         "category": "strength",
         "description": "Com halteres nas mãos, dê passos alternados à frente em avanço contínuo.",
-        "gif_id": "Walking_Lunge",
+        "gif_id": "Bodyweight_Walking_Lunge",
     },
     {
         "name": "Stiff Romeno com Barra",
@@ -1468,7 +1468,7 @@ EXERCISES = [
         "equipment": "barra",
         "category": "strength",
         "description": "Similar ao stiff mas com leve flexão de joelhos, focando no alongamento dos isquiotibiais.",
-        "gif_id": "Romanian_Deadlift",
+        "gif_id": "Barbell_Deadlift",
     },
     {
         "name": "Hip Thrust na Máquina",
@@ -1478,7 +1478,7 @@ EXERCISES = [
         "equipment": "máquina",
         "category": "strength",
         "description": "Na máquina de hip thrust, empurre o quadril para cima contra a resistência.",
-        "gif_id": "Hip_Thrust_Machine",
+        "gif_id": "Barbell_Glute_Bridge",
     },
     {
         "name": "Elevação Pélvica Unilateral",
@@ -1488,7 +1488,7 @@ EXERCISES = [
         "equipment": "peso_corporal",
         "category": "strength",
         "description": "Ponte de glúteo com uma perna só. A outra fica estendida no ar.",
-        "gif_id": "Single_Leg_Glute_Bridge",
+        "gif_id": "Butt_Lift_Bridge",
     },
 
     # -- Ombros extras --
@@ -1500,7 +1500,7 @@ EXERCISES = [
         "equipment": "barra",
         "category": "strength",
         "description": "Sentado, empurre a barra de trás da cabeça para cima. Requer boa mobilidade de ombro.",
-        "gif_id": "Behind_Neck_Press",
+        "gif_id": "Bradford_Rocky_Presses",
     },
     {
         "name": "Elevação Lateral Inclinada",
@@ -1510,7 +1510,7 @@ EXERCISES = [
         "equipment": "halteres",
         "category": "strength",
         "description": "Inclinado lateralmente segurando em um apoio, eleve o haltere lateralmente com o braço livre.",
-        "gif_id": "Incline_Lateral_Raise",
+        "gif_id": "One-Arm_Incline_Lateral_Raise",
     },
 
     # -- Braços extras --
@@ -1522,7 +1522,7 @@ EXERCISES = [
         "equipment": "barra",
         "category": "strength",
         "description": "7 repetições na metade inferior, 7 na metade superior e 7 completas. Total de 21 reps.",
-        "gif_id": "Barbell_21s",
+        "gif_id": "Close-Grip_Standing_Barbell_Curl",
     },
     {
         "name": "Tríceps Mergulho nas Paralelas",
@@ -1542,7 +1542,7 @@ EXERCISES = [
         "equipment": "halteres",
         "category": "strength",
         "description": "Deite de bruços no banco inclinado com braços pendurados. Flexione os halteres isolando o bíceps.",
-        "gif_id": "Spider_Curl",
+        "gif_id": "Dumbbell_Prone_Incline_Curl",
     },
 
     # -- Core extras --
@@ -1554,7 +1554,7 @@ EXERCISES = [
         "equipment": "peso_corporal",
         "category": "strength",
         "description": "Em posição de flexão, toque alternadamente cada ombro com a mão oposta mantendo o quadril estável.",
-        "gif_id": "Plank_Shoulder_Tap",
+        "gif_id": "Body-Up",
     },
     {
         "name": "Abdominal V-Up",
@@ -1564,7 +1564,7 @@ EXERCISES = [
         "equipment": "peso_corporal",
         "category": "strength",
         "description": "Deite de costas e eleve simultaneamente tronco e pernas retas, tocando os pés com as mãos.",
-        "gif_id": "V-Up",
+        "gif_id": "Jackknife_Sit-Up",
     },
     {
         "name": "Pallof Press (Anti-Rotação)",
@@ -1574,7 +1574,7 @@ EXERCISES = [
         "equipment": "cabos",
         "category": "strength",
         "description": "Em pé de lado para a polia, estenda os braços à frente resistindo à rotação do tronco.",
-        "gif_id": "Pallof_Press",
+        "gif_id": "Cable_Iron_Cross",
     },
 
     # -- Full Body extras --
@@ -1586,7 +1586,7 @@ EXERCISES = [
         "equipment": "halteres",
         "category": "strength",
         "description": "Com halteres: flexão, remada alternada, clean e press. Exercício completo de corpo inteiro.",
-        "gif_id": "Man_Maker",
+        "gif_id": "Alternating_Renegade_Row",
     },
     {
         "name": "Bear Crawl",
@@ -1596,7 +1596,7 @@ EXERCISES = [
         "equipment": "peso_corporal",
         "category": "cardio",
         "description": "De quatro com joelhos elevados do chão, caminhe para frente alternando mãos e pés opostos.",
-        "gif_id": "Bear_Crawl",
+        "gif_id": "Bear_Crawl_Sled_Drags",
     },
     {
         "name": "Battle Rope (Corda Naval)",
@@ -1606,7 +1606,7 @@ EXERCISES = [
         "equipment": "corda",
         "category": "cardio",
         "description": "Segure as pontas da corda naval e faça ondas alternadas ou simultâneas com os braços.",
-        "gif_id": "Battle_Ropes",
+        "gif_id": "Battling_Ropes",
     },
     {
         "name": "Kettlebell Clean and Press",
@@ -1616,7 +1616,7 @@ EXERCISES = [
         "equipment": "kettlebell",
         "category": "strength",
         "description": "Puxe o kettlebell do chão até o ombro (clean) e empurre acima da cabeça (press) em sequência.",
-        "gif_id": "Kettlebell_Clean_And_Press",
+        "gif_id": "Clean_and_Press",
     },
     {
         "name": "Devil Press",
@@ -1626,7 +1626,7 @@ EXERCISES = [
         "equipment": "halteres",
         "category": "cardio",
         "description": "Burpee segurando halteres, ao subir faça um snatch levando os halteres acima da cabeça.",
-        "gif_id": "Devil_Press",
+        "gif_id": "Alternating_Hang_Clean",
     },
 ]
 
