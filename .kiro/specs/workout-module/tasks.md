@@ -32,7 +32,7 @@ Implementação incremental do módulo de treinos: extensão dos modelos existen
     - Verificar que `SessionCheckin` persiste e recupera `exercise_logs` como JSON
     - _Requirements: 1.7, 3.8, 6.1_
 
-- [-] 2. Implementar endpoints do Personal Trainer em `app/routers/personal.py`
+- [x] 2. Implementar endpoints do Personal Trainer em `app/routers/personal.py`
   - [x] 2.1 Implementar `POST /api/personal/plans/{plan_id}/publish`
     - Verificar que o plano pertence ao profissional autenticado (403 se não)
     - Verificar que o plano possui ao menos uma sessão (422 com mensagem descritiva se não)
@@ -67,11 +67,11 @@ Implementação incremental do módulo de treinos: extensão dos modelos existen
     - **Validates: Requirements 1.6, 10.2**
     - Criar dois profissionais com planos distintos; verificar que profissional B recebe 403 ao acessar planos do profissional A
 
-- [ ] 3. Checkpoint — Testar endpoints do Personal Trainer
+- [x] 3. Checkpoint — Testar endpoints do Personal Trainer
   - Garantir que todos os testes passam. Verificar manualmente via `/docs` (Swagger) os novos endpoints. Perguntar ao usuário se há dúvidas antes de continuar.
 
-- [-] 4. Criar router `app/routers/patient_workout.py` e registrá-lo em `main.py`
-  - [ ] 4.1 Criar o arquivo `app/routers/patient_workout.py` com o router base
+- [x] 4. Criar router `app/routers/patient_workout.py` e registrá-lo em `main.py`
+  - [x] 4.1 Criar o arquivo `app/routers/patient_workout.py` com o router base
     - Definir `router = APIRouter(prefix="/api/patient", tags=["Portal Paciente — Treino"])`
     - Reutilizar o helper `get_current_patient` importado de `patient_portal.py` (ou replicar o padrão de autenticação via `nutrirp_patient_token`)
     - _Requirements: 5.1, 6.1, 10.1_
@@ -127,10 +127,10 @@ Implementação incremental do módulo de treinos: extensão dos modelos existen
     - Adicionar `app.include_router(patient_workout.router)` após o router `personal`
     - _Requirements: 5.1, 6.1_
 
-- [ ] 5. Checkpoint — Testar endpoints do Portal do Paciente
+- [x] 5. Checkpoint — Testar endpoints do Portal do Paciente
   - Garantir que todos os testes passam. Verificar via `/docs` os endpoints `/api/patient/workout/*`. Perguntar ao usuário se há dúvidas antes de continuar.
 
-- [-] 6. Implementar componentes frontend do Personal Trainer
+- [x] 6. Implementar componentes frontend do Personal Trainer
   - [x] 6.1 Criar `src/pages/personal/PersonalWorkoutBuilder.jsx`
     - Carregar plano via `GET /api/personal/plans/{planId}` com sessões e exercícios aninhados
     - Exibir sessões (Treino A/B/C) em ordem de `order_index` com botões para adicionar, renomear e reordenar
@@ -163,7 +163,7 @@ Implementação incremental do módulo de treinos: extensão dos modelos existen
     - Adicionar seção "Check-ins de Sessão" usando o componente `SessionCheckinHistory`
     - _Requirements: 7.4_
 
-- [ ] 7. Implementar componentes frontend do Portal do Paciente
+- [x] 7. Implementar componentes frontend do Portal do Paciente
   - [x] 7.1 Criar `src/pages/patient/PatientWorkout.jsx`
     - Chamar `GET /api/patient/workout/active-plan` com token `nutrirp_patient_token`
     - Exibir sessões do plano em ordem de `order_index` como abas ou cards expansíveis
@@ -188,7 +188,7 @@ Implementação incremental do módulo de treinos: extensão dos modelos existen
     - Eixo X: `performed_at`; eixo Y: valor numérico extraído de `load_used`
     - _Requirements: 4.8, 8.2, 8.5_
 
-- [ ] 8. Adicionar rotas em `App.jsx` e `spa-routes.cjs`
+- [x] 8. Adicionar rotas em `App.jsx` e `spa-routes.cjs`
   - [x] 8.1 Adicionar rotas do Personal Trainer em `src/App.jsx`
     - Importar `PersonalWorkoutBuilder` de `./pages/personal/PersonalWorkoutBuilder`
     - Adicionar dentro do bloco de rotas privadas: `<Route path="personal/plans/:planId" element={<PersonalWorkoutBuilder />} />`
