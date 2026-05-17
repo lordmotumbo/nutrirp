@@ -353,9 +353,9 @@ Base.metadata.create_all(bind=engine)
 # Roda migrações de colunas/tabelas novas
 run_migrations()
 
-# Popula biblioteca de exercícios se estiver vazia
+# Popula biblioteca de exercícios (insere novos ou atualiza imagens existentes)
 def seed_exercises():
-    """Insere exercícios globais pré-carregados se a biblioteca estiver vazia."""
+    """Insere exercícios globais pré-carregados ou atualiza thumbnail/video_url dos existentes."""
     import logging
     from sqlalchemy import text
     from app.data.exercise_seed import build_seed_data
@@ -365,42 +365,47 @@ def seed_exercises():
     is_pg = "postgresql" in db_url or "postgres" in db_url
 
     with engine.connect() as conn:
-        try:
-            row = conn.execute(text(
-                "SELECT COUNT(*) FROM exercise_library WHERE created_by IS NULL"
-            )).fetchone()
-            count = row[0] if row else 0
-        except Exception:
-            count = 0
-
-        if count > 0:
-            logger.info(f"Biblioteca já tem {count} exercícios globais. Seed ignorado.")
-            return
-
         exercises = build_seed_data()
         inserted = 0
+        updated = 0
         for ex in exercises:
             try:
-                if is_pg:
+                # Check if exercise already exists by name
+                row = conn.execute(text(
+                    "SELECT id FROM exercise_library WHERE name = :name AND created_by IS NULL"
+                ), {"name": ex["name"]}).fetchone()
+
+                if row:
+                    # Update thumbnail and video_url for existing exercise
                     conn.execute(text("""
-                        INSERT INTO exercise_library
-                            (name, description, muscle_group, subgroup, difficulty, equipment,
-                             category, thumbnail, video_url, is_active, created_by)
-                        VALUES
-                            (:name, :description, :muscle_group, :subgroup, :difficulty, :equipment,
-                             :category, :thumbnail, :video_url, TRUE, NULL)
-                        ON CONFLICT DO NOTHING
+                        UPDATE exercise_library
+                        SET thumbnail = :thumbnail, video_url = :video_url,
+                            subgroup = :subgroup, muscle_group = :muscle_group
+                        WHERE name = :name AND created_by IS NULL
                     """), ex)
+                    updated += 1
                 else:
-                    conn.execute(text("""
-                        INSERT OR IGNORE INTO exercise_library
-                            (name, description, muscle_group, subgroup, difficulty, equipment,
-                             category, thumbnail, video_url, is_active, created_by)
-                        VALUES
-                            (:name, :description, :muscle_group, :subgroup, :difficulty, :equipment,
-                             :category, :thumbnail, :video_url, 1, NULL)
-                    """), ex)
-                inserted += 1
+                    # Insert new exercise
+                    if is_pg:
+                        conn.execute(text("""
+                            INSERT INTO exercise_library
+                                (name, description, muscle_group, subgroup, difficulty, equipment,
+                                 category, thumbnail, video_url, is_active, created_by)
+                            VALUES
+                                (:name, :description, :muscle_group, :subgroup, :difficulty, :equipment,
+                                 :category, :thumbnail, :video_url, TRUE, NULL)
+                            ON CONFLICT DO NOTHING
+                        """), ex)
+                    else:
+                        conn.execute(text("""
+                            INSERT OR IGNORE INTO exercise_library
+                                (name, description, muscle_group, subgroup, difficulty, equipment,
+                                 category, thumbnail, video_url, is_active, created_by)
+                            VALUES
+                                (:name, :description, :muscle_group, :subgroup, :difficulty, :equipment,
+                                 :category, :thumbnail, :video_url, 1, NULL)
+                        """), ex)
+                    inserted += 1
             except Exception as e:
                 logger.warning(f"Seed error for {ex.get('name')}: {e}")
                 try:
@@ -409,7 +414,7 @@ def seed_exercises():
                     pass
 
         conn.commit()
-        logger.info(f"Seed: {inserted} exercícios inseridos na biblioteca.")
+        logger.info(f"Seed: {inserted} inseridos, {updated} atualizados na biblioteca.")
 
 
 seed_exercises()
