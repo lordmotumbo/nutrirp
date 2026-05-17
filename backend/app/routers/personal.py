@@ -125,8 +125,10 @@ class BodyEvolutionIn(BaseModel):
 def list_exercises(
     q: Optional[str] = None,
     muscle_group: Optional[str] = None,
+    subgroup: Optional[str] = None,
     difficulty: Optional[str] = None,
     category: Optional[str] = None,
+    equipment: Optional[str] = None,
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
@@ -139,11 +141,15 @@ def list_exercises(
         query = query.filter(ExerciseLibrary.name.ilike(f"%{q}%"))
     if muscle_group:
         query = query.filter(ExerciseLibrary.muscle_group == muscle_group)
+    if subgroup:
+        query = query.filter(ExerciseLibrary.subgroup == subgroup)
     if difficulty:
         query = query.filter(ExerciseLibrary.difficulty == difficulty)
     if category:
         query = query.filter(ExerciseLibrary.category == category)
-    return query.order_by(ExerciseLibrary.name).limit(100).all()
+    if equipment:
+        query = query.filter(ExerciseLibrary.equipment == equipment)
+    return query.order_by(ExerciseLibrary.name).limit(200).all()
 
 
 @router.post("/exercises/library", status_code=201)

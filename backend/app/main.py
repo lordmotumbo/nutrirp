@@ -54,6 +54,7 @@ def run_migrations():
         ("chat_messages", "message", "TEXT"),  # torna nullable (já existe, ignora)
         ("workout_plans", "is_published", "BOOLEAN DEFAULT FALSE"),
         ("workout_exercises", "muscle_group", "VARCHAR(100)"),
+        ("exercise_library", "subgroup", "VARCHAR(100)"),
     ]
 
     with engine.connect() as conn:
@@ -383,20 +384,20 @@ def seed_exercises():
                 if is_pg:
                     conn.execute(text("""
                         INSERT INTO exercise_library
-                            (name, description, muscle_group, difficulty, equipment,
+                            (name, description, muscle_group, subgroup, difficulty, equipment,
                              category, thumbnail, video_url, is_active, created_by)
                         VALUES
-                            (:name, :description, :muscle_group, :difficulty, :equipment,
+                            (:name, :description, :muscle_group, :subgroup, :difficulty, :equipment,
                              :category, :thumbnail, :video_url, TRUE, NULL)
                         ON CONFLICT DO NOTHING
                     """), ex)
                 else:
                     conn.execute(text("""
                         INSERT OR IGNORE INTO exercise_library
-                            (name, description, muscle_group, difficulty, equipment,
+                            (name, description, muscle_group, subgroup, difficulty, equipment,
                              category, thumbnail, video_url, is_active, created_by)
                         VALUES
-                            (:name, :description, :muscle_group, :difficulty, :equipment,
+                            (:name, :description, :muscle_group, :subgroup, :difficulty, :equipment,
                              :category, :thumbnail, :video_url, 1, NULL)
                     """), ex)
                 inserted += 1

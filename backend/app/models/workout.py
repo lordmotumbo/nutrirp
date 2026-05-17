@@ -15,6 +15,7 @@ class ExerciseLibrary(Base):
     name = Column(String(200), nullable=False, index=True)
     description = Column(Text, nullable=True)
     muscle_group = Column(String(100), nullable=True)   # peito | costas | pernas | ombros | braços | core | full_body
+    subgroup = Column(String(100), nullable=True)       # subgrupo muscular específico
     difficulty = Column(String(20), nullable=True)      # iniciante | intermediario | avancado
     video_url = Column(String(500), nullable=True)
     thumbnail = Column(String(500), nullable=True)
