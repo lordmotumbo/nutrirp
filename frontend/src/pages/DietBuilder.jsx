@@ -17,9 +17,9 @@ const UNITS = ['g', 'ml', 'unidade', 'colher de sopa', 'colher de chá', 'xícar
 
 function FoodRow({ food, onChange, onRemove }) {
   return (
-    <div className="grid grid-cols-12 gap-1.5 items-center text-sm">
+    <div className="grid grid-cols-12 gap-2 items-center text-sm">
       <input
-        className="input col-span-4"
+        className="input col-span-3"
         placeholder="Alimento"
         value={food.food_name}
         onChange={e => onChange('food_name', e.target.value)}
@@ -42,7 +42,7 @@ function FoodRow({ food, onChange, onRemove }) {
       </select>
       <input
         type="number"
-        className="input col-span-1"
+        className="input col-span-2"
         placeholder="kcal"
         value={food.calories}
         onChange={e => onChange('calories', e.target.value)}
@@ -301,11 +301,11 @@ export default function DietBuilder() {
           {!collapsed[mealIdx] && (
             <>
               {meal.foods.length > 0 && (
-                <div className="grid grid-cols-12 gap-1.5 text-xs text-gray-400 px-0.5">
-                  <span className="col-span-4">Alimento</span>
+                <div className="grid grid-cols-12 gap-2 text-xs text-gray-400 px-0.5">
+                  <span className="col-span-3">Alimento</span>
                   <span className="col-span-2">Qtd</span>
                   <span className="col-span-2">Unid.</span>
-                  <span className="col-span-1">kcal</span>
+                  <span className="col-span-2">kcal</span>
                   <span className="col-span-1">Prot</span>
                   <span className="col-span-1">Carb</span>
                   <span className="col-span-1" />
@@ -328,6 +328,15 @@ export default function DietBuilder() {
                 <FoodAutocomplete
                   placeholder="Digite o nome do alimento..."
                   onSelect={(food) => addFood(mealIdx, food)}
+                  onAddCustom={(name) => {
+                    addFood(mealIdx)
+                    setMeals(ms => ms.map((m, i) => {
+                      if (i !== mealIdx) return m
+                      const foods = [...m.foods]
+                      foods[foods.length - 1] = { ...foods[foods.length - 1], food_name: name }
+                      return { ...m, foods }
+                    }))
+                  }}
                 />
               </div>
 

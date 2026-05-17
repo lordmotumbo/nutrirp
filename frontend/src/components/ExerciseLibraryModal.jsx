@@ -22,12 +22,24 @@ const DIFFICULTY_LABELS = {
   avancado: { label: 'Avançado', color: 'bg-red-100 text-red-700' },
 }
 
+const MUSCLE_EMOJI = {
+  peito: '🏋️',
+  costas: '🔙',
+  pernas: '🦵',
+  ombros: '💪',
+  bracos: '💪',
+  core: '🎯',
+  full_body: '🏃',
+  gluteos: '🍑',
+  panturrilha: '🦶',
+}
+
 /**
  * Componente de animação de exercício.
  * Alterna entre thumbnail (frame 0) e video_url (frame 1) para simular animação.
  * Quando o usuário passa o mouse, mostra o segundo frame.
  */
-function ExerciseAnimation({ thumbnail, videoUrl, name, className = '' }) {
+function ExerciseAnimation({ thumbnail, videoUrl, name, muscleGroup, className = '' }) {
   const [showAlt, setShowAlt] = useState(false)
   const intervalRef = useRef(null)
 
@@ -43,8 +55,8 @@ function ExerciseAnimation({ thumbnail, videoUrl, name, className = '' }) {
   const src = showAlt && videoUrl ? videoUrl : thumbnail
 
   if (!src) return (
-    <div className={`bg-gray-100 dark:bg-gray-800 flex items-center justify-center ${className}`}>
-      <Dumbbell className="w-8 h-8 text-gray-300" />
+    <div className={`bg-purple-900/30 flex items-center justify-center text-2xl ${className}`}>
+      {MUSCLE_EMOJI[muscleGroup] || '🏋️'}
     </div>
   )
 
@@ -195,6 +207,7 @@ export default function ExerciseLibraryModal({ onSelect, onClose }) {
                       thumbnail={ex.thumbnail}
                       videoUrl={ex.video_url}
                       name={ex.name}
+                      muscleGroup={ex.muscle_group}
                       className="w-full h-full"
                     />
                   </div>
@@ -227,6 +240,7 @@ export default function ExerciseLibraryModal({ onSelect, onClose }) {
                     thumbnail={preview.thumbnail}
                     videoUrl={preview.video_url}
                     name={preview.name}
+                    muscleGroup={preview.muscle_group}
                     className="w-full h-full"
                   />
                 </div>

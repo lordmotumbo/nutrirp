@@ -40,7 +40,37 @@ export default function Anthropometry() {
     api.get(`/patients/${id}`).then(r => setPatient(r.data))
     api.get(`/anthropometry/patient/${id}`).then(r => {
       setHistory(r.data)
-      if (r.data.length > 0) setLastRecordId(r.data[0].id)
+      if (r.data.length > 0) {
+        setLastRecordId(r.data[0].id)
+        // Preenche o formulário com a última avaliação
+        const last = r.data[0]
+        setForm(prev => ({
+          ...prev,
+          weight: last.weight ? String(last.weight) : '',
+          height: last.height ? String(last.height) : '',
+          age: last.age ? String(last.age) : '',
+          triceps: last.triceps ? String(last.triceps) : '',
+          biceps: last.biceps ? String(last.biceps) : '',
+          subscapular: last.subscapular ? String(last.subscapular) : '',
+          suprailiac: last.suprailiac ? String(last.suprailiac) : '',
+          abdominal: last.abdominal ? String(last.abdominal) : '',
+          thigh: last.thigh ? String(last.thigh) : '',
+          calf: last.calf ? String(last.calf) : '',
+          chest: last.chest ? String(last.chest) : '',
+          midaxillary: last.midaxillary ? String(last.midaxillary) : '',
+          waist: last.waist ? String(last.waist) : '',
+          hip: last.hip ? String(last.hip) : '',
+          neck: last.neck ? String(last.neck) : '',
+          arm: last.arm ? String(last.arm) : '',
+          forearm: last.forearm ? String(last.forearm) : '',
+          thigh_circ: last.thigh_circ ? String(last.thigh_circ) : '',
+          calf_circ: last.calf_circ ? String(last.calf_circ) : '',
+          protocol: last.protocol || 'pollock7',
+          activity_factor: last.activity_factor || 1.55,
+          bmr_formula: last.bmr_formula || 'mifflin',
+          notes: last.notes || '',
+        }))
+      }
     }).catch(() => {})
   }, [id])
 
@@ -171,28 +201,7 @@ export default function Anthropometry() {
         </button>
       </form>
 
-      {/* Resultado */}
-      {result && (
-        <div className="card bg-primary-50 border-primary-200">
-          <h2 className="font-semibold text-primary-800 mb-4">📊 Resultados Calculados</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              { label: 'IMC', value: result.bmi, unit: 'kg/m²' },
-              { label: '% Gordura', value: result.body_fat_pct, unit: '%' },
-              { label: 'Massa Gorda', value: result.fat_mass, unit: 'kg' },
-              { label: 'Massa Magra', value: result.lean_mass, unit: 'kg' },
-              { label: 'RCQ', value: result.waist_hip_ratio, unit: '' },
-              { label: 'TMB', value: result.bmr, unit: 'kcal' },
-              { label: 'GET', value: result.tdee, unit: 'kcal/dia' },
-            ].filter(r => r.value).map(({ label, value, unit }) => (
-              <div key={label} className="bg-[#12121f] rounded-lg p-3 text-center shadow-sm border border-purple-900/20">
-                <p className="text-lg font-bold text-primary-700">{value} <span className="text-xs font-normal text-gray-400">{unit}</span></p>
-                <p className="text-xs text-gray-500">{label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+
     </div>
   )
 }

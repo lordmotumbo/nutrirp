@@ -6,7 +6,7 @@ import api from '../api'
  * Campo de busca de alimentos com autocomplete.
  * Ao selecionar um alimento, chama onSelect(food) com os dados nutricionais.
  */
-export default function FoodAutocomplete({ onSelect, placeholder = "Buscar alimento..." }) {
+export default function FoodAutocomplete({ onSelect, onAddCustom, placeholder = "Buscar alimento..." }) {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState([])
   const [loading, setLoading] = useState(false)
@@ -103,8 +103,15 @@ export default function FoodAutocomplete({ onSelect, placeholder = "Buscar alime
       )}
 
       {open && query.length >= 2 && results.length === 0 && !loading && (
-        <div className="absolute z-50 w-full mt-1 bg-[#0f0f1c] border border-purple-900/30 rounded-xl shadow-lg px-4 py-3">
-          <p className="text-sm text-gray-400">Nenhum alimento encontrado para "{query}"</p>
+        <div className="absolute z-50 w-full mt-1 bg-[#0f0f1c] border border-purple-900/30 rounded-xl shadow-lg px-4 py-3 text-center">
+          <p className="text-sm text-gray-400 mb-2">Nenhum alimento encontrado para "{query}"</p>
+          <button
+            type="button"
+            onClick={() => { onAddCustom?.(query); setQuery(''); setOpen(false) }}
+            className="text-sm text-purple-400 hover:text-purple-300 font-medium"
+          >
+            + Cadastrar "{query}" como alimento personalizado
+          </button>
         </div>
       )}
     </div>
